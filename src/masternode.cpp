@@ -370,8 +370,8 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
     if (!pwalletMain->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
         return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
     
-    if (sporkManager.IsSporkActive(SPORK_15_MASTERNODE_LOCK_NUMBER) && mnodeman.size() < SPORK_15_MASTERNODE_LOCK_NUMBER_DEFAULT)
-	return Log(strprintf("Masternode limit reached, cannot enable more masternodes", strTxHash, strOutputIndex, strService));
+    if (sporkManager.IsSporkActive(SPORK_15_MASTERNODE_LOCK_NUMBER) && mnodeman.size() > sporkManager.GetSporkValue(SPORK_15_MASTERNODE_LOCK_NUMBER))
+	return Log(strprintf("Masternode limit reached, masternodes enabled: %d ,cannot enable more masternodes. Current limit is %d",mnodeman.size(), sporkManager.GetSporkValue(SPORK_15_MASTERNODE_LOCK_NUMBER)));
 
     CService service;
     if (!Lookup(strService.c_str(), service, 0, false))
