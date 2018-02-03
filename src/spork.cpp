@@ -134,7 +134,7 @@ bool CSporkManager::IsSporkActive(int nSporkID)
             case SPORK_12_RECONSIDER_BLOCKS:                r = SPORK_12_RECONSIDER_BLOCKS_DEFAULT; break;
             case SPORK_13_OLD_SUPERBLOCK_FLAG:              r = SPORK_13_OLD_SUPERBLOCK_FLAG_DEFAULT; break;
             case SPORK_14_REQUIRE_SENTINEL_FLAG:            r = SPORK_14_REQUIRE_SENTINEL_FLAG_DEFAULT; break;
-	    case SPORK_15_MASTERNODE_LOCK_NUMBER:           r = return SPORK_15_MASTERNODE_LOCK_NUMBER; break;
+	    case SPORK_15_MASTERNODE_LOCK_NUMBER:           r = SPORK_15_MASTERNODE_LOCK_NUMBER_DEFAULT; break;
 	    default:
                 LogPrint("spork", "CSporkManager::IsSporkActive -- Unknown Spork ID %d\n", nSporkID);
                 r = 4070908800ULL; // 2099-1-1 i.e. off by default
@@ -161,7 +161,7 @@ int64_t CSporkManager::GetSporkValue(int nSporkID)
         case SPORK_12_RECONSIDER_BLOCKS:                return SPORK_12_RECONSIDER_BLOCKS_DEFAULT;
         case SPORK_13_OLD_SUPERBLOCK_FLAG:              return SPORK_13_OLD_SUPERBLOCK_FLAG_DEFAULT;
         case SPORK_14_REQUIRE_SENTINEL_FLAG:            return SPORK_14_REQUIRE_SENTINEL_FLAG_DEFAULT;
-	case SPORK_15_MASTERNODE_LOCK_NUMBER:           return SPORK_15_MASTERNODE_LOCK_NUMBER;
+	case SPORK_15_MASTERNODE_LOCK_NUMBER:           return SPORK_15_MASTERNODE_LOCK_NUMBER_DEFAULT;
         default:
             LogPrint("spork", "CSporkManager::GetSporkValue -- Unknown Spork ID %d\n", nSporkID);
             return -1;
