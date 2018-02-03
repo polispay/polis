@@ -77,6 +77,8 @@ public:
     bool SimpleCheck(int& nDos);
     bool CheckAndUpdate(CMasternode* pmn, bool fFromNewBroadcast, int& nDos, CConnman& connman);
     void Relay(CConnman& connman);
+    int  GetMasternodeCount;
+    friend class CMasternodeMan;
 };
 
 inline bool operator==(const CMasternodePing& a, const CMasternodePing& b)
@@ -294,6 +296,7 @@ public:
         mapGovernanceObjectsVotedOn = from.mapGovernanceObjectsVotedOn;
         return *this;
     }
+    int GetMasternodeCount();
 };
 
 inline bool operator==(const CMasternode& a, const CMasternode& b)

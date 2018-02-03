@@ -132,7 +132,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         READWRITE(vecTimestamps);
         READWRITE(nDataStart);
@@ -159,7 +159,7 @@ public: // Types
         ADD_SERIALIZE_METHODS;
 
         template <typename Stream, typename Operation>
-        inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+        inline void SerializationOp(Stream& s, Operation ser_action)
         {
             READWRITE(triggerBuffer);
             READWRITE(watchdogBuffer);
@@ -293,7 +293,7 @@ public:
     virtual ~CGovernanceManager() {}
 
     /**
-     * This is called by AlreadyHave in main.cpp as part of the inventory
+     * This is called by AlreadyHave in net_processing.cpp as part of the inventory
      * retrieval process.  Returns true if we want to retrieve the object, otherwise
      * false. (Note logic is inverted in AlreadyHave).
      */
@@ -301,7 +301,7 @@ public:
 
     void Sync(CNode* node, const uint256& nProp, const CBloomFilter& filter, CConnman& connman);
 
-    void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv, CConnman& connman);
+    void ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman);
 
     void DoMaintenance(CConnman& connman);
 
@@ -341,7 +341,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+    inline void SerializationOp(Stream& s, Operation ser_action) {
         LOCK(cs);
         std::string strVersion;
         if(ser_action.ForRead()) {

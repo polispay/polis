@@ -10,6 +10,7 @@
 #include <boost/shared_ptr.hpp>
 
 class CBlock;
+class CBlockIndex;
 struct CBlockLocator;
 class CBlockIndex;
 class CConnman;
@@ -33,7 +34,7 @@ protected:
     virtual void AcceptedBlockHeader(const CBlockIndex *pindexNew) {}
     virtual void NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitialDownload) {}
     virtual void UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockIndex *pindexFork, bool fInitialDownload) {}
-    virtual void SyncTransaction(const CTransaction &tx, const CBlock *pblock) {}
+    virtual void SyncTransaction(const CTransaction &tx, const CBlockIndex *pindex, int posInBlock) {}
     virtual void NotifyTransactionLock(const CTransaction &tx) {}
     virtual void SetBestChain(const CBlockLocator &locator) {}
     virtual bool UpdatedTransaction(const uint256 &hash) { return false;}
@@ -54,8 +55,17 @@ struct CMainSignals {
     boost::signals2::signal<void (const CBlockIndex *, bool fInitialDownload)> NotifyHeaderTip;
     /** Notifies listeners of updated block chain tip */
     boost::signals2::signal<void (const CBlockIndex *, const CBlockIndex *, bool fInitialDownload)> UpdatedBlockTip;
-    /** Notifies listeners of updated transaction data (transaction, and optionally the block it is found in. */
-    boost::signals2::signal<void (const CTransaction &, const CBlock *)> SyncTransaction;
+    /** A posInBlock value for SyncTransaction calls for tranactions not
+     * included in connected blocks such as transactions removed from mempool,
+     * accepted to mempool or appearing in disconnected blocks.*/
+    static const int SYNC_TRANSACTION_NOT_IN_BLOCK = -1;
+    /** Notifies listeners of updated transaction data (transaction, and
+     * optionally the block it is found in). Called with block data when
+     * transaction is included in a connected block, and without block data when
+     * transaction was accepted to mempool, removed from mempool (only when
+     * removal was due to conflict from connected block), or appeared in a
+     * disconnected block.*/
+    boost::signals2::signal<void (const CTransaction &, const CBlockIndex *pindex, int posInBlock)> SyncTransaction;
     /** Notifies listeners of an updated transaction lock without new data. */
     boost::signals2::signal<void (const CTransaction &)> NotifyTransactionLock;
     /** Notifies listeners of an updated transaction without new data (for now: a coinbase potentially becoming visible). */
