@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 // Copyright (c) 2011-2013 The Bitcoin Core developers
 // Copyright (c) 2014-2017 The polis Core developers
+=======
+// Copyright (c) 2011-2014 The Bitcoin Core developers
+// Copyright (c) 2014-2017 The Dash Core developers
+>>>>>>> pr/6
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 

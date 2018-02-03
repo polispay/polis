@@ -10,6 +10,7 @@
 #include "masternodeman.h"
 #include "messagesigner.h"
 #include "netfulfilledman.h"
+#include "netmessagemaker.h"
 #ifdef ENABLE_WALLET
 #include "privatesend-client.h"
 #endif // ENABLE_WALLET
@@ -84,6 +85,7 @@ void CMasternodeMan::AskForMN(CNode* pnode, const COutPoint& outpoint, CConnman&
 {
     if(!pnode) return;
 
+    CNetMsgMaker msgMaker(pnode->GetSendVersion());
     LOCK(cs);
 
     std::map<COutPoint, std::map<CNetAddr, int64_t> >::iterator it1 = mWeAskedForMasternodeListEntry.find(outpoint);
@@ -106,7 +108,7 @@ void CMasternodeMan::AskForMN(CNode* pnode, const COutPoint& outpoint, CConnman&
     }
     mWeAskedForMasternodeListEntry[outpoint][pnode->addr] = GetTime() + DSEG_UPDATE_SECONDS;
 
-    connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn(outpoint));
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn(outpoint)));
 }
 
 bool CMasternodeMan::AllowMixing(const COutPoint &outpoint)
@@ -401,6 +403,7 @@ int CMasternodeMan::CountByIP(int nNetworkType)
 
 void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman& connman)
 {
+    CNetMsgMaker msgMaker(pnode->GetSendVersion());
     LOCK(cs);
 
     if(Params().NetworkIDString() == CBaseChainParams::MAIN) {
@@ -413,7 +416,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman& connman)
         }
     }
 
-    connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn());
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn()));
     int64_t askAgain = GetTime() + DSEG_UPDATE_SECONDS;
     mWeAskedForMasternodeList[pnode->addr] = askAgain;
 
@@ -584,9 +587,9 @@ masternode_info_t CMasternodeMan::FindRandomNotInVec(const std::vector<COutPoint
         vpMasternodesShuffled.push_back(&mnpair.second);
     }
 
-    InsecureRand insecureRand;
+    FastRandomContext insecure_rand;
     // shuffle pointers
-    std::random_shuffle(vpMasternodesShuffled.begin(), vpMasternodesShuffled.end(), insecureRand);
+    std::random_shuffle(vpMasternodesShuffled.begin(), vpMasternodesShuffled.end(), insecure_rand);
     bool fExclude;
 
     // loop through
@@ -737,10 +740,54 @@ std::pair<CService, std::set<uint256> > CMasternodeMan::PopScheduledMnbRequestCo
     return std::make_pair(pairFront.first, setResult);
 }
 
+void CMasternodeMan::ProcessPendingMnbRequests(CConnman& connman)
+{
+    std::pair<CService, std::set<uint256> > p = PopScheduledMnbRequestConnection();
+    if (!(p.first == CService() || p.second.empty())) {
+        if (connman.IsMasternodeOrDisconnectRequested(p.first)) return;
+        mapPendingMNB.insert(std::make_pair(p.first, std::make_pair(GetTime(), p.second)));
+        connman.AddPendingMasternode(p.first);
+    }
 
-void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv, CConnman& connman)
+    std::map<CService, std::pair<int64_t, std::set<uint256> > >::iterator itPendingMNB = mapPendingMNB.begin();
+    while (itPendingMNB != mapPendingMNB.end()) {
+        bool fDone = connman.ForNode(itPendingMNB->first, [&](CNode* pnode) {
+            // compile request vector
+            std::vector<CInv> vToFetch;
+            std::set<uint256>& setHashes = itPendingMNB->second.second;
+            std::set<uint256>::iterator it = setHashes.begin();
+            while(it != setHashes.end()) {
+                if(*it != uint256()) {
+                    vToFetch.push_back(CInv(MSG_MASTERNODE_ANNOUNCE, *it));
+                    LogPrint("masternode", "-- asking for mnb %s from addr=%s\n", it->ToString(), pnode->addr.ToString());
+                }
+                ++it;
+            }
+
+            // ask for data
+            CNetMsgMaker msgMaker(pnode->GetSendVersion());
+            connman.PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
+            return true;
+        });
+
+        int64_t nTimeAdded = itPendingMNB->second.first;
+        if (fDone || (GetTime() - nTimeAdded > 15)) {
+            if (!fDone) {
+                LogPrint("masternode", "CMasternodeMan::%s -- failed to connect to %s\n", __func__, itPendingMNB->first.ToString());
+            }
+            mapPendingMNB.erase(itPendingMNB++);
+        } else {
+            ++itPendingMNB;
+        }
+    }
+    LogPrint("masternode", "%s -- mapPendingMNB size: %d\n", __func__, mapPendingMNB.size());
+}
+
+void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
 {
     if(fLiteMode) return; // disable all polis specific functionality
+
+    CNetMsgMaker msgMaker(pfrom->GetSendVersion());
 
     if (strCommand == NetMsgType::MNANNOUNCE) { //Masternode Broadcast
 
@@ -868,7 +915,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
 
         if(vin == CTxIn()) {
-            connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount);
+            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount));
             LogPrintf("DSEG -- Sent %d Masternode invs to peer %d\n", nInvCount, pfrom->id);
             return;
         }
@@ -1044,26 +1091,51 @@ bool CMasternodeMan::SendVerifyRequest(const CAddress& addr, const std::vector<C
         return false;
     }
 
-    CNode* pnode = connman.ConnectNode(addr, NULL, true);
-    if(pnode == NULL) {
-        LogPrintf("CMasternodeMan::SendVerifyRequest -- can't connect to node to verify it, addr=%s\n", addr.ToString());
-        return false;
-    }
+    if (connman.IsMasternodeOrDisconnectRequested(addr)) return false;
 
-    netfulfilledman.AddFulfilledRequest(addr, strprintf("%s", NetMsgType::MNVERIFY)+"-request");
+    connman.AddPendingMasternode(addr);
     // use random nonce, store it and require node to reply with correct one later
     CMasternodeVerification mnv(addr, GetRandInt(999999), nCachedBlockHeight - 1);
-    mWeAskedForVerification[addr] = mnv;
+    LOCK(cs_mapPendingMNV);
+    mapPendingMNV.insert(std::make_pair(addr, std::make_pair(GetTime(), mnv)));
     LogPrintf("CMasternodeMan::SendVerifyRequest -- verifying node using nonce %d addr=%s\n", mnv.nonce, addr.ToString());
-    connman.PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
-
     return true;
+}
+
+void CMasternodeMan::ProcessPendingMnvRequests(CConnman& connman)
+{
+    LOCK(cs_mapPendingMNV);
+
+    std::map<CService, std::pair<int64_t, CMasternodeVerification> >::iterator itPendingMNV = mapPendingMNV.begin();
+
+    while (itPendingMNV != mapPendingMNV.end()) {
+        bool fDone = connman.ForNode(itPendingMNV->first, [&](CNode* pnode) {
+            netfulfilledman.AddFulfilledRequest(pnode->addr, strprintf("%s", NetMsgType::MNVERIFY)+"-request");
+            // use random nonce, store it and require node to reply with correct one later
+            mWeAskedForVerification[pnode->addr] = itPendingMNV->second.second;
+            LogPrint("masternode", "-- verifying node using nonce %d addr=%s\n", itPendingMNV->second.second.nonce, pnode->addr.ToString());
+            CNetMsgMaker msgMaker(pnode->GetSendVersion()); // TODO this gives a warning about version not being set (we should wait for VERSION exchange)
+            connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, itPendingMNV->second.second));
+            return true;
+        });
+
+        int64_t nTimeAdded = itPendingMNV->second.first;
+        if (fDone || (GetTime() - nTimeAdded > 15)) {
+            if (!fDone) {
+                LogPrint("masternode", "CMasternodeMan::%s -- failed to connect to %s\n", __func__, itPendingMNV->first.ToString());
+            }
+            mapPendingMNV.erase(itPendingMNV++);
+        } else {
+            ++itPendingMNV;
+        }
+    }
+    LogPrint("masternode", "%s -- mapPendingMNV size: %d\n", __func__, mapPendingMNV.size());
 }
 
 void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv, CConnman& connman)
 {
     // only masternodes can sign this, why would someone ask regular node?
-    if(!fMasterNode) {
+    if(!fMasternodeMode) {
         // do not ban, malicious node might be using my IP
         // and trying to confuse the node which tries to verify it
         return;
@@ -1096,7 +1168,8 @@ void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv,
         return;
     }
 
-    connman.PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
+    CNetMsgMaker msgMaker(pnode->GetSendVersion());
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, mnv));
     netfulfilledman.AddFulfilledRequest(pnode->addr, strprintf("%s", NetMsgType::MNVERIFY)+"-reply");
 }
 
@@ -1418,7 +1491,7 @@ bool CMasternodeMan::CheckMnbAndUpdateMasternodeList(CNode* pfrom, CMasternodeBr
         Add(mnb);
         masternodeSync.BumpAssetLastTime("CMasternodeMan::CheckMnbAndUpdateMasternodeList - new");
         // if it matches our Masternode privkey...
-        if(fMasterNode && mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode) {
+        if(fMasternodeMode && mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode) {
             mnb.nPoSeBanScore = -MASTERNODE_POSE_BAN_MAX_SCORE;
             if(mnb.nProtocolVersion == PROTOCOL_VERSION) {
                 // ... and PROTOCOL_VERSION, then we've been remotely activated ...
@@ -1450,7 +1523,7 @@ void CMasternodeMan::UpdateLastPaid(const CBlockIndex* pindex)
     static bool IsFirstRun = true;
     // Do full scan on first run or if we are not a masternode
     // (MNs should update this info on every block, so limited scan should be enough for them)
-    int nMaxBlocksToScanBack = (IsFirstRun || !fMasterNode) ? mnpayments.GetStorageLimit() : LAST_PAID_SCAN_BLOCKS;
+    int nMaxBlocksToScanBack = (IsFirstRun || !fMasternodeMode) ? mnpayments.GetStorageLimit() : LAST_PAID_SCAN_BLOCKS;
 
     // LogPrint("mnpayments", "CMasternodeMan::UpdateLastPaid -- nHeight=%d, nMaxBlocksToScanBack=%d, IsFirstRun=%s\n",
     //                         nCachedBlockHeight, nMaxBlocksToScanBack, IsFirstRun ? "true" : "false");
@@ -1547,7 +1620,7 @@ void CMasternodeMan::UpdatedBlockTip(const CBlockIndex *pindex)
 
     CheckSameAddr();
 
-    if(fMasterNode) {
+    if(fMasternodeMode) {
         // normal wallet does not need to update this every block, doing update on rpc call should be enough
         UpdateLastPaid(pindex);
     }

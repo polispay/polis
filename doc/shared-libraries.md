@@ -11,7 +11,11 @@ The interface is defined in the C header `polisconsensus.h` located in  `src/scr
 
 #### Version
 
+<<<<<<< HEAD
 `polisconsensus_version` returns an `unsigned int` with the the API version *(currently at an experimental `0`)*.
+=======
+`dashconsensus_version` returns an `unsigned int` with the API version *(currently at an experimental `0`)*.
+>>>>>>> pr/6
 
 #### Script Validation
 
@@ -27,9 +31,18 @@ The interface is defined in the C header `polisconsensus.h` located in  `src/scr
 - `polisconsensus_error* err` - Will have the error/success code for the operation *(see below)*.
 
 ##### Script Flags
+<<<<<<< HEAD
 - `polisconsensus_SCRIPT_FLAGS_VERIFY_NONE`
 - `polisconsensus_SCRIPT_FLAGS_VERIFY_P2SH` - Evaluate P2SH ([BIP16](https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki)) subscripts
 - `polisconsensus_SCRIPT_FLAGS_VERIFY_DERSIG` - Enforce strict DER ([BIP66](https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki)) compliance
+=======
+- `dashconsensus_SCRIPT_FLAGS_VERIFY_NONE`
+- `dashconsensus_SCRIPT_FLAGS_VERIFY_P2SH` - Evaluate P2SH ([BIP16](https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki)) subscripts
+- `dashconsensus_SCRIPT_FLAGS_VERIFY_DERSIG` - Enforce strict DER ([BIP66](https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki)) compliance
+- `dashconsensus_SCRIPT_FLAGS_VERIFY_NULLDUMMY` - Enforce NULLDUMMY ([BIP147](https://github.com/bitcoin/bips/blob/master/bip-0147.mediawiki))
+- `dashconsensus_SCRIPT_FLAGS_VERIFY_CHECKLOCKTIMEVERIFY` - Enable CHECKLOCKTIMEVERIFY ([BIP65](https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki))
+- `dashconsensus_SCRIPT_FLAGS_VERIFY_CHECKSEQUENCEVERIFY` - Enable CHECKSEQUENCEVERIFY ([BIP112](https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki))
+>>>>>>> pr/6
 
 ##### Errors
 - `polisconsensus_ERR_OK` - No errors with input parameters *(see the return value of `polisconsensus_verify_script` for the verification status)*

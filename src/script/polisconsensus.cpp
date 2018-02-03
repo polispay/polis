@@ -23,7 +23,7 @@ public:
     m_remaining(txToLen)
     {}
 
-    TxInputStream& read(char* pch, size_t nSize)
+    void read(char* pch, size_t nSize)
     {
         if (nSize > m_remaining)
             throw std::ios_base::failure(std::string(__func__) + ": end of data");
@@ -37,16 +37,17 @@ public:
         memcpy(pch, m_data, nSize);
         m_remaining -= nSize;
         m_data += nSize;
-        return *this;
     }
 
     template<typename T>
     TxInputStream& operator>>(T& obj)
     {
-        ::Unserialize(*this, obj, m_type, m_version);
+        ::Unserialize(*this, obj);
         return *this;
     }
 
+    int GetVersion() const { return m_version; }
+    int GetType() const { return m_type; }
 private:
     const int m_type;
     const int m_version;
@@ -75,12 +76,17 @@ int polisconsensus_verify_script(const unsigned char *scriptPubKey, unsigned int
 {
     try {
         TxInputStream stream(SER_NETWORK, PROTOCOL_VERSION, txTo, txToLen);
-        CTransaction tx;
-        stream >> tx;
+        CTransaction tx(deserialize, stream);
         if (nIn >= tx.vin.size())
+<<<<<<< HEAD:src/script/polisconsensus.cpp
             return set_error(err, polisconsensus_ERR_TX_INDEX);
         if (tx.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) != txToLen)
             return set_error(err, polisconsensus_ERR_TX_SIZE_MISMATCH);
+=======
+            return set_error(err, dashconsensus_ERR_TX_INDEX);
+        if (GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION) != txToLen)
+            return set_error(err, dashconsensus_ERR_TX_SIZE_MISMATCH);
+>>>>>>> pr/6:src/script/dashconsensus.cpp
 
          // Regardless of the verification result, the tx did not error.
          set_error(err, polisconsensus_ERR_OK);

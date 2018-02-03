@@ -16,8 +16,13 @@ BEGIN
     BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
+<<<<<<< HEAD:src/polis-tx-res.rc
             VALUE "CompanyName",        "polis"
             VALUE "FileDescription",    "polis-tx (CLI polis transaction editor utility)"
+=======
+            VALUE "CompanyName",        "Dash"
+            VALUE "FileDescription",    "dash-cli (JSON-RPC client for " PACKAGE_NAME ")"
+>>>>>>> pr/6:src/dash-cli-res.rc
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "polis-tx"
             VALUE "LegalCopyright",     COPYRIGHT_STR

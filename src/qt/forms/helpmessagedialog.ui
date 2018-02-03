@@ -16,9 +16,12 @@
     <height>500</height>
    </size>
   </property>
+<<<<<<< HEAD
   <property name="windowTitle">
    <string notr="true">polis Core - Command-line options</string>
   </property>
+=======
+>>>>>>> pr/6
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <property name="spacing">
     <number>0</number>

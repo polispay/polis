@@ -1,3 +1,4 @@
+<<<<<<< HEAD:contrib/polisd.bash-completion
 # bash programmable completion for polisd(1) and polis-cli(1)
 # Copyright (c) 2012,2014 Christian von Roques <roques@mti.ag>
 # Distributed under the MIT software license, see the accompanying
@@ -27,16 +28,31 @@ _polis_accounts() {
 }
 
 _polisd() {
+=======
+# bash programmable completion for dashd(1) and dash-qt(1)
+# Copyright (c) 2012-2016 The Bitcoin Core developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+_dashd() {
+>>>>>>> pr/6:contrib/dashd.bash-completion
     local cur prev words=() cword
     local polisd
 
+<<<<<<< HEAD:contrib/polisd.bash-completion
     # save and use original argument to invoke polisd
     # polisd might not be in $PATH
     polisd="$1"
+=======
+    # save and use original argument to invoke dashd for -help
+    # it might not be in $PATH
+    dashd="$1"
+>>>>>>> pr/6:contrib/dashd.bash-completion
 
     COMPREPLY=()
     _get_comp_words_by_ref -n = cur prev words cword
 
+<<<<<<< HEAD:contrib/polisd.bash-completion
     if ((cword > 4)); then
         case ${words[cword-4]} in
             listtransactions)
@@ -95,8 +111,10 @@ _polisd() {
             ;;
     esac
 
+=======
+>>>>>>> pr/6:contrib/dashd.bash-completion
     case "$cur" in
-        -conf=*|-pid=*|-loadblock=*|-wallet=*)
+        -conf=*|-pid=*|-loadblock=*|-rootcertificates=*|-rpccookiefile=*|-wallet=*)
             cur="${cur#*=}"
             _filedir
             return 0
@@ -110,10 +128,10 @@ _polisd() {
             return 0
             ;;
         *)
-            local helpopts commands
 
-            # only parse --help if senseful
+            # only parse -help if senseful
             if [[ -z "$cur" || "$cur" =~ ^- ]]; then
+<<<<<<< HEAD:contrib/polisd.bash-completion
                 helpopts=$($polisd --help 2>&1 | awk '$1 ~ /^-/ { sub(/=.*/, "="); print $1 }' )
             fi
 
@@ -124,6 +142,13 @@ _polisd() {
 
             COMPREPLY=( $( compgen -W "$helpopts $commands" -- "$cur" ) )
 
+=======
+                local helpopts
+                helpopts=$($dashd -help 2>&1 | awk '$1 ~ /^-/ { sub(/=.*/, "="); print $1 }' )
+                COMPREPLY=( $( compgen -W "$helpopts" -- "$cur" ) )
+            fi
+
+>>>>>>> pr/6:contrib/dashd.bash-completion
             # Prevent space if an argument is desired
             if [[ $COMPREPLY == *= ]]; then
                 compopt -o nospace
@@ -131,10 +156,15 @@ _polisd() {
             return 0
             ;;
     esac
+<<<<<<< HEAD:contrib/polisd.bash-completion
 }
 
 complete -F _polisd polisd polis-cli
 }
+=======
+} &&
+complete -F _dashd dashd dash-qt
+>>>>>>> pr/6:contrib/dashd.bash-completion
 
 # Local variables:
 # mode: shell-script
