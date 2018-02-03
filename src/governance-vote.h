@@ -151,7 +151,7 @@ public:
     std::string ToString() const
     {
         std::ostringstream ostr;
-        ostr << vinMasternode.prevout.ToStringShort() << ":"
+        ostr << vinMasternode.ToString() << ":"
              << nTime << ":"
              << CGovernanceVoting::ConvertOutcomeToString(GetOutcome()) << ":"
              << CGovernanceVoting::ConvertSignalToString(GetSignal());
@@ -189,7 +189,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(vinMasternode);
         READWRITE(nParentHash);
         READWRITE(nVoteOutcome);

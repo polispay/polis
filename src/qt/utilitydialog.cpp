@@ -3,10 +3,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include "config/dash-config.h"
-#endif
-
 #include "utilitydialog.h"
 
 #include "ui_helpmessagedialog.h"
@@ -38,13 +34,9 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, HelpMode helpMode) :
 {
     ui->setupUi(this);
 
-<<<<<<< HEAD
     QString version = tr("polis Core") + " " + tr("version") + " " + QString::fromStdString(FormatFullVersion());
-=======
-    QString version = tr(PACKAGE_NAME) + " " + tr("version") + " " + QString::fromStdString(FormatFullVersion());
->>>>>>> pr/6
     /* On x86 add a bit specifier to the version so that users can distinguish between
-     * 32 and 64 bit builds. On other architectures, 32/64 bit may be more ambiguous.
+     * 32 and 64 bit builds. On other architectures, 32/64 bit may be more ambigious.
      */
 #if defined(__x86_64__)
     version += " " + tr("(%1-bit)").arg(64);
@@ -54,11 +46,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, HelpMode helpMode) :
 
     if (helpMode == about)
     {
-<<<<<<< HEAD
         setWindowTitle(tr("About polis Core"));
-=======
-        setWindowTitle(tr("About %1").arg(tr(PACKAGE_NAME)));
->>>>>>> pr/6
 
         /// HTML-format the license message from the core
         QString licenseInfo = QString::fromStdString(LicenseInfo());
@@ -69,7 +57,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, HelpMode helpMode) :
         uri.setMinimal(true); // use non-greedy matching
         licenseInfoHTML.replace(uri, "<a href=\"\\1\">\\1</a>");
         // Replace newlines with HTML breaks
-        licenseInfoHTML.replace("\n", "<br>");
+        licenseInfoHTML.replace("\n\n", "<br><br>");
 
         ui->aboutMessage->setTextFormat(Qt::RichText);
         ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -215,11 +203,7 @@ ShutdownWindow::ShutdownWindow(QWidget *parent, Qt::WindowFlags f):
 {
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(new QLabel(
-<<<<<<< HEAD
         tr("polis Core is shutting down...") + "<br /><br />" +
-=======
-        tr("%1 is shutting down...").arg(tr(PACKAGE_NAME)) + "<br /><br />" +
->>>>>>> pr/6
         tr("Do not shut down the computer until this window disappears.")));
     setLayout(layout);
 }

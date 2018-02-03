@@ -6,6 +6,7 @@ architectures:
 - "amd64"
 packages:
 - "faketime"
+reference_datetime: "2017-01-01 00:00:00"
 remotes:
 - "url": "https://github.com/polispay/polis-detached-sigs.git"
   "dir": "signature"
@@ -31,11 +32,6 @@ script: |
   SIGNED=polis-osx-signed.dmg
 
   tar -xf ${UNSIGNED}
-  OSX_VOLNAME="$(cat osx_volname)"
   ./detached-sig-apply.sh ${UNSIGNED} signature/osx
-<<<<<<< HEAD
   ${WRAP_DIR}/genisoimage -no-cache-inodes -D -l -probe -V "polis-Core" -no-pad -r -dir-mode 0755 -apple -o uncompressed.dmg signed-app
-=======
-  ${WRAP_DIR}/genisoimage -no-cache-inodes -D -l -probe -V "${OSX_VOLNAME}" -no-pad -r -dir-mode 0755 -apple -o uncompressed.dmg signed-app
->>>>>>> pr/6
   ${WRAP_DIR}/dmg dmg uncompressed.dmg ${OUTDIR}/${SIGNED}

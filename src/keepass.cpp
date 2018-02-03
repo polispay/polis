@@ -232,7 +232,8 @@ SecureString CKeePassIntegrator::generateRandomKey(size_t nSize)
     SecureString sKey;
     sKey.resize(nSize);
 
-    GetStrongRandBytes((unsigned char *) &sKey[0], nSize);
+    RandAddSeedPerfmon();
+    GetRandBytes((unsigned char *) &sKey[0], nSize);
 
     return sKey;
 }

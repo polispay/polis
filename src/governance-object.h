@@ -74,7 +74,7 @@ struct vote_instance_t {
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         int nOutcome = int(eOutcome);
         READWRITE(nOutcome);
@@ -98,7 +98,7 @@ struct vote_rec_t {
     ADD_SERIALIZE_METHODS;
 
      template <typename Stream, typename Operation>
-     inline void SerializationOp(Stream& s, Operation ser_action)
+     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
      {
          READWRITE(mapInstances);
      }
@@ -305,7 +305,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         // SERIALIZE DATA FOR SAVING/LOADING OR NETWORK FUNCTIONS
 
@@ -317,7 +317,7 @@ public:
         READWRITE(nObjectType);
         READWRITE(vinMasternode);
         READWRITE(vchSig);
-        if(s.GetType() & SER_DISK) {
+        if(nType & SER_DISK) {
             // Only include these for the disk file format
             LogPrint("gobject", "CGovernanceObject::SerializationOp Reading/writing votes from/to disk\n");
             READWRITE(nDeletionTime);

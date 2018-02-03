@@ -44,22 +44,14 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 static const int MAX_URI_LENGTH = 255;
 
 /* QRCodeDialog -- size of exported QR Code image */
-#define QR_IMAGE_SIZE 300
+#define EXPORT_IMAGE_SIZE 256
 
 /* Number of frames in spinner animation */
 #define SPINNER_FRAMES 36
 
-<<<<<<< HEAD
 #define QAPP_ORG_NAME "polis"
 #define QAPP_ORG_DOMAIN "polis.org"
 #define QAPP_APP_NAME_DEFAULT "polis-Qt"
 #define QAPP_APP_NAME_TESTNET "polis-Qt-testnet"
-=======
-#define QAPP_ORG_NAME "Dash"
-#define QAPP_ORG_DOMAIN "dash.org"
-#define QAPP_APP_NAME_DEFAULT "Dash-Qt"
-#define QAPP_APP_NAME_TESTNET "Dash-Qt-testnet"
-#define QAPP_APP_NAME_DEVNET "Dash-Qt-%s"
->>>>>>> pr/6
 
 #endif // BITCOIN_QT_GUICONSTANTS_H

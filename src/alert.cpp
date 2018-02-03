@@ -8,7 +8,6 @@
 #include "base58.h"
 #include "clientversion.h"
 #include "net.h"
-#include "netmessagemaker.h"
 #include "pubkey.h"
 #include "timedata.h"
 #include "ui_interface.h"
@@ -140,7 +139,7 @@ bool CAlert::RelayTo(CNode* pnode, CConnman& connman) const
             AppliesToMe() ||
             GetAdjustedTime() < nRelayUntil)
         {
-            connman.PushMessage(pnode, CNetMsgMaker(pnode->GetSendVersion()).Make(NetMsgType::ALERT, *this));
+            connman.PushMessage(pnode, NetMsgType::ALERT, *this);
             return true;
         }
     }

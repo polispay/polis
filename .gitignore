@@ -110,7 +110,11 @@ linux-build
 win32-build
 qa/pull-tester/run-bitcoind-for-test.sh
 qa/pull-tester/tests_config.py
-qa/cache/*
+qa/pull-tester/cache/*
+qa/pull-tester/test.*/*
+qa/tmp
+cache/
+share/BitcoindComparisonTool.jar
 
 !src/leveldb*/Makefile
 
@@ -121,7 +125,6 @@ qa/cache/*
 
 libpolisconsensus.pc
 src/qt/polis-qt.bash
-contrib/devtools/split-debug.sh
 qa/pull-tester/tests-config.sh
 
 #development symlinks
@@ -129,5 +132,3 @@ polis-cli
 polisd
 polis-qt
 make
-
-/docker/bin

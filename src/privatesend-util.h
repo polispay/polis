@@ -27,10 +27,9 @@ class CKeyHolderStorage
 {
 private:
     std::vector<std::unique_ptr<CKeyHolder> > storage;
-    mutable CCriticalSection cs_storage;
 
 public:
-    CScript AddKey(CWallet* pwalletIn);
+    const CKeyHolder& AddKey(CWallet* pwalletIn);
     void KeepAll();
     void ReturnAll();
 

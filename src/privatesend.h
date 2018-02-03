@@ -98,64 +98,34 @@ public:
         {}
 };
 
-class CDarksendAccept
-{
-public:
-    int nDenom;
-    CMutableTransaction txCollateral;
-
-    CDarksendAccept() :
-        nDenom(0),
-        txCollateral(CMutableTransaction())
-        {};
-
-    CDarksendAccept(int nDenom, const CMutableTransaction& txCollateral) :
-        nDenom(nDenom),
-        txCollateral(txCollateral)
-        {};
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
-        READWRITE(nDenom);
-        READWRITE(txCollateral);
-    }
-
-    friend bool operator==(const CDarksendAccept& a, const CDarksendAccept& b)
-    {
-        return a.nDenom == b.nDenom && a.txCollateral == b.txCollateral;
-    }
-};
-
 // A clients transaction in the mixing pool
 class CDarkSendEntry
 {
 public:
     std::vector<CTxDSIn> vecTxDSIn;
     std::vector<CTxOut> vecTxOut;
-    CTransactionRef txCollateral;
+    CTransaction txCollateral;
     // memory only
     CService addr;
 
     CDarkSendEntry() :
         vecTxDSIn(std::vector<CTxDSIn>()),
         vecTxOut(std::vector<CTxOut>()),
-        txCollateral(MakeTransactionRef()),
+        txCollateral(CTransaction()),
         addr(CService())
         {}
 
     CDarkSendEntry(const std::vector<CTxDSIn>& vecTxDSIn, const std::vector<CTxOut>& vecTxOut, const CTransaction& txCollateral) :
         vecTxDSIn(vecTxDSIn),
         vecTxOut(vecTxOut),
-        txCollateral(MakeTransactionRef(txCollateral)),
+        txCollateral(txCollateral),
         addr(CService())
         {}
 
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(vecTxDSIn);
         READWRITE(txCollateral);
         READWRITE(vecTxOut);
@@ -200,7 +170,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(nDenom);
         READWRITE(vin);
         READWRITE(nTime);
@@ -246,31 +216,31 @@ private:
     int nConfirmedHeight;
 
 public:
-    CTransactionRef tx;
+    CTransaction tx;
     CTxIn vin;
     std::vector<unsigned char> vchSig;
     int64_t sigTime;
 
     CDarksendBroadcastTx() :
         nConfirmedHeight(-1),
-        tx(MakeTransactionRef()),
+        tx(),
         vin(),
         vchSig(),
         sigTime(0)
         {}
 
-    CDarksendBroadcastTx(const CTransactionRef& _tx, COutPoint _outpoint, int64_t _sigTime) :
+    CDarksendBroadcastTx(CTransaction tx, COutPoint outpoint, int64_t sigTime) :
         nConfirmedHeight(-1),
-        tx(_tx),
-        vin(CTxIn(_outpoint)),
+        tx(tx),
+        vin(CTxIn(outpoint)),
         vchSig(),
-        sigTime(_sigTime)
+        sigTime(sigTime)
         {}
 
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(tx);
         READWRITE(vin);
         READWRITE(vchSig);
@@ -279,7 +249,7 @@ public:
 
     friend bool operator==(const CDarksendBroadcastTx& a, const CDarksendBroadcastTx& b)
     {
-        return *a.tx == *b.tx;
+        return a.tx == b.tx;
     }
     friend bool operator!=(const CDarksendBroadcastTx& a, const CDarksendBroadcastTx& b)
     {
@@ -383,7 +353,7 @@ public:
     static CDarksendBroadcastTx GetDSTX(const uint256& hash);
 
     static void UpdatedBlockTip(const CBlockIndex *pindex);
-    static void SyncTransaction(const CTransaction& tx, const CBlockIndex *pindex, int posInBlock);
+    static void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
 };
 
 void ThreadCheckPrivateSend(CConnman& connman);

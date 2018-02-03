@@ -11,6 +11,8 @@
 #include <boost/assign/list_of.hpp>
 #include <boost/test/unit_test.hpp>
 
+using namespace std;
+
 BOOST_FIXTURE_TEST_SUITE(netbase_tests, BasicTestingSetup)
 
 static CNetAddr ResolveIP(const char* ip)
@@ -63,9 +65,9 @@ BOOST_AUTO_TEST_CASE(netbase_properties)
 
 }
 
-bool static TestSplitHost(std::string test, std::string host, int port)
+bool static TestSplitHost(string test, string host, int port)
 {
-    std::string hostOut;
+    string hostOut;
     int portOut = -1;
     SplitHostPort(test, portOut, hostOut);
     return hostOut == host && port == portOut;
@@ -90,7 +92,7 @@ BOOST_AUTO_TEST_CASE(netbase_splithost)
     BOOST_CHECK(TestSplitHost("", "", -1));
 }
 
-bool static TestParse(std::string src, std::string canon)
+bool static TestParse(string src, string canon)
 {
     CService addr(LookupNumeric(src.c_str(), 65535));
     return canon == addr.ToString();

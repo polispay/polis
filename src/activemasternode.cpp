@@ -14,7 +14,7 @@ CActiveMasternode activeMasternode;
 void CActiveMasternode::ManageState(CConnman& connman)
 {
     LogPrint("masternode", "CActiveMasternode::ManageState -- Start\n");
-    if(!fMasternodeMode) {
+    if(!fMasterNode) {
         LogPrint("masternode", "CActiveMasternode::ManageState -- Not a masternode, returning\n");
         return;
     }
@@ -182,10 +182,7 @@ void CActiveMasternode::ManageStateInitial(CConnman& connman)
 
     LogPrintf("CActiveMasternode::ManageStateInitial -- Checking inbound connection to '%s'\n", service.ToString());
 
-    CAddress addr(service, NODE_NETWORK);
-    connman.OpenMasternodeConnection(addr);
-
-    if (!connman.IsConnected(addr, CConnman::AllNodes)) {
+    if(!connman.ConnectNode(CAddress(service, NODE_NETWORK), NULL, true)) {
         nState = ACTIVE_MASTERNODE_NOT_CAPABLE;
         strNotCapableReason = "Could not connect to " + service.ToString();
         LogPrintf("CActiveMasternode::ManageStateInitial -- %s: %s\n", GetStateString(), strNotCapableReason);

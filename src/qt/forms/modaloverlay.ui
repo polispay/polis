@@ -265,7 +265,7 @@
              <item>
               <widget class="QLabel" name="percentageProgress">
                <property name="text">
-                <string notr="true">~</string>
+                <string>~</string>
                </property>
               </widget>
              </item>

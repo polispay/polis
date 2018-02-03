@@ -35,12 +35,7 @@ const char *FILTERADD="filteradd";
 const char *FILTERCLEAR="filterclear";
 const char *REJECT="reject";
 const char *SENDHEADERS="sendheaders";
-<<<<<<< HEAD
 // polis message types
-=======
-const char *FEEFILTER="feefilter";
-// Dash message types
->>>>>>> pr/6
 const char *TXLOCKREQUEST="ix";
 const char *TXLOCKVOTE="txlvote";
 const char *SPORK="spork";
@@ -124,12 +119,7 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::FILTERCLEAR,
     NetMsgType::REJECT,
     NetMsgType::SENDHEADERS,
-<<<<<<< HEAD
     // polis message types
-=======
-    NetMsgType::FEEFILTER,	
-    // Dash message types
->>>>>>> pr/6
     // NOTE: do NOT include non-implmented here, we want them to be "Unknown command" in ProcessMessage()
     NetMsgType::TXLOCKREQUEST,
     NetMsgType::TXLOCKVOTE,

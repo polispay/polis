@@ -24,6 +24,9 @@
 using namespace std;
 
 
+unsigned int nWalletDBUpdated;
+
+
 //
 // CDB
 //
@@ -40,7 +43,7 @@ void CDBEnv::EnvShutdown()
     if (ret != 0)
         LogPrintf("CDBEnv::EnvShutdown: Error %d shutting down database environment: %s\n", ret, DbEnv::strerror(ret));
     if (!fMockDb)
-        DbEnv((u_int32_t)0).remove(strPath.c_str(), 0);
+        DbEnv(0).remove(strPath.c_str(), 0);
 }
 
 void CDBEnv::Reset()
@@ -162,11 +165,6 @@ CDBEnv::VerifyResult CDBEnv::Verify(const std::string& strFile, bool (*recoverFu
     return (fRecovered ? RECOVER_OK : RECOVER_FAIL);
 }
 
-/* End of headers, beginning of key/value data */
-static const char *HEADER_END = "HEADER=END";
-/* End of key/value data */
-static const char *DATA_END = "DATA=END";
-
 bool CDBEnv::Salvage(const std::string& strFile, bool fAggressive, std::vector<CDBEnv::KeyValPair>& vResult)
 {
     LOCK(cs_db);
@@ -195,33 +193,22 @@ bool CDBEnv::Salvage(const std::string& strFile, bool fAggressive, std::vector<C
     // Format of bdb dump is ascii lines:
     // header lines...
     // HEADER=END
-    //  hexadecimal key
-    //  hexadecimal value
-    //  ... repeated
+    // hexadecimal key
+    // hexadecimal value
+    // ... repeated
     // DATA=END
 
     string strLine;
-    while (!strDump.eof() && strLine != HEADER_END)
+    while (!strDump.eof() && strLine != "HEADER=END")
         getline(strDump, strLine); // Skip past header
 
     std::string keyHex, valueHex;
-    while (!strDump.eof() && keyHex != DATA_END) {
+    while (!strDump.eof() && keyHex != "DATA=END") {
         getline(strDump, keyHex);
-        if (keyHex != DATA_END) {
-            if (strDump.eof())
-                break;
+        if (keyHex != "DATA=END") {
             getline(strDump, valueHex);
-            if (valueHex == DATA_END) {
-                LogPrintf("CDBEnv::Salvage: WARNING: Number of keys in data does not match number of values.\n");
-                break;
-            }
             vResult.push_back(make_pair(ParseHex(keyHex), ParseHex(valueHex)));
         }
-    }
-
-    if (keyHex != DATA_END) {
-        LogPrintf("CDBEnv::Salvage: WARNING: Unexpected end of file while reading salvage output.\n");
-        return false;
     }
 
     return (result == 0);
@@ -384,11 +371,11 @@ bool CDB::Rewrite(const string& strFile, const char* pszSkip)
                         while (fSuccess) {
                             CDataStream ssKey(SER_DISK, CLIENT_VERSION);
                             CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-                            int ret1 = db.ReadAtCursor(pcursor, ssKey, ssValue);
-                            if (ret1 == DB_NOTFOUND) {
+                            int ret = db.ReadAtCursor(pcursor, ssKey, ssValue, DB_NEXT);
+                            if (ret == DB_NOTFOUND) {
                                 pcursor->close();
                                 break;
-                            } else if (ret1 != 0) {
+                            } else if (ret != 0) {
                                 pcursor->close();
                                 fSuccess = false;
                                 break;
