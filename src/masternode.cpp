@@ -369,6 +369,8 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
 
     if (!pwalletMain->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
         return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
+    if (sporkManager.IsSporkActive(SPORK_15_MASTERNODE_LOCK_NUMBER))
+	return Log(strprintf("Masternode limit reach, cannot enable %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
 
     CService service;
     if (!Lookup(strService.c_str(), service, 0, false))
@@ -873,3 +875,4 @@ void CMasternode::FlagGovernanceItemsAsDirty()
         mnodeman.AddDirtyGovernanceObjectHash(vecDirty[i]);
     }
 }
+
