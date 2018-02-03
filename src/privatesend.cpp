@@ -12,6 +12,7 @@
 #include "masternode-sync.h"
 #include "masternodeman.h"
 #include "messagesigner.h"
+#include "netmessagemaker.h"
 #include "script/sign.h"
 #include "txmempool.h"
 #include "util.h"
@@ -37,7 +38,7 @@ bool CDarkSendEntry::AddScriptSig(const CTxIn& txin)
 
 bool CDarksendQueue::Sign()
 {
-    if(!fMasterNode) return false;
+    if(!fMasternodeMode) return false;
 
     std::string strMessage = vin.ToString() + boost::lexical_cast<std::string>(nDenom) + boost::lexical_cast<std::string>(nTime) + boost::lexical_cast<std::string>(fReady);
 
@@ -64,10 +65,12 @@ bool CDarksendQueue::CheckSignature(const CPubKey& pubKeyMasternode)
 
 bool CDarksendQueue::Relay(CConnman& connman)
 {
-    std::vector<CNode*> vNodesCopy = connman.CopyNodeVector();
-    BOOST_FOREACH(CNode* pnode, vNodesCopy)
-        if(pnode->nVersion >= MIN_PRIVATESEND_PEER_PROTO_VERSION)
-            connman.PushMessage(pnode, NetMsgType::DSQUEUE, (*this));
+    std::vector<CNode*> vNodesCopy = connman.CopyNodeVector(CConnman::FullyConnectedOnly);
+    BOOST_FOREACH(CNode* pnode, vNodesCopy) {
+        CNetMsgMaker msgMaker(pnode->GetSendVersion());
+        if (pnode->nVersion >= MIN_PRIVATESEND_PEER_PROTO_VERSION)
+            connman.PushMessage(pnode, msgMaker.Make(NetMsgType::DSQUEUE, (*this)));
+    }
 
     connman.ReleaseNodeVector(vNodesCopy);
     return true;
@@ -75,9 +78,9 @@ bool CDarksendQueue::Relay(CConnman& connman)
 
 bool CDarksendBroadcastTx::Sign()
 {
-    if(!fMasterNode) return false;
+    if(!fMasternodeMode) return false;
 
-    std::string strMessage = tx.GetHash().ToString() + boost::lexical_cast<std::string>(sigTime);
+    std::string strMessage = tx->GetHash().ToString() + boost::lexical_cast<std::string>(sigTime);
 
     if(!CMessageSigner::SignMessage(strMessage, vchSig, activeMasternode.keyMasternode)) {
         LogPrintf("CDarksendBroadcastTx::Sign -- SignMessage() failed\n");
@@ -89,7 +92,7 @@ bool CDarksendBroadcastTx::Sign()
 
 bool CDarksendBroadcastTx::CheckSignature(const CPubKey& pubKeyMasternode)
 {
-    std::string strMessage = tx.GetHash().ToString() + boost::lexical_cast<std::string>(sigTime);
+    std::string strMessage = tx->GetHash().ToString() + boost::lexical_cast<std::string>(sigTime);
     std::string strError = "";
 
     if(!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, strError)) {
@@ -213,7 +216,7 @@ bool CPrivateSend::IsCollateralValid(const CTransaction& txCollateral)
     {
         LOCK(cs_main);
         CValidationState validationState;
-        if(!AcceptToMemoryPool(mempool, validationState, txCollateral, false, NULL, false, true, true)) {
+        if(!AcceptToMemoryPool(mempool, validationState, MakeTransactionRef(txCollateral), false, NULL, false, maxTxFee, true)) {
             LogPrint("privatesend", "CPrivateSend::IsCollateralValid -- didn't pass AcceptToMemoryPool()\n");
             return false;
         }
@@ -379,7 +382,7 @@ std::string CPrivateSend::GetMessageByID(PoolMessage nMessageID)
 void CPrivateSend::AddDSTX(const CDarksendBroadcastTx& dstx)
 {
     LOCK(cs_mapdstx);
-    mapDSTX.insert(std::make_pair(dstx.tx.GetHash(), dstx));
+    mapDSTX.insert(std::make_pair(dstx.tx->GetHash(), dstx));
 }
 
 CDarksendBroadcastTx CPrivateSend::GetDSTX(const uint256& hash)
@@ -410,7 +413,7 @@ void CPrivateSend::UpdatedBlockTip(const CBlockIndex *pindex)
     }
 }
 
-void CPrivateSend::SyncTransaction(const CTransaction& tx, const CBlock* pblock)
+void CPrivateSend::SyncTransaction(const CTransaction& tx, const CBlockIndex *pindex, int posInBlock)
 {
     if (tx.IsCoinBase()) return;
 
@@ -419,19 +422,8 @@ void CPrivateSend::SyncTransaction(const CTransaction& tx, const CBlock* pblock)
     uint256 txHash = tx.GetHash();
     if (!mapDSTX.count(txHash)) return;
 
-    // When tx is 0-confirmed or conflicted, pblock is NULL and nConfirmedHeight should be set to -1
-    CBlockIndex* pblockindex = NULL;
-    if(pblock) {
-        uint256 blockHash = pblock->GetHash();
-        BlockMap::iterator mi = mapBlockIndex.find(blockHash);
-        if(mi == mapBlockIndex.end() || !mi->second) {
-            // shouldn't happen
-            LogPrint("privatesend", "CPrivateSendClient::SyncTransaction -- Failed to find block %s\n", blockHash.ToString());
-            return;
-        }
-        pblockindex = mi->second;
-    }
-    mapDSTX[txHash].SetConfirmedHeight(pblockindex ? pblockindex->nHeight : -1);
+    // When tx is 0-confirmed or conflicted, posInBlock is SYNC_TRANSACTION_NOT_IN_BLOCK and nConfirmedHeight should be set to -1
+    mapDSTX[txHash].SetConfirmedHeight(posInBlock == CMainSignals::SYNC_TRANSACTION_NOT_IN_BLOCK ? -1 : pindex->nHeight);
     LogPrint("privatesend", "CPrivateSendClient::SyncTransaction -- txid=%s\n", txHash.ToString());
 }
 
@@ -463,6 +455,9 @@ void ThreadCheckPrivateSend(CConnman& connman)
             // make sure to check all masternodes first
             mnodeman.Check();
 
+            mnodeman.ProcessPendingMnbRequests(connman);
+            mnodeman.ProcessPendingMnvRequests(connman);
+
             // check if we should activate or ping every few minutes,
             // slightly postpone first run to give net thread a chance to connect to some peers
             if(nTick % MASTERNODE_MIN_MNP_SECONDS == 15)
@@ -474,7 +469,7 @@ void ThreadCheckPrivateSend(CConnman& connman)
                 mnpayments.CheckAndRemove();
                 instantsend.CheckAndRemove();
             }
-            if(fMasterNode && (nTick % (60 * 5) == 0)) {
+            if(fMasternodeMode && (nTick % (60 * 5) == 0)) {
                 mnodeman.DoFullVerificationStep(connman);
             }
 

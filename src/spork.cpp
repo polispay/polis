@@ -6,6 +6,7 @@
 #include "validation.h"
 #include "messagesigner.h"
 #include "net_processing.h"
+#include "netmessagemaker.h"
 #include "spork.h"
 
 #include <boost/lexical_cast.hpp>
@@ -17,7 +18,7 @@ CSporkManager sporkManager;
 
 std::map<uint256, CSporkMessage> mapSporks;
 
-void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv, CConnman& connman)
+void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
 {
     if(fLiteMode) return; // disable all polis specific functionality
 
@@ -65,7 +66,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStr
         std::map<int, CSporkMessage>::iterator it = mapSporksActive.begin();
 
         while(it != mapSporksActive.end()) {
-            connman.PushMessage(pfrom, NetMsgType::SPORK, it->second);
+            connman.PushMessage(pfrom, CNetMsgMaker(pfrom->GetSendVersion()).Make(NetMsgType::SPORK, it->second));
             it++;
         }
     }

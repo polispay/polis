@@ -18,7 +18,7 @@ extern CInstantSend instantsend;
 
 /*
     At 15 signatures, 1/2 of the masternode network can be owned by
-    one party without comprimising the security of InstantSend
+    one party without compromising the security of InstantSend
     (1000/2150.0)**10 = 0.00047382219560689856
     (1000/2900.0)**10 = 2.3769498616783657e-05
 
@@ -83,9 +83,10 @@ private:
 public:
     CCriticalSection cs_instantsend;
 
-    void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv, CConnman& connman);
+    void ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman);
 
     bool ProcessTxLockRequest(const CTxLockRequest& txLockRequest, CConnman& connman);
+    void Vote(const uint256& txHash, CConnman& connman);
 
     bool AlreadyHave(const uint256& hash);
 
@@ -113,12 +114,12 @@ public:
     void Relay(const uint256& txHash, CConnman& connman);
 
     void UpdatedBlockTip(const CBlockIndex *pindex);
-    void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
+    void SyncTransaction(const CTransaction& tx, const CBlockIndex *pindex, int posInBlock);
 
     std::string ToString();
 };
 
-class CTxLockRequest : public CTransaction
+class CTxLockRequest
 {
 private:
     static const CAmount MIN_FEE            = 0.0001 * COIN;
@@ -126,12 +127,39 @@ private:
 public:
     static const int WARN_MANY_INPUTS       = 100;
 
-    CTxLockRequest() = default;
-    CTxLockRequest(const CTransaction& tx) : CTransaction(tx) {};
+    CTransactionRef tx;
+
+    CTxLockRequest() : tx(MakeTransactionRef()) {}
+    CTxLockRequest(const CTransaction& _tx) : tx(MakeTransactionRef(_tx)) {};
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action) {
+        READWRITE(tx);
+    }
 
     bool IsValid() const;
     CAmount GetMinFee() const;
     int GetMaxSignatures() const;
+
+    const uint256 &GetHash() const {
+        return tx->GetHash();
+    }
+
+    std::string ToString() const {
+        return tx->ToString();
+    }
+
+    friend bool operator==(const CTxLockRequest& a, const CTxLockRequest& b)
+    {
+        return *a.tx == *b.tx;
+    }
+
+    friend bool operator!=(const CTxLockRequest& a, const CTxLockRequest& b)
+    {
+        return *a.tx != *b.tx;
+    }
 
     explicit operator bool() const
     {
@@ -172,7 +200,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+    inline void SerializationOp(Stream& s, Operation ser_action) {
         READWRITE(txHash);
         READWRITE(outpoint);
         READWRITE(outpointMasternode);

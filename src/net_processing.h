@@ -9,6 +9,13 @@
 #include "net.h"
 #include "validationinterface.h"
 
+/** Default for -maxorphantx, maximum number of orphan transactions kept in memory */
+static const unsigned int DEFAULT_MAX_ORPHAN_TRANSACTIONS = 100;
+/** Expiration time for orphan transactions in seconds */
+static const int64_t ORPHAN_TX_EXPIRE_TIME = 20 * 60;
+/** Minimum time between orphan transactions expire time checks in seconds */
+static const int64_t ORPHAN_TX_EXPIRE_INTERVAL = 5 * 60;
+
 /** Headers download timeout expressed in microseconds
  *  Timeout = base + per_header * (expected number of headers) */
 static constexpr int64_t HEADERS_DOWNLOAD_TIMEOUT_BASE = 15 * 60 * 1000000; // 15 minutes
@@ -26,6 +33,7 @@ private:
 public:
     PeerLogicValidation(CConnman* connmanIn);
 
+    virtual void SyncTransaction(const CTransaction& tx, const CBlockIndex* pindex, int nPosInBlock);
     virtual void UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockIndex *pindexFork, bool fInitialDownload);
     virtual void BlockChecked(const CBlock& block, const CValidationState& state);
 };
@@ -43,7 +51,7 @@ bool GetNodeStateStats(NodeId nodeid, CNodeStateStats &stats);
 void Misbehaving(NodeId nodeid, int howmuch);
 
 /** Process protocol messages received from a given node */
-bool ProcessMessages(CNode* pfrom, CConnman& connman, std::atomic<bool>& interrupt);
+bool ProcessMessages(CNode* pfrom, CConnman& connman, const std::atomic<bool>& interrupt);
 /**
  * Send queued protocol messages to be sent to a give node.
  *
@@ -52,6 +60,6 @@ bool ProcessMessages(CNode* pfrom, CConnman& connman, std::atomic<bool>& interru
  * @param[in]   interrupt       Interrupt condition for processing threads
  * @return                      True if there is more work to be done
  */
-bool SendMessages(CNode* pto, CConnman& connman, std::atomic<bool>& interrupt);
+bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interrupt);
 
 #endif // BITCOIN_NET_PROCESSING_H
