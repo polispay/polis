@@ -226,47 +226,6 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
     return true;
 }
 
-static bool GetKernlStakeModifierV03(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
-{
-    nStakeModifier = 0;
-    if (!mapBlockIndex.count(hashBlockFrom))
-        return error("GetKernelStakeModifier() : block not indexed");
-
-    const CBlockIndex* pindexFrom = mapBlockIndex[hashBlockFrom];
-    nStakeModifierHeight = pindexFrom->nHeight;
-    nStakeModifierTime = pindexFrom->GetBlockTime();
-    int64_t nStakeModifierSelectionInterval = GetStakeModifierSelectionInterval();
-    const CBlockIndex* pindex = pindexFrom;
-    CBlockIndex* pindexNext = chainActive[pindexFrom->nHeight + 1];
-
-    // loop to find the stake modifier later by a selection interval
-    while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval) {
-        if (!pindexNext) {
-            // Should never happen
-            if(Params().NetworkIDString() == CBaseChainParams::TESTNET)
-            {
-                nStakeModifierHeight = pindexFrom->nHeight;
-                nStakeModifierTime = pindexFrom->GetBlockTime();
-                if(pindex->GeneratedStakeModifier())
-                    nStakeModifier = pindex->nStakeModifier;
-                return true;
-            }
-            else
-            {
-                return error("Null pindexNext\n");
-            }
-        }
-
-        pindex = pindexNext;
-        pindexNext = chainActive[pindexNext->nHeight + 1];
-        if (pindex->GeneratedStakeModifier()) {
-            nStakeModifierHeight = pindex->nHeight;
-            nStakeModifierTime = pindex->GetBlockTime();
-        }
-    }
-    nStakeModifier = pindex->nStakeModifier;
-    return true;
-}
 
 // V0.5: Stake modifier used to hash for a stake kernel is chosen as the stake
 // modifier that is (nStakeMinAge minus a selection interval) earlier than the
@@ -348,7 +307,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
 
     auto nStakeMinAge = Params().GetConsensus().nStakeMinAge;
     auto nStakeMaxAge = Params().GetConsensus().nStakeMaxAge;
-    unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
+    int64_t nTimeBlockFrom = blockFrom.GetBlockTime();
     if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
         return error("CheckStakeKernelHash() : min age violation");
 
@@ -359,7 +318,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     // this change increases active coins participating the hash and helps
     // to secure the network when proof-of-stake difficulty is low
     int64_t nTimeWeight = std::min<int64_t>(nTimeTx - txPrevTime, nStakeMaxAge - nStakeMinAge);
-    arith_uint256 bnCoinDayWeight = nValueIn * nTimeWeight / COIN / (24 * 60 * 60);
+    arith_uint256 bnCoinDayWeight = nValueIn * nTimeWeight / COIN / 200;
 
     // Calculate hash
     CDataStream ss(SER_GETHASH, 0);
@@ -371,46 +330,14 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
         return error("Failed to get kernel stake modifier");
 
     ss << nStakeModifier;
-    ss << nTimeBlockFrom << nTxPrevOffset << txPrev->nLockTime << prevout.n << nTimeTx;
-
+    ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
     hashProofOfStake = Hash(ss.begin(), ss.end());
-    if (fPrintProofOfStake)
-    {
-        LogPrint("%s : using modifier 0x%016" PRI64x" at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
-                 __func__,
-                 nStakeModifier, nStakeModifierHeight,
-                 DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nStakeModifierTime).c_str(),
-                 mapBlockIndex[blockFrom.GetHash()]->nHeight,
-                 DateTimeStrFormat("%Y-%m-%d %H:%M:%S", blockFrom.GetBlockTime()).c_str());
-
-        LogPrint("%s : check protocol=%s modifier=0x%016" PRI64x" nTimeBlockFrom=%u nTxPrevOffset=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s\n",
-                 __func__,
-                 "0.5",
-                 nStakeModifier,
-                 nTimeBlockFrom, nTxPrevOffset,
-                 txPrevTime, prevout.n, nTimeTx,
-                 hashProofOfStake.ToString().c_str());
-    }
-
     // Now check if proof-of-stake hash meets target protocol
-    //if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay)
-    //    return false;
+    arith_uint256 mult = (bnCoinDayWeight * bnTargetPerCoinDay);
+    if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay)
+        //return false;
 
-    if (fPrintProofOfStake)
-    {
-        LogPrint("%s : Generated using modifier 0x%016" PRI64x" at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
-                 __func__,
-                 nStakeModifier, nStakeModifierHeight,
-                 DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nStakeModifierTime).c_str(),
-                 mapBlockIndex[blockFrom.GetHash()]->nHeight,
-                 DateTimeStrFormat("%Y-%m-%d %H:%M:%S", blockFrom.GetBlockTime()).c_str());
-        LogPrint("%s : Generated pass protocol=%s modifier=0x%016" PRI64x" nTimeBlockFrom=%u nTxPrevOffset=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s\n",
-                 __func__,
-                 "0.5",
-                 nStakeModifier,
-                 nTimeBlockFrom, nTxPrevOffset, txPrevTime, prevout.n, nTimeTx,
-                 hashProofOfStake.ToString().c_str());
-    }
+
     return true;
 }
 
