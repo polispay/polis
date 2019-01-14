@@ -1137,9 +1137,9 @@ bool GetAddressUnspent(uint160 addressHash, int type,
 }
 
 /** Return transaction in txOut, and if it was found inside a block, its hash is placed in hashBlock */
-bool GetTransaction(const uint256& hash, CTransactionRef& txOut, const Consensus::Params& consensusParams, uint256& hashBlock, bool fAllowSlow, CBlockIndex* blockIndex)
+bool GetTransaction(const uint256 &hash, CTransactionRef &txOut, const Consensus::Params& consensusParams, uint256 &hashBlock, bool fAllowSlow)
 {
-    CBlockIndex *pindexSlow = blockIndex;
+    CBlockIndex *pindexSlow = NULL;
     LOCK(cs_main);
     CTransactionRef ptx = mempool.get(hash);
     if (ptx)
@@ -3134,7 +3134,7 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
     }
 
     //update previous block pointer
-    //pindexNew->pprev->pnext = pindexNew;
+    //        pindexNew->pprev->pnext = pindexNew;
 
     // ppcoin: compute chain trust score
     pindexNew->bnChainTrust = (pindexNew->pprev ? pindexNew->pprev->bnChainTrust : ArithToUint256(0 + pindexNew->GetBlockTrust()));
@@ -3433,15 +3433,29 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         for (unsigned int i = 2; i < block.vtx.size(); i++)
             if (block.vtx[i]->IsCoinStake())
                 return state.DoS(100, error("CheckBlock() : more than one coinstake"));
+
         uint256 hashProofOfStake;
         uint256 hash = block.GetHash();
+
+
+       //  CBlock blockTmp = block;
+
+       //  CBlockSigner signer(blockTmp, NULL);
+
+       // if(!signer.CheckBlockSignature()) {
+       //    return state.DoS(100, error("CheckBlock(): block signature invalid"),
+      //                     REJECT_INVALID, "bad-block-signature");
+      //   }
+
         if(!CheckProofOfStake(block, hashProofOfStake)) {
             return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
         }
+
         if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
             mapProofOfStake.insert(std::make_pair(hash, hashProofOfStake));
     }
 
+    // END POLIS
 
     // Check transactions
     for (const auto& tx : block.vtx)
@@ -3492,9 +3506,8 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
             return state.DoS(100, error("%s : incorrect proof of work (DGW pre-fork) - %f %f %f at %d", __func__, abs(n1-n2), n1, n2, nHeight),
                             REJECT_INVALID, "bad-diffbits");
     } else {
-        if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams)) {
+        if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
             return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, strprintf("incorrect proof of work at %d", nHeight));
-        }
     }
 
     // Check timestamp against prev
@@ -3705,6 +3718,7 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
         GetMainSignals().NewPoWValidBlock(pindex, pblock);
 
     int nHeight = pindex->nHeight;
+
     // Write block to history file
     try {
         unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
@@ -4261,7 +4275,6 @@ static bool AddGenesisBlock(const CChainParams& chainparams, const CBlock& block
     if (!WriteBlockToDisk(block, blockPos, chainparams.MessageStart()))
         return error("%s: writing genesis block to disk failed", __func__);
     CBlockIndex *pindex = AddToBlockIndex(block);
-    AcceptProofOfStakeBlock(block, pindex);
     if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
         return error("%s: genesis block not accepted", __func__);
     return true;
