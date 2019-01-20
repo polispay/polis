@@ -393,7 +393,7 @@ public:
             // Testnet polis BIP44 coin type is '1' (All coin's testnet default)
             nExtCoinType = 1;
 
-            fMiningRequiresPeers = false;
+            fMiningRequiresPeers = true;
             fDefaultConsistencyChecks = false;
             fRequireStandard = false;
             fMineBlocksOnDemand = false;
@@ -652,7 +652,6 @@ public:
 
             nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
 
-            // privKey: cP4EKFyJsHT39LDqgdcB43Y3YXjNyjb5Fuas1GQSeAtjnZWmZEQK
             strSporkAddress = "yj949n1UH6fDhw6HtVE5VMj2iSTaSWBMcW";
 
             checkpointData = (CCheckpointData){
