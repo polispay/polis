@@ -684,7 +684,7 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp)
 
 UniValue dumpprivkey_polis(const JSONRPCRequest& request)
 {
-    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
+    if (request.fHelp || request.params.empty() || request.params.size() > 2)
         throw std::runtime_error(
                 "dumpprivkey \"address\"\n"
                 "\nReveals the private key corresponding to 'address'.\n"

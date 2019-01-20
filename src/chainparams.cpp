@@ -290,7 +290,7 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
             strNetworkID = "test";
-            consensus.nSubsidyHalvingInterval = 1569325056;
+            consensus.nSubsidyHalvingInterval = 60;
             consensus.nMasternodePaymentsStartBlock = 15; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
             consensus.nMasternodePaymentsIncreaseBlock = 1569325056;
             consensus.nMasternodePaymentsIncreasePeriod = 1569325056;
@@ -319,11 +319,11 @@ public:
             consensus.nPowDGWHeight = 4001;
 
             // Stake info
-            consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
+            consensus.nPosTargetSpacing = 20; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40;
             consensus.nStakeMinAge = 60; //one minute
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
-            consensus.nLastPoWBlock = 650;
+            consensus.nLastPoWBlock = 46;
             consensus.nPoSDiffAdjustRange = 1;
             // highest difficulty | 0x1e0ffff0 (?)
             // smallest difficulty | 0x008000
@@ -393,7 +393,7 @@ public:
             // Testnet polis BIP44 coin type is '1' (All coin's testnet default)
             nExtCoinType = 1;
 
-            fMiningRequiresPeers = true;
+            fMiningRequiresPeers = false;
             fDefaultConsistencyChecks = false;
             fRequireStandard = false;
             fMineBlocksOnDemand = false;
@@ -404,7 +404,7 @@ public:
             nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
 
 
-            strSporkAddress = "yMCScEFCuhFGQL8aBS8UPXnKriFtjMVWra";
+            strSporkAddress = "yZo4g1DeATAZ7AJTJMRLXsiZfC4aVzrGJo";
 
             checkpointData = (CCheckpointData) {
                     boost::assign::map_list_of
