@@ -751,6 +751,18 @@ QWidget .QFrame#frame .QLabel#labelStakeInfo { /* Available Balance Label */
     min-height:35px;
 }
 
+QWidget .QLabel#labelTransactionListTitle {
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    background-color:#2E4D7C;
+    color:#ffffff;
+    margin-right:5px;
+    padding-right:5px;
+    font-size:14px;
+    font-weight: bold;
+    min-height:35px;
+}
+
 QWidget .QFrame#frame .QLabel#labelWalletInfo { /* Available Balance Label */
     qproperty-alignment: 'AlignVCenter | AlignCenter';
     min-width:160px;

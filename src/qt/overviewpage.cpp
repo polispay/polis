@@ -25,8 +25,8 @@
 #include <QSettings>
 #include <QTimer>
 
-#define ICON_OFFSET 12
-#define DECORATION_SIZE 54
+#define ICON_OFFSET 15
+#define DECORATION_SIZE 50
 #define NUM_ITEMS 7
 #define NUM_ITEMS_ADV 7
 
@@ -365,7 +365,6 @@ void OverviewPage::updateAdvancedPSUI(bool fShowAdvancedPSUI) {
 
 void OverviewPage::SetupTransactionList(int nNumItems) {
     ui->listTransactions->setMinimumHeight(nNumItems * (DECORATION_SIZE + 2));
-
     if(walletModel && walletModel->getOptionsModel()) {
         // Set up transaction list
         filter.reset(new TransactionFilterProxy());
