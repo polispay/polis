@@ -1390,32 +1390,17 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             return false;
         }
 
-        if (sporkManager.IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES))
-        {
-            if (nVersion < MIN_PEER_PROTO_VERSION) {
-                // disconnect from peers older than this proto version
+            int minProtocol = sporkManager.IsSporkActive(SPORK_15_PEER_DISCONNECT_OLD_PROTOCOL) ?  MIN_PEER_PROTO_VERSION_1 : MIN_PEER_PROTO_VERSION_2;
+            if (nVersion < minProtocol) {
                 LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, nVersion);
                 connman.PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand,
                                                                                  REJECT_OBSOLETE,
                                                                                  strprintf(
                                                                                          "Version must be %d or greater",
-                                                                                         MIN_PEER_PROTO_VERSION)));
+                                                                                         minProtocol)));
                 pfrom->fDisconnect = true;
                 return false;
             }
-        } else {
-            if (nVersion < PRESPORK_PROTOCOL) {
-                // disconnect from peers older than this proto version
-                LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, nVersion);
-                connman.PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand,
-                                                                                 REJECT_OBSOLETE,
-                                                                                 strprintf(
-                                                                                         "Version must be %d or greater",
-                                                                                         MIN_PEER_PROTO_VERSION)));
-                pfrom->fDisconnect = true;
-                return false;
-            }
-        }
 
 
         if (nVersion == 10300)
