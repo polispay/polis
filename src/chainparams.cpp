@@ -213,9 +213,6 @@ public:
 
             vSeeds.push_back(CDNSSeedData("dnsseed.poliscentral.org", "dnsseed.poliscentral.org"));
             vSeeds.push_back(CDNSSeedData("dnsseed2.poliscentral.org", "dnsseed2.poliscentral.org"));
-            vSeeds.push_back(CDNSSeedData("dnsseed3.poliscentral.org", "dnsseed3.poliscentral.org"));
-            vSeeds.push_back(CDNSSeedData("polis.seeds.mn.zone", "polis.seeds.mn.zone"));
-            vSeeds.push_back(CDNSSeedData("polis.mnseeds.com", "polis.mnseeds.com"));
 
             // polis addresses start with 'P'
             base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);
