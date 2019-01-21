@@ -320,7 +320,7 @@ public:
             // Stake info
             consensus.nPosTargetSpacing = 20; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40;
-            consensus.nStakeMinAge = 60; //one minute
+            consensus.nStakeMinAge = 60 * 60;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 46;
             consensus.nPoSDiffAdjustRange = 1;
