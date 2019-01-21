@@ -265,7 +265,6 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
         pindex = pindex->pprev;
         if (pindex->GeneratedStakeModifier())
         {
-            LogPrintf("Kernel::GetKernelStakeModifierV05 PrevIndexGeneratedStakeModifier TRUE");
             nStakeModifierHeight = pindex->nHeight;
             nStakeModifierTime = pindex->GetBlockTime();
         }
