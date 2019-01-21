@@ -3456,8 +3456,7 @@ bool CheckBlock(const CBlock &block, CValidationState& state, const Consensus::P
                              REJECT_INVALID, "bad-block-signature");
         }*/
 
-        if (sporkManager.IsSporkActive(SPORK_16_POS_VALIDATIONS_START_HEIGHT)
-        && sporkManager.GetSporkValue(SPORK_16_POS_VALIDATIONS_START_HEIGHT) > block.nTime) {
+        if (sporkManager.IsSporkActive(SPORK_16_POS_VALIDATIONS_START_HEIGHT)) {
             if(!CheckProofOfStake(block, hashProofOfStake)) {
                 return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
             }
