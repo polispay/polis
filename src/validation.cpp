@@ -3171,7 +3171,7 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
                 LogPrintf("AcceptProofOfStakeBlock() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, std::to_string(nStakeModifier));
     }
 
-    setDirtyBlockIndex.insert(pindexNew);
+        setDirtyBlockIndex.insert(pindexNew);
 
 }
 
