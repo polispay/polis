@@ -457,12 +457,12 @@ BOOST_FIXTURE_TEST_CASE(importwallet_rescan, TestChain100Setup)
         wallet.mapKeyMetadata[coinbaseKey.GetPubKey().GetID()].nCreateTime = KEY_TIME;
         wallet.AddKeyPubKey(coinbaseKey, coinbaseKey.GetPubKey());
 
-        UniValue dumpParams;
-        dumpParams.setArray();
-        dumpParams.push_back(request.params[0]);
+        JSONRPCRequest request;
+        request.params.setArray();
+        request.params.push_back("wallet.backup");
 
         ::pwalletMain = &wallet;
-        ::dumpwallet(dumpParams, false);
+        ::dumpwallet(request.params, false);
     }
 
     // Call importwallet RPC and verify all blocks with timestamps >= BLOCK_TIME
