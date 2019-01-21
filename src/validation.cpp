@@ -3366,7 +3366,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const 
     return true;
 }
 
-bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot)
+bool CheckBlock(const CBlock &block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     // These are checks that are independent of context.
 
@@ -3447,17 +3447,21 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         uint256 hash = block.GetHash();
 
 
-       //  CBlock blockTmp = block;
+/*      CBlock blockTmp = block;
 
-       //  CBlockSigner signer(blockTmp, NULL);
+        CBlockSigner signer(blockTmp, nullptr);
 
-       // if(!signer.CheckBlockSignature()) {
-       //    return state.DoS(100, error("CheckBlock(): block signature invalid"),
-      //                     REJECT_INVALID, "bad-block-signature");
-      //   }
+        if(!signer.CheckBlockSignature()) {
+            return state.DoS(100, error("CheckBlock(): block signature invalid"),
+                             REJECT_INVALID, "bad-block-signature");
+        }*/
 
-        if(!CheckProofOfStake(block, hashProofOfStake)) {
-            return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
+        CBlockIndex pindex = CBlockIndex(block);
+        if (sporkManager.IsSporkActive(SPORK_16_POS_VALIDATIONS_START_HEIGHT)
+        && sporkManager.GetSporkValue(SPORK_16_POS_VALIDATIONS_START_HEIGHT) > pindex.nHeight) {
+            if(!CheckProofOfStake(block, hashProofOfStake)) {
+                return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
+            }
         }
 
         if(!mapProofOfStake.count(hash)) // add to mapProofOfStake

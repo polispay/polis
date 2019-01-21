@@ -27,9 +27,10 @@ static const int SPORK_10_MASTERNODE_PAY_UPDATED_NODES                  = 10009;
 static const int SPORK_12_RECONSIDER_BLOCKS                             = 10011;
 static const int SPORK_14_REQUIRE_SENTINEL_FLAG                         = 10013;
 static const int SPORK_15_PEER_DISCONNECT_OLD_PROTOCOL                  = 10014;
+static const int SPORK_16_POS_VALIDATIONS_START_HEIGHT                  = 10016;
 
 static const int SPORK_START                                            = SPORK_2_INSTANTSEND_ENABLED;
-static const int SPORK_END                                              = SPORK_15_PEER_DISCONNECT_OLD_PROTOCOL;
+static const int SPORK_END                                              = SPORK_16_POS_VALIDATIONS_START_HEIGHT;
 
 extern std::map<int, int64_t> mapSporkDefaults;
 extern std::map<uint256, CSporkMessage> mapSporks;
