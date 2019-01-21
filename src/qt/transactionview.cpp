@@ -334,6 +334,13 @@ void TransactionView::chooseWatchonly(int idx)
         (TransactionFilterProxy::WatchOnlyFilter)watchOnlyWidget->itemData(idx).toInt());
 }
 
+void TransactionView::changedPrefix(const QString &prefix)
+{
+    if(!transactionProxyModel)
+        return;
+    transactionProxyModel->setSearchString(prefix);
+}
+
 void TransactionView::changedAmount(const QString &amount)
 {
     if(!transactionProxyModel)
