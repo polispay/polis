@@ -3154,7 +3154,7 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
 
     // ppcoin: compute stake modifier
     // Don't calculate StakeModifier for POW blocks, just 1 less than nLastPowBlock
-    if (pindexNew->IsProofOfStake() || pindexNew->nHeight == Params().GetConsensus().nLastPoWBlock -1) {
+    if (pindexNew->IsProofOfStake() || pindexNew->nHeight == Params().GetConsensus().nLastPoWBlock -1 || pindexNew->nHeight == 0) {
             uint64_t nStakeModifier = 0;
             bool fGeneratedStakeModifier = false;
             if (!ComputeNextStakeModifier(pindexNew, nStakeModifier, fGeneratedStakeModifier))
