@@ -1304,7 +1304,7 @@ inline void static SendBlockTransactions(const CBlock& block, const BlockTransac
 
 int static GetProtocolNumber()
 {
-    if (sporkManager.IsSporkActive(SPORK_15_PEER_DISCONNECT_OLD_PROTOCOL)) {
+    if (sporkManager.IsSporkActive(SPORK_17_PEER_DISCONNECT_OLD_PROTOCOL)) {
         return MIN_PEER_PROTO_VERSION_2;
     }  else {
         return  MIN_PEER_PROTO_VERSION_1;
