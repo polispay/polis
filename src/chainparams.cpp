@@ -156,7 +156,6 @@ public:
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40; // 40 minutes at max for difficulty adjustment 40 mins
             consensus.nStakeMinAge = 60 * 2;
-
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
             consensus.nPoSDiffAdjustRange = 5;
@@ -213,9 +212,6 @@ public:
 
             vSeeds.push_back(CDNSSeedData("dnsseed.poliscentral.org", "dnsseed.poliscentral.org"));
             vSeeds.push_back(CDNSSeedData("dnsseed2.poliscentral.org", "dnsseed2.poliscentral.org"));
-            vSeeds.push_back(CDNSSeedData("dnsseed3.poliscentral.org", "dnsseed3.poliscentral.org"));
-            vSeeds.push_back(CDNSSeedData("polis.seeds.mn.zone", "polis.seeds.mn.zone"));
-            vSeeds.push_back(CDNSSeedData("polis.mnseeds.com", "polis.mnseeds.com"));
 
             // polis addresses start with 'P'
             base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);
@@ -323,7 +319,7 @@ public:
             // Stake info
             consensus.nPosTargetSpacing = 20; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40;
-            consensus.nStakeMinAge = 60; //one minute
+            consensus.nStakeMinAge = 60 * 60;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 46;
             consensus.nPoSDiffAdjustRange = 1;
