@@ -28,7 +28,6 @@
 #define ICON_OFFSET 15
 #define DECORATION_SIZE 50
 #define NUM_ITEMS 7
-#define NUM_ITEMS_ADV 7
 
 extern int64_t nLastCoinStakeSearchInterval;
 
@@ -281,8 +280,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
-        updateAdvancedPSUI(model->getOptionsModel()->getShowAdvancedPSUI());
-
+        SetupTransactionList();
     }
 }
 
@@ -357,13 +355,8 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
 
 
 
-void OverviewPage::updateAdvancedPSUI(bool fShowAdvancedPSUI) {
-    int nNumItems = (fLiteMode || !fShowAdvancedPSUI) ? NUM_ITEMS : NUM_ITEMS_ADV;
-    SetupTransactionList(nNumItems);
-
-}
-
-void OverviewPage::SetupTransactionList(int nNumItems) {
+void OverviewPage::SetupTransactionList() {
+    int nNumItems = NUM_ITEMS;
     ui->listTransactions->setMinimumHeight(nNumItems * (DECORATION_SIZE + 2));
     if(walletModel && walletModel->getOptionsModel()) {
         // Set up transaction list
@@ -374,7 +367,6 @@ void OverviewPage::SetupTransactionList(int nNumItems) {
         filter->setSortRole(Qt::EditRole);
         filter->setShowInactive(false);
         filter->sort(TransactionTableModel::Date, Qt::DescendingOrder);
-
         ui->listTransactions->setModel(filter.get());
         ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
     }

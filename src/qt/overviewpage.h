@@ -67,12 +67,10 @@ private:
     TxViewDelegate *txdelegate;
     std::unique_ptr<TransactionFilterProxy> filter;
 
-    void SetupTransactionList(int nNumItems);
-    void DisablePrivateSendCompletely();
+    void SetupTransactionList();
 
 private Q_SLOTS:
     void updateDisplayUnit();
-    void updateAdvancedPSUI(bool fShowAdvancedPSUI);
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);
     void updateWatchOnlyLabels(bool showWatchOnly);
