@@ -250,6 +250,7 @@ static bool GetKernlStakeModifierV03(uint256 hashBlockFrom, unsigned int nTimeTx
         return error("GetKernelStakeModifier() : block not indexed");
 
     const CBlockIndex* pindexFrom = mapBlockIndex[hashBlockFrom];
+    LogPrintf("pindexFrom = %s", pindexFrom->ToString());
     nStakeModifierHeight = pindexFrom->nHeight;
     nStakeModifierTime = pindexFrom->GetBlockTime();
     int64_t nStakeModifierSelectionInterval = GetStakeModifierSelectionInterval();
