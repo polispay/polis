@@ -272,7 +272,7 @@ public:
                     1548043780, // * UNIX timestamp of last checkpoint block
                     612166,    // * total number of transactions between genesis and last checkpoint
                     //   (the tx=... number in the SetBestChain debug.log lines)
-                    2160        // * estimated number of transactions per day after checkpoint
+                    0.1        // * estimated number of transactions per day after checkpoint
 
             };
     }
@@ -590,8 +590,8 @@ public:
             consensus.nPowTargetSpacing = 120; // polis: 2.5 minutes
             consensus.fPowAllowMinDifficultyBlocks = true;
             consensus.fPowNoRetargeting = true;
-            consensus.nPowKGWHeight = 15200; // same as mainnet
-            consensus.nPowDGWHeight = 34140; // same as mainnet
+            consensus.nPowKGWHeight = 551;
+            consensus.nPowDGWHeight = 551;
             consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
             consensus.nMinerConfirmationWindow = 144; // Faster than normal for regtest (144 instead of 2016)
             consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -608,11 +608,12 @@ public:
             consensus.vDeployments[Consensus::DEPLOYMENT_BIP147].nTimeout = 999999999999ULL;
 
             // Stake info
-            consensus.nPosTargetSpacing = 30; // PoSW: 1 minutes
-            consensus.nPosTargetTimespan = 60 * 40;
-            consensus.nStakeMinAge = 60;
+            consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
+            consensus.nPosTargetTimespan = 60 * 40; // 40 minutes at max for difficulty adjustment 40 mins
+            consensus.nStakeMinAge = 60 * 2;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
-            consensus.nLastPoWBlock = 25;
+            consensus.nPoSDiffAdjustRange = 5;
+            consensus.nLastPoWBlock = 50;
             // highest difficulty | 0x1e0ffff0 (?)
             // smallest difficulty | 0x008000
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty

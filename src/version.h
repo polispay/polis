@@ -23,9 +23,6 @@ static const int GETHEADERS_VERSION = 70077;
 static const int MIN_PEER_PROTO_VERSION_1 = 70211;
 static const int MIN_PEER_PROTO_VERSION_2 = 70212;
 
-//! disconnect from peers older than this proto version
-static const int PRESPORK_PROTOCOL = 70211;
-
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this
 static const int CADDR_TIME_VERSION = 31402;
