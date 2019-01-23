@@ -150,7 +150,6 @@ public:
             consensus.fPowNoRetargeting = false;
             consensus.nPowKGWHeight = 551;
             consensus.nPowDGWHeight = 551;
-            consensus.FixKernelTime = 1548186500;
             // Stake information
 
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
