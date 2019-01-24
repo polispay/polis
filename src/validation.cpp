@@ -3153,16 +3153,18 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
     }
 
     // ppcoin: compute stake modifier
-    // Don't calculate StakeModifier for POW blocks, just 1 less than nLastPowBlock
-      uint64_t nStakeModifier = 0;
-      bool fGeneratedStakeModifier = false;
-      if (!ComputeNextStakeModifier(pindexNew, nStakeModifier, fGeneratedStakeModifier))
-          LogPrintf("AcceptProofOfStakeBlock() : ComputeNextStakeModifier() failed \n");
-      pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
-      pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
-      if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
-          LogPrintf("AcceptProofOfStakeBlock() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, std::to_string(nStakeModifier));
+    if (pindexNew->IsProofOfStake()) {
+        uint64_t nStakeModifier = 0;
+        bool fGeneratedStakeModifier = false;
+        if (!ComputeNextStakeModifier(pindexNew, nStakeModifier, fGeneratedStakeModifier))
+            LogPrintf("AcceptProofOfStakeBlock() : ComputeNextStakeModifier() failed \n");
+        pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
+        pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
+        if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
+            LogPrintf("AcceptProofOfStakeBlock() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n",
+                      pindexNew->nHeight, std::to_string(nStakeModifier));
 
+    }
       setDirtyBlockIndex.insert(pindexNew);
 
 }
@@ -3358,7 +3360,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const 
     return true;
 }
 
-bool CheckBlock(const CBlock &block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot)
+bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     // These are checks that are independent of context.
 

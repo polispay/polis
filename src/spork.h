@@ -26,10 +26,9 @@ static const int SPORK_9_SUPERBLOCKS_ENABLED                            = 10008;
 static const int SPORK_10_MASTERNODE_PAY_UPDATED_NODES                  = 10009;
 static const int SPORK_12_RECONSIDER_BLOCKS                             = 10011;
 static const int SPORK_14_REQUIRE_SENTINEL_FLAG                         = 10013;
-static const int SPORK_17_PEER_DISCONNECT_OLD_PROTOCOL                  = 10017;
 
 static const int SPORK_START                                            = SPORK_2_INSTANTSEND_ENABLED;
-static const int SPORK_END                                              = SPORK_17_PEER_DISCONNECT_OLD_PROTOCOL;
+static const int SPORK_END                                              = SPORK_14_REQUIRE_SENTINEL_FLAG;
 
 extern std::map<int, int64_t> mapSporkDefaults;
 extern std::map<uint256, CSporkMessage> mapSporks;
