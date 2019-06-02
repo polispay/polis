@@ -214,7 +214,6 @@ libpolis_server_a_SOURCES = \
   activemasternode.cpp \
   addrman.cpp \
   addrdb.cpp \
-  alert.cpp \
   bloom.cpp \
   blockencodings.cpp \
   chain.cpp \
@@ -259,7 +258,6 @@ libpolis_server_a_SOURCES = \
   rpc/server.cpp \
   script/sigcache.cpp \
   script/ismine.cpp \
-  sendalert.cpp \
   spork.cpp \
   timedata.cpp \
   torcontrol.cpp \

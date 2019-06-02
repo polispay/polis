@@ -4,7 +4,6 @@
 
 #include "activemasternode.h"
 #include "addrman.h"
-#include "alert.h"
 #include "clientversion.h"
 #include "governance.h"
 #include "masternode-payments.h"
@@ -1735,8 +1734,6 @@ void CMasternodeMan::WarnMasternodeDaemonUpdates()
     SetMiscWarning(strWarning);
     // trigger GUI update
     uiInterface.NotifyAlertChanged(SerializeHash(strWarning), CT_NEW);
-    // trigger cmd-line notification
-    CAlert::Notify(strWarning);
 
     fWarned = true;
 }
