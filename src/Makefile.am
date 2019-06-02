@@ -243,6 +243,7 @@ libpolis_server_a_SOURCES = \
   net_processing.cpp \
   noui.cpp \
   policy/fees.cpp \
+  policy/feerate.cpp \
   policy/policy.cpp \
   pow.cpp \
   privatesend.cpp \

@@ -12,6 +12,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <policy/feerate.h>
 
 class CAutoFile;
 class CFeeRate;
