@@ -12,7 +12,7 @@
 #include "wallet/wallet.h"
 
 #include "instantx.h"
-#include "privatesend.h"
+#include "privatesend/privatesend.h"
 
 #include <stdint.h>
 

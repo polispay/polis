@@ -2,10 +2,10 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "activemasternode.h"
+#include "masternode/activemasternode.h"
 #include "addrman.h"
 #include "clientversion.h"
-#include "governance.h"
+#include "governance/governance.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
@@ -13,7 +13,7 @@
 #include "netfulfilledman.h"
 #include "netmessagemaker.h"
 #ifdef ENABLE_WALLET
-#include "privatesend-client.h"
+#include "privatesend/privatesend-client.h"
 #endif // ENABLE_WALLET
 #include "script/standard.h"
 #include "ui_interface.h"

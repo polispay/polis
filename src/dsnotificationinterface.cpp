@@ -5,13 +5,13 @@
 #include "chainparams.h"
 #include "dsnotificationinterface.h"
 #include "instantx.h"
-#include "governance.h"
-#include "masternodeman.h"
-#include "masternode-payments.h"
-#include "masternode-sync.h"
-#include "privatesend.h"
+#include "governance/governance.h"
+#include "masternode/masternodeman.h"
+#include "masternode/masternode-payments.h"
+#include "masternode/masternode-sync.h"
+#include "privatesend/privatesend.h"
 #ifdef ENABLE_WALLET
-#include "privatesend-client.h"
+#include "privatesend/privatesend-client.h"
 #endif // ENABLE_WALLET
 
 void CDSNotificationInterface::InitializeCurrentBlockTip()

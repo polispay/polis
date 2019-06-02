@@ -16,7 +16,7 @@
 #include "noui.h"
 #include "scheduler.h"
 #include "util.h"
-#include "masternodeconfig.h"
+#include "masternode/masternodeconfig.h"
 #include "httpserver.h"
 #include "httprpc.h"
 #include "utilstrencodings.h"

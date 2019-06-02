@@ -26,7 +26,7 @@
 #include "paymentserver.h"
 #include "walletmodel.h"
 #endif
-#include "masternodeconfig.h"
+#include "masternode/masternodeconfig.h"
 
 #include "init.h"
 #include "rpc/server.h"

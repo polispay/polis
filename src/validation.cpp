@@ -39,8 +39,8 @@
 #include "warnings.h"
 #include "kernel.h"
 #include "instantx.h"
-#include "masternodeman.h"
-#include "masternode-payments.h"
+#include "masternode/masternodeman.h"
+#include "masternode/masternode-payments.h"
 
 #include <atomic>
 #include <sstream>

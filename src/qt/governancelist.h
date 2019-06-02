@@ -5,7 +5,7 @@
 #include "platformstyle.h"
 #include "sync.h"
 #include "util.h"
-#include "governance.h"
+#include "governance/governance.h"
 
 #include <QMenu>
 #include <QTimer>
