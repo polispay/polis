@@ -102,11 +102,10 @@ endif
 # polis core #
 BITCOIN_CORE_H = \
   addrdb.h \
-  activemasternode.h \
+  masternode/activemasternode.h \
   addressindex.h \
   spentindex.h \
   addrman.h \
-  alert.h \
   base58.h \
   batchedlogger.h \
   bip39.h \
@@ -264,10 +263,9 @@ libpolis_util_a-clientversion.$(OBJEXT): obj/build.h
 libpolis_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libpolis_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libpolis_server_a_SOURCES = \
-  activemasternode.cpp \
+  masternode/activemasternode.cpp \
   addrman.cpp \
   addrdb.cpp \
-  alert.cpp \
   batchedlogger.cpp \
   bloom.cpp \
   blockencodings.cpp \
