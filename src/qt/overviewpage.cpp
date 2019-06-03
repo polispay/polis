@@ -19,7 +19,7 @@
 #include "modaloverlay.h"
 #include "validation.h"
 #include "instantx.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include <QAbstractItemDelegate>
 #include <QPainter>
 #include <QSettings>

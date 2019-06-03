@@ -20,9 +20,9 @@
 #include "ui_interface.h"
 #include "util.h"
 
-#include "masternodeman.h"
-#include "masternode-sync.h"
-#include "privatesend.h"
+#include "masternode/masternodeman.h"
+#include "masternode/masternode-sync.h"
+#include "privatesend/privatesend.h"
 
 #include <stdint.h>
 

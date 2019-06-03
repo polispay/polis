@@ -78,7 +78,7 @@ endif
 # polis core #
 BITCOIN_CORE_H = \
   addrdb.h \
-  activemasternode.h \
+  masternode/activemasternode.h \
   addressindex.h \
   spentindex.h \
   addrman.h \
@@ -107,18 +107,18 @@ BITCOIN_CORE_H = \
   core_io.h \
   core_memusage.h \
   cuckoocache.h \
-  privatesend.h \
-  privatesend-client.h \
-  privatesend-server.h \
-  privatesend-util.h \
+  privatesend/privatesend.h \
+  privatesend/privatesend-client.h \
+  privatesend/privatesend-server.h \
+  privatesend/privatesend-util.h \
   dsnotificationinterface.h \
-  governance.h \
-  governance-classes.h \
-  governance-exceptions.h \
-  governance-object.h \
-  governance-validators.h \
-  governance-vote.h \
-  governance-votedb.h \
+  governance/governance.h \
+  governance/governance-classes.h \
+  governance/governance-exceptions.h \
+  governance/governance-object.h \
+  governance/governance-validators.h \
+  governance/governance-vote.h \
+  governance/governance-votedb.h \
   flat-database.h \
   hdchain.h \
   httprpc.h \
@@ -133,11 +133,11 @@ BITCOIN_CORE_H = \
   keystore.h \
   dbwrapper.h \
   limitedmap.h \
-  masternode.h \
-  masternode-payments.h \
-  masternode-sync.h \
-  masternodeman.h \
-  masternodeconfig.h \
+  masternode/masternode.h \
+  masternode/masternode-payments.h \
+  masternode/masternode-sync.h \
+  masternode/masternodeman.h \
+  masternode/masternodeconfig.h \
   memusage.h \
   merkleblock.h \
   messagesigner.h \
@@ -211,7 +211,7 @@ libpolis_util_a-clientversion.$(OBJEXT): obj/build.h
 libpolis_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libpolis_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libpolis_server_a_SOURCES = \
-  activemasternode.cpp \
+  masternode/activemasternode.cpp \
   addrman.cpp \
   addrdb.cpp \
   alert.cpp \
@@ -225,17 +225,17 @@ libpolis_server_a_SOURCES = \
   init.cpp \
   instantx.cpp \
   dbwrapper.cpp \
-  governance.cpp \
-  governance-classes.cpp \
-  governance-object.cpp \
-  governance-validators.cpp \
-  governance-vote.cpp \
-  governance-votedb.cpp \
-  masternode.cpp \
-  masternode-payments.cpp \
-  masternode-sync.cpp \
-  masternodeconfig.cpp \
-  masternodeman.cpp \
+  governance/governance.cpp \
+  governance/governance-classes.cpp \
+  governance/governance-object.cpp \
+  governance/governance-validators.cpp \
+  governance/governance-vote.cpp \
+  governance/governance-votedb.cpp \
+  masternode/masternode.cpp \
+  masternode/masternode-payments.cpp \
+  masternode/masternode-sync.cpp \
+  masternode/masternodeconfig.cpp \
+  masternode/masternodeman.cpp \
   merkleblock.cpp \
   messagesigner.cpp \
   miner.cpp \
@@ -246,8 +246,8 @@ libpolis_server_a_SOURCES = \
   policy/fees.cpp \
   policy/policy.cpp \
   pow.cpp \
-  privatesend.cpp \
-  privatesend-server.cpp \
+  privatesend/privatesend.cpp \
+  privatesend/privatesend-server.cpp \
   rest.cpp \
   rpc/blockchain.cpp \
   rpc/masternode.cpp \
@@ -289,8 +289,8 @@ libpolis_wallet_a_SOURCES = \
   kernel.cpp \
   keepass.cpp \
   blocksigner.cpp \
-  privatesend-client.cpp \
-  privatesend-util.cpp \
+  privatesend/privatesend-client.cpp \
+  privatesend/privatesend-util.cpp \
   wallet/crypter.cpp \
   wallet/db.cpp \
   wallet/rpcdump.cpp \

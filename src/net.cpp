@@ -25,9 +25,9 @@
 #include "utilstrencodings.h"
 
 #include "instantx.h"
-#include "masternode-sync.h"
-#include "masternodeman.h"
-#include "privatesend.h"
+#include "masternode/masternode-sync.h"
+#include "masternode/masternodeman.h"
+#include "privatesend/privatesend.h"
 
 #ifdef WIN32
 #include <string.h>

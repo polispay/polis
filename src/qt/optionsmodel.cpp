@@ -23,10 +23,10 @@
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 
-#include "masternodeconfig.h"
-#include "governance.h"
+#include "masternode/masternodeconfig.h"
+#include "governance/governance.h"
 
-#include "privatesend-client.h"
+#include "privatesend/privatesend-client.h"
 #endif
 
 #include <QNetworkProxy>

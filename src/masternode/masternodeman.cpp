@@ -6,7 +6,7 @@
 #include "addrman.h"
 #include "alert.h"
 #include "clientversion.h"
-#include "governance.h"
+#include "governance/governance.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
@@ -14,7 +14,7 @@
 #include "netfulfilledman.h"
 #include "netmessagemaker.h"
 #ifdef ENABLE_WALLET
-#include "privatesend-client.h"
+#include "privatesend/privatesend-client.h"
 #endif // ENABLE_WALLET
 #include "script/standard.h"
 #include "ui_interface.h"

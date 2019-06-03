@@ -6,7 +6,7 @@
 #define GOVERNANCE_DIALOG_H
 
 #include "walletmodel.h"
-#include "governance-vote.h"
+#include "governance/governance-vote.h"
 
 #include <QDialog>
 #include <QImage>

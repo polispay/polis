@@ -4,7 +4,7 @@
 
 #include "activemasternode.h"
 #include "consensus/validation.h"
-#include "governance-classes.h"
+#include "governance/governance-classes.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"

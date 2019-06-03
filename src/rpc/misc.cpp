@@ -20,7 +20,7 @@
 #include "wallet/walletdb.h"
 #endif
 
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "spork.h"
 
 #include <stdint.h>
