@@ -12,6 +12,18 @@
 #include "serialize.h"
 #include "uint256.h"
 
+/** Transaction types */
+enum {
+    TRANSACTION_NORMAL = 0,
+    TRANSACTION_PROVIDER_REGISTER = 1,
+    TRANSACTION_PROVIDER_UPDATE_SERVICE = 2,
+    TRANSACTION_PROVIDER_UPDATE_REGISTRAR = 3,
+    TRANSACTION_PROVIDER_UPDATE_REVOKE = 4,
+    TRANSACTION_COINBASE = 5,
+    TRANSACTION_QUORUM_COMMITMENT = 6,
+};
+
+
 /** An outpoint - a combination of a transaction hash and an index n into its vout */
 class COutPoint
 {
@@ -235,9 +247,11 @@ public:
     // and bypass the constness. This is safe, as they update the entire
     // structure, including the hash.
     const int32_t nVersion;
+    const int16_t nType;
     const std::vector<CTxIn> vin;
     const std::vector<CTxOut> vout;
     const uint32_t nLockTime;
+    const std::vector<uint8_t> vExtraPayload; // only available for special transaction types
 
 private:
     /** Memory only. */
@@ -255,10 +269,12 @@ public:
 
     template <typename Stream>
     inline void Serialize(Stream& s) const {
-        s << this->nVersion;
+        s << this->nVersion | (this->nType << 16);
         s << vin;
         s << vout;
         s << nLockTime;
+        if (this->nVersion == 3 && this->nType != TRANSACTION_NORMAL)
+            s << vExtraPayload;
     }
 
     /** This deserializing constructor is provided instead of an Unserialize method.
@@ -320,9 +336,11 @@ public:
 struct CMutableTransaction
 {
     int32_t nVersion;
+    int16_t nType;
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
     uint32_t nLockTime;
+    std::vector<uint8_t> vExtraPayload; // only available for special transaction types
 
     CMutableTransaction();
     CMutableTransaction(const CTransaction& tx);
@@ -335,6 +353,9 @@ struct CMutableTransaction
         READWRITE(vin);
         READWRITE(vout);
         READWRITE(nLockTime);
+        if (this->nVersion == 3 && this->nType != TRANSACTION_NORMAL) {
+            READWRITE(vExtraPayload);
+        }
     }
 
     template <typename Stream>

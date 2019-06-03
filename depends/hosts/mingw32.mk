@@ -1,4 +1,3 @@
-
 mingw32_CFLAGS=-pipe
 mingw32_CXXFLAGS=$(mingw32_CFLAGS) -static-libstdc++
 
