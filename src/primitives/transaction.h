@@ -269,7 +269,8 @@ public:
 
     template <typename Stream>
     inline void Serialize(Stream& s) const {
-        s << this->nVersion | (this->nType << 16);
+        int32_t n32bitVersion = this->nVersion | (this->nType << 16);
+        s << n32bitVersion;
         s << vin;
         s << vout;
         s << nLockTime;
@@ -349,7 +350,12 @@ struct CMutableTransaction
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action) {
-        READWRITE(this->nVersion);
+        int32_t n32bitVersion = this->nVersion | (this->nType << 16);
+        READWRITE(n32bitVersion);
+        if (ser_action.ForRead()) {
+            this->nVersion = (int16_t) (n32bitVersion & 0xffff);
+            this->nType = (int16_t) ((n32bitVersion >> 16) & 0xffff);
+        }
         READWRITE(vin);
         READWRITE(vout);
         READWRITE(nLockTime);

@@ -199,6 +199,7 @@ BITCOIN_CORE_H = \
   noui.h \
   policy/fees.h \
   policy/policy.h \
+  policy/rbf.h \
   pow.h \
   protocol.h \
   random.h \
@@ -374,6 +375,7 @@ libpolis_wallet_a_SOURCES = \
   wallet/wallet.cpp \
   wallet/walletdb.cpp \
   wallet/authhelper.cpp \
+  policy/rbf.cpp \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
@@ -430,8 +432,8 @@ libpolis_consensus_a_SOURCES = \
   amount.h \
   arith_uint256.cpp \
   arith_uint256.h \
-  bls/bls.cpp \
-  bls/bls.h \
+  #bls/bls.cpp \
+  #bls/bls.h \
   consensus/merkle.cpp \
   consensus/merkle.h \
   consensus/params.h \
@@ -491,11 +493,11 @@ libpolis_common_a_SOURCES = \
 libpolis_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libpolis_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libpolis_util_a_SOURCES = \
-  bls/bls_batchverifier.h \
-  bls/bls_ies.cpp \
-  bls/bls_ies.h \
-  bls/bls_worker.cpp \
-  bls/bls_worker.h \
+  #bls/bls_batchverifier.h \
+  #bls/bls_ies.cpp \
+  #bls/bls_ies.h \
+  #bls/bls_worker.cpp \
+  #bls/bls_worker.h \
   support/lockedpool.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
