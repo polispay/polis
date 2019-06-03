@@ -133,13 +133,13 @@ BITCOIN_CORE_H = \
   cuckoocache.h \
   ctpl.h \
   cxxtimer.hpp \
-  evo/cbtx.h \
-  evo/deterministicmns.h \
-  evo/evodb.h \
-  evo/mnauth.h \
-  evo/providertx.h \
-  evo/simplifiedmns.h \
-  evo/specialtx.h \
+  #evo/cbtx.h \
+  #evo/deterministicmns.h \
+  #evo/evodb.h \
+  #evo/mnauth.h \
+  #evo/providertx.h \
+  #evo/simplifiedmns.h \
+  #evo/specialtx.h \
   privatesend/privatesend.h \
   privatesend/privatesend-client.h \
   privatesend/privatesend-server.h \
@@ -166,26 +166,26 @@ BITCOIN_CORE_H = \
   keystore.h \
   dbwrapper.h \
   limitedmap.h \
-  llmq/quorums.h \
-  llmq/quorums_blockprocessor.h \
-  llmq/quorums_commitment.h \
-  llmq/quorums_chainlocks.h \
-  llmq/quorums_debug.h \
-  llmq/quorums_dkgsessionhandler.h \
-  llmq/quorums_dkgsessionmgr.h \
-  llmq/quorums_dkgsession.h \
-  llmq/quorums_init.h \
-  llmq/quorums_instantsend.h \
-  llmq/quorums_signing.h \
-  llmq/quorums_signing_shares.h \
-  llmq/quorums_utils.h \
+  #llmq/quorums.h \
+  #llmq/quorums_blockprocessor.h \
+  #llmq/quorums_commitment.h \
+  #llmq/quorums_chainlocks.h \
+  #llmq/quorums_debug.h \
+  #llmq/quorums_dkgsessionhandler.h \
+  #llmq/quorums_dkgsessionmgr.h \
+  #llmq/quorums_dkgsession.h \
+  #llmq/quorums_init.h \
+  #llmq/quorums_instantsend.h \
+  #llmq/quorums_signing.h \
+  #llmq/quorums_signing_shares.h \
+  #llmq/quorums_utils.h \
   masternode/masternode.h \
-  masternode/masternode-meta.h \
+  #masternode/masternode-meta.h \
   masternode/masternode-payments.h \
   masternode/masternode-sync.h \
   masternode/masternodeman.h \
   masternode/masternodeconfig.h \
-  masternode/masternode-utils.h \
+  #masternode/masternode-utils.h \
   memusage.h \
   merkleblock.h \
   messagesigner.h \
@@ -272,13 +272,13 @@ libpolis_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   dsnotificationinterface.cpp \
-  evo/cbtx.cpp \
-  evo/deterministicmns.cpp \
-  evo/evodb.cpp \
-  evo/mnauth.cpp \
-  evo/providertx.cpp \
-  evo/simplifiedmns.cpp \
-  evo/specialtx.cpp \
+  #evo/cbtx.cpp \
+  #evo/deterministicmns.cpp \
+  #evo/evodb.cpp \
+  #evo/mnauth.cpp \
+  #evo/providertx.cpp \
+  #evo/simplifiedmns.cpp \
+  #evo/specialtx.cpp \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
@@ -290,26 +290,26 @@ libpolis_server_a_SOURCES = \
   governance/governance-validators.cpp \
   governance/governance-vote.cpp \
   governance/governance-votedb.cpp \
-  llmq/quorums.cpp \
-  llmq/quorums_blockprocessor.cpp \
-  llmq/quorums_commitment.cpp \
-  llmq/quorums_chainlocks.cpp \
-  llmq/quorums_debug.cpp \
-  llmq/quorums_dkgsessionhandler.cpp \
-  llmq/quorums_dkgsessionmgr.cpp \
-  llmq/quorums_dkgsession.cpp \
-  llmq/quorums_init.cpp \
-  llmq/quorums_instantsend.cpp \
-  llmq/quorums_signing.cpp \
-  llmq/quorums_signing_shares.cpp \
-  llmq/quorums_utils.cpp \
+  #llmq/quorums.cpp \
+  #llmq/quorums_blockprocessor.cpp \
+  #llmq/quorums_commitment.cpp \
+  #llmq/quorums_chainlocks.cpp \
+  #llmq/quorums_debug.cpp \
+  #llmq/quorums_dkgsessionhandler.cpp \
+  #llmq/quorums_dkgsessionmgr.cpp \
+  #llmq/quorums_dkgsession.cpp \
+  #llmq/quorums_init.cpp \
+  #llmq/quorums_instantsend.cpp \
+  #llmq/quorums_signing.cpp \
+  #llmq/quorums_signing_shares.cpp \
+  #llmq/quorums_utils.cpp \
   masternode/masternode.cpp \
-  masternode/masternode-meta.cpp \
+  #masternode/masternode-meta.cpp \
   masternode/masternode-payments.cpp \
   masternode/masternode-sync.cpp \
   masternode/masternodeconfig.cpp \
   masternode/masternodeman.cpp \
-  masternode/masternode-utils.cpp \
+  #masternode/masternode-utils.cpp \
   merkleblock.cpp \
   messagesigner.cpp \
   miner.cpp \
@@ -331,8 +331,8 @@ libpolis_server_a_SOURCES = \
   rpc/misc.cpp \
   rpc/net.cpp \
   rpc/rawtransaction.cpp \
-  rpc/rpcevo.cpp \
-  rpc/rpcquorums.cpp \
+  #rpc/rpcevo.cpp \
+  #rpc/rpcquorums.cpp \
   rpc/server.cpp \
   script/sigcache.cpp \
   script/ismine.cpp \
@@ -465,7 +465,6 @@ libpolis_consensus_a_SOURCES = \
 libpolis_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libpolis_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libpolis_common_a_SOURCES = \
-  amount.cpp \
   base58.cpp \
   bip39.cpp \
   chainparams.cpp \
