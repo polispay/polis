@@ -58,8 +58,16 @@ file(GLOB SOURCE_FILES
         src/*.h
         src/evo/*.h
         src/evo/*.cpp
-        src/rpc/*.cpp
-        src/rpc/*.h
+        src/masternode/*.h
+        src/masternode/*.cpp
+        src/governance/*.h
+        src/governance/*.cpp
+        src/privatesend/*.h
+        src/privatesend/*.cpp
+        src/llmq/*.cpp
+        src/llmq/*.h
+        src/bls/*.cpp
+        src/bls/*.h
         )
 
 add_executable(polis ${SOURCE_FILES})

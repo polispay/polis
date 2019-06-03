@@ -1,6 +1,5 @@
-# Copyright (c) 2013-2017 The Bitcoin Core developers
+# Copyright (c) 2013-2016 The Bitcoin Core developers
 # Copyright (c) 2014-2018 The Dash Core developers
-# Copyright (c) 2018-2019 The Polis Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,6 +9,29 @@ AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS) $(HARDENED_LDFLAGS)
 AM_CXXFLAGS = $(HARDENED_CXXFLAGS) $(ERROR_CXXFLAGS)
 AM_CPPFLAGS = $(HARDENED_CPPFLAGS)
 EXTRA_LIBRARIES =
+
+if ENABLE_STACKTRACES
+if STACKTRACE_WRAPPED_CXX_ABI
+# Wrap internal C++ ABI's so that we can attach stacktraces to exceptions
+LDFLAGS_WRAP_EXCEPTIONS = -Wl,-wrap,__cxa_allocate_exception -Wl,-wrap,__cxa_free_exception
+if TARGET_WINDOWS
+LDFLAGS_WRAP_EXCEPTIONS += -Wl,-wrap,_assert -Wl,-wrap,_wassert
+else
+LDFLAGS_WRAP_EXCEPTIONS += -Wl,-wrap,__assert_fail
+endif
+endif
+
+if RDYNAMIC_SUPPORTED
+# This gives better stacktraces
+AM_CXXFLAGS += -rdynamic
+endif
+
+if TARGET_WINDOWS
+BACKTRACE_LIB = -ldbghelp -lbacktrace
+else
+BACKTRACE_LIB = -lbacktrace
+endif
+endif
 
 if EMBEDDED_UNIVALUE
 LIBUNIVALUE = univalue/libunivalue.la
@@ -86,6 +108,7 @@ BITCOIN_CORE_H = \
   addrman.h \
   alert.h \
   base58.h \
+  batchedlogger.h \
   bip39.h \
   bip39_english.h \
   blockencodings.h \
@@ -109,6 +132,8 @@ BITCOIN_CORE_H = \
   core_io.h \
   core_memusage.h \
   cuckoocache.h \
+  ctpl.h \
+  cxxtimer.hpp \
   evo/cbtx.h \
   evo/deterministicmns.h \
   evo/evodb.h \
@@ -156,10 +181,12 @@ BITCOIN_CORE_H = \
   llmq/quorums_signing_shares.h \
   llmq/quorums_utils.h \
   masternode/masternode.h \
+  masternode/masternode-meta.h \
   masternode/masternode-payments.h \
   masternode/masternode-sync.h \
   masternode/masternodeman.h \
   masternode/masternodeconfig.h \
+  masternode/masternode-utils.h \
   memusage.h \
   merkleblock.h \
   messagesigner.h \
@@ -173,7 +200,6 @@ BITCOIN_CORE_H = \
   noui.h \
   policy/fees.h \
   policy/policy.h \
-  policy/rbf.h \
   pow.h \
   protocol.h \
   random.h \
@@ -182,13 +208,17 @@ BITCOIN_CORE_H = \
   rpc/protocol.h \
   rpc/server.h \
   rpc/register.h \
+  saltedhasher.h \
   scheduler.h \
   script/sigcache.h \
   script/sign.h \
   script/standard.h \
   script/ismine.h \
   spork.h \
+  stacktraces.h \
   streams.h \
+  support/allocators/mt_pooled_secure.h \
+  support/allocators/pooled_secure.h \
   support/allocators/secure.h \
   support/allocators/zeroafterfree.h \
   support/cleanse.h \
@@ -203,6 +233,7 @@ BITCOIN_CORE_H = \
   txmempool.h \
   ui_interface.h \
   undo.h \
+  unordered_lru_cache.h \
   util.h \
   utilmoneystr.h \
   utiltime.h \
@@ -236,6 +267,8 @@ libpolis_server_a_SOURCES = \
   activemasternode.cpp \
   addrman.cpp \
   addrdb.cpp \
+  alert.cpp \
+  batchedlogger.cpp \
   bloom.cpp \
   blockencodings.cpp \
   chain.cpp \
@@ -246,7 +279,7 @@ libpolis_server_a_SOURCES = \
   evo/evodb.cpp \
   evo/mnauth.cpp \
   evo/providertx.cpp \
-  evo/simplifiedmns.cpp
+  evo/simplifiedmns.cpp \
   evo/specialtx.cpp \
   httprpc.cpp \
   httpserver.cpp \
@@ -273,10 +306,12 @@ libpolis_server_a_SOURCES = \
   llmq/quorums_signing_shares.cpp \
   llmq/quorums_utils.cpp \
   masternode/masternode.cpp \
+  masternode/masternode-meta.cpp \
   masternode/masternode-payments.cpp \
   masternode/masternode-sync.cpp \
   masternode/masternodeconfig.cpp \
   masternode/masternodeman.cpp \
+  masternode/masternode-utils.cpp \
   merkleblock.cpp \
   messagesigner.cpp \
   miner.cpp \
@@ -298,6 +333,8 @@ libpolis_server_a_SOURCES = \
   rpc/misc.cpp \
   rpc/net.cpp \
   rpc/rawtransaction.cpp \
+  rpc/rpcevo.cpp \
+  rpc/rpcquorums.cpp \
   rpc/server.cpp \
   script/sigcache.cpp \
   script/ismine.cpp \
@@ -339,7 +376,6 @@ libpolis_wallet_a_SOURCES = \
   wallet/wallet.cpp \
   wallet/walletdb.cpp \
   wallet/authhelper.cpp \
-  policy/rbf.cpp \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
@@ -419,6 +455,7 @@ libpolis_consensus_a_SOURCES = \
   script/script_error.cpp \
   script/script_error.h \
   serialize.h \
+  streams.h \
   tinyformat.h \
   uint256.cpp \
   uint256.h \
@@ -444,6 +481,7 @@ libpolis_common_a_SOURCES = \
   netaddress.cpp \
   netbase.cpp \
   protocol.cpp \
+  saltedhasher.cpp \
   scheduler.cpp \
   script/sign.cpp \
   script/standard.cpp \
@@ -469,6 +507,7 @@ libpolis_util_a_SOURCES = \
   compat/strnlen.cpp \
   random.cpp \
   rpc/protocol.cpp \
+  stacktraces.cpp \
   support/cleanse.cpp \
   sync.cpp \
   threadinterrupt.cpp \
@@ -480,7 +519,7 @@ libpolis_util_a_SOURCES = \
 
 if GLIBC_BACK_COMPAT
 libpolis_util_a_SOURCES += compat/glibc_compat.cpp
-AM_LDFLAGS += $(COMPAT_LDFLAGS)
+AM_LDFLAGS += -Wl,--wrap=log2f -Wl,--wrap=__divmoddi4
 endif
 
 # cli: shared between polis-cli and polis-qt
@@ -497,7 +536,7 @@ nodist_libpolis_util_a_SOURCES = $(srcdir)/obj/build.h
 polisd_SOURCES = polisd.cpp
 polisd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 polisd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-polisd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+polisd_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
 polisd_SOURCES += polisd-res.rc
@@ -516,13 +555,13 @@ polisd_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-polisd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(BLS_LIBS)
+polisd_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(BLS_LIBS)
 
 # polis-cli binary #
 polis_cli_SOURCES = polis-cli.cpp
 polis_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
 polis_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-polis_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+polis_cli_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
 polis_cli_SOURCES += polis-cli-res.rc
@@ -533,14 +572,14 @@ polis_cli_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
-polis_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
+polis_cli_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
 #
 
 # polis-tx binary #
 polis_tx_SOURCES = polis-tx.cpp
 polis_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 polis_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-polis_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+polis_tx_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
 polis_tx_SOURCES += polis-tx-res.rc
@@ -554,7 +593,7 @@ polis_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-polis_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS) $(BLS_LIBS)
+polis_tx_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(CRYPTO_LIBS) $(BLS_LIBS)
 #
 
 # polisconsensus library #
@@ -595,9 +634,12 @@ CLEANFILES += wallet/*.gcda wallet/*.gcno
 CLEANFILES += wallet/test/*.gcda wallet/test/*.gcno
 CLEANFILES += zmq/*.gcda zmq/*.gcno
 
+IMMER_DIST = immer
+
 DISTCLEANFILES = obj/build.h
 
 EXTRA_DIST = $(CTAES_DIST)
+EXTRA_DIST += $(IMMER_DIST)
 
 
 config/polis-config.h: config/stamp-h1
