@@ -204,6 +204,7 @@ public:
     uint64_t nStakeModifier;             // hash modifier for proof-of-stake
     unsigned int nStakeModifierChecksum; // checksum of index; in-memeory only
     COutPoint prevoutStake;
+    std::vector<unsigned char> vchBlockSig;
     unsigned int nStakeTime;
     uint256 hashProofOfStake;
     int64_t nMint;
@@ -243,14 +244,15 @@ public:
         nFlags = 0;
         nStakeModifier = 0;
         nStakeModifierChecksum = 0;
-        prevoutStake.SetNull();
         nStakeTime = 0;
+        vchBlockSig.clear();
 
         nVersion       = 0;
         hashMerkleRoot = uint256();
         nTime          = 0;
         nBits          = 0;
         nNonce         = 0;
+        prevoutStake.SetNull();
     }
 
     CBlockIndex()
@@ -267,6 +269,7 @@ public:
         nTime               = block.nTime;
         nBits               = block.nBits;
         nNonce              = block.nNonce;
+        prevoutStake        = block.prevoutStake;
 
         //Proof of Stake
         bnChainTrust = uint256();
@@ -276,13 +279,11 @@ public:
         nStakeModifier = 0;
         nStakeModifierChecksum = 0;
         hashProofOfStake = uint256();
-
+        vchBlockSig    = block.vchBlockSig;
         if (block.IsProofOfStake()) {
             SetProofOfStake();
-            prevoutStake = block.vtx[1]->vin[0].prevout;
             nStakeTime = block.nTime;
         } else {
-            prevoutStake.SetNull();
             nStakeTime = 0;
         }
     }
@@ -315,6 +316,7 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+        block.prevoutStake   = prevoutStake;
         return block;
     }
 

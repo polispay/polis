@@ -497,7 +497,6 @@ bool DisconnectBlocks(int blocks);
 void ReprocessBlocks(int nBlocks);
 
 /** Context-independent validity checks */
-bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTimeBlock, /* const COutPoint& prevout , */CCoinsViewCache& view);
 bool CheckHeaderProofOfStake(const CBlockHeader& block, const Consensus::Params& consensusParams);
 bool CheckHeaderProofOfWork(const CBlockHeader& block, const Consensus::Params& consensusParams);
 bool CheckIndexProof(const CBlockIndex& block, const Consensus::Params& consensusParams);
@@ -592,6 +591,7 @@ void DumpMempool();
 
 /** Load the mempool from disk. */
 bool LoadMempool();
+bool GetSpentCoinFromTip(COutPoint prevout, Coin* coin);
 
 
 #endif // BITCOIN_VALIDATION_H

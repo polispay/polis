@@ -27,6 +27,7 @@ public:
     uint32_t nTime;
     uint32_t nBits;
     uint32_t nNonce;
+    COutPoint prevoutStake;
 
     CBlockHeader()
     {
@@ -43,6 +44,7 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+        READWRITE(prevoutStake);
 
     }
 
@@ -55,7 +57,44 @@ public:
         nTime = 0;
         nBits = 0;
         nNonce = 0;
+        prevoutStake.SetNull();
 
+    }
+
+    // ppcoin: two types of block: proof-of-work or proof-of-stake
+    virtual bool IsProofOfStake() const //qtum
+    {
+        return !prevoutStake.IsNull();
+    }
+
+    virtual bool IsProofOfWork() const
+    {
+        return !IsProofOfStake();
+    }
+
+    virtual uint32_t StakeTime() const
+    {
+        uint32_t ret = 0;
+        if(IsProofOfStake())
+        {
+            ret = nTime;
+        }
+        return ret;
+    }
+
+    CBlockHeader& operator=(const CBlockHeader& other)
+    {
+        if (this != &other)
+        {
+            this->nVersion       = other.nVersion;
+            this->hashPrevBlock  = other.hashPrevBlock;
+            this->hashMerkleRoot = other.hashMerkleRoot;
+            this->nTime          = other.nTime;
+            this->nBits          = other.nBits;
+            this->nNonce         = other.nNonce;
+            this->prevoutStake   = other.prevoutStake;
+        }
+        return *this;
     }
 
     bool IsNull() const

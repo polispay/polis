@@ -325,8 +325,6 @@ public:
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 650;
             consensus.nPoSDiffAdjustRange = 1;
-            // highest difficulty | 0x1e0ffff0 (?)
-            // smallest difficulty | 0x008000
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
@@ -617,8 +615,7 @@ public:
             consensus.nStakeMinAge = 60;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 25;
-            // highest difficulty | 0x1e0ffff0 (?)
-            // smallest difficulty | 0x008000
+            consensus.nPoSDiffAdjustRange = 1;
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
 
             // The best chain should have at least this much work.

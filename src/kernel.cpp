@@ -37,6 +37,12 @@ bool IsProtocolV03(unsigned int nTimeCoinStake)
     return (nTimeCoinStake >= (nForkTimestamp));
 }
 
+// Check whether the coinstake timestamp meets protocol
+bool CheckCoinStakeTimestamp(uint32_t nTimeBlock)
+{
+    return (nTimeBlock & STAKE_TIMESTAMP_MASK) == 0;
+}
+
 // Get the last stake modifier and its generation time from a given block
 static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModifier, int64_t& nModifierTime)
 {
@@ -244,7 +250,7 @@ static bool GetKernlStakeModifierV03(uint256 hashBlockFrom, unsigned int nTimeTx
     while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval) {
         if (!pindexNext) {
             // Should never happen
-            if(Params().NetworkIDString() == CBaseChainParams::TESTNET)
+            if(Params().NetworkIDString() == CBaseChainParams::TESTNET || Params().NetworkIDString() == CBaseChainParams::REGTEST)
             {
                 nStakeModifierHeight = pindexFrom->nHeight;
                 nStakeModifierTime = pindexFrom->GetBlockTime();
@@ -328,6 +334,51 @@ static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, 
 //   a proof-of-work situation.
 //
 
+bool CheckStakeKernelHash(unsigned int nBits, unsigned int blockFromTime, uint256 blockFromHash, unsigned int nTxPrevOffset, CAmount nValueIn, const COutPoint& prevout, unsigned int nTimeTx, uint256& hashProofOfStake)
+{
+
+    if (nTimeTx < blockFromTime)  // Transaction timestamp violation
+        return error("CheckStakeKernelHash() : nTime violation");
+
+    auto nStakeMinAge = Params().GetConsensus().nStakeMinAge;
+    auto nStakeMaxAge = Params().GetConsensus().nStakeMaxAge;
+    unsigned int nTimeBlockFrom = blockFromTime;
+    if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
+        return error("CheckStakeKernelHash() : min age violation");
+
+    arith_uint256 bnTargetPerCoinDay;
+    bnTargetPerCoinDay.SetCompact(nBits);
+    //CAmount nValueIn = txPrev->vout[prevout.n].nValue;
+    // v0.3 protocol kernel hash weight starts from 0 at the 30-day min age
+    // this change increases active coins participating the hash and helps
+    // to secure the network when proof-of-stake difficulty is low
+    int64_t nTimeWeight = std::min<int64_t>(nTimeTx - blockFromTime, nStakeMaxAge - nStakeMinAge);
+    arith_uint256 bnCoinDayWeight = nValueIn * nTimeWeight / COIN / 200;
+
+    // Calculate hash
+    CDataStream ss(SER_GETHASH, 0);
+    uint64_t nStakeModifier = 0;
+    int nStakeModifierHeight = 0;
+    int64_t nStakeModifierTime = 0;
+
+    if (IsProtocolV03(nTimeTx)){
+        if (!GetKernelStakeModifier(blockFromHash, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
+            return false;
+        ss << nStakeModifier;
+    }
+
+    ss << nTimeBlockFrom << nTxPrevOffset << blockFromTime << prevout.n << nTimeTx;
+    hashProofOfStake = Hash(ss.begin(), ss.end());
+    if (nTimeTx < 1549143000)
+        return true;
+
+    // Now check if proof-of-stake hash meets target protocol
+    if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay)
+        return false;
+
+    return true;
+}
+
 bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned int nTxPrevOffset, const CTransactionRef& txPrev, const COutPoint& prevout, unsigned int nTimeTx, uint256& hashProofOfStake)
 {
 
@@ -370,7 +421,6 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     // Now check if proof-of-stake hash meets target protocol
     if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay)
         return false;
-
 
     return true;
 }
@@ -448,4 +498,73 @@ bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierCheck
         return nStakeModifierChecksum == mapStakeModifierCheckpoints[nHeight];
     }
     return true;
+}
+
+bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTimeBlock, const COutPoint& prevout, CCoinsViewCache& view)
+{
+    std::map<COutPoint, CStakeCache> tmp;
+    return CheckKernel(pindexPrev, nBits, nTimeBlock, prevout, view, tmp);
+}
+
+bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTimeBlock, const COutPoint& prevout, CCoinsViewCache& view, const std::map<COutPoint, CStakeCache>& cache)
+{
+    uint256 hashProofOfStake;
+    auto it = cache.find(prevout);
+    LogPrint("Prevout, = %s \n", prevout.ToString());
+    if(it == cache.end()) {
+        // not found in cache (shouldn't happen during staking, only during verification which does not use cache)
+        Coin coinPrev;
+        if(!view.GetCoin(prevout, coinPrev)){
+            if(pindexPrev->GetBlockHash() != chainActive.Tip()->pprev->GetBlockHash()) {
+                return error("CheckKernel(): Could not find coin and did not fork at tip");
+            }
+
+            if(!GetSpentCoinFromTip(prevout, &coinPrev)) {
+                return error("CheckKernel(): Could not find coin and it was not at the tip");
+            }
+
+            LogPrintf("CheckKernel(): Uses spent stake from tip\n");
+        }
+
+        if(pindexPrev->nHeight + 1 - coinPrev.nHeight < COINBASE_MATURITY){
+            return error("CheckKernel(): Coin not matured");
+        }
+        CBlockIndex* blockFrom = pindexPrev->GetAncestor(coinPrev.nHeight);
+        if(!blockFrom) {
+            return error("CheckKernel(): Could not find block");
+        }
+        if(coinPrev.IsSpent()){
+            return error("CheckKernel(): Coin is spent");
+        }
+
+        return CheckStakeKernelHash(nBits, blockFrom->nTime, blockFrom->GetBlockHash(), sizeof(blockFrom), coinPrev.out.nValue, prevout, nTimeBlock, hashProofOfStake);
+    } else {
+        // found in cache
+        const CStakeCache& stake = it->second;
+        if(CheckStakeKernelHash(nBits, stake.blockFromTime, stake.blockFromHash, sizeof(stake), stake.amount, prevout,
+                                nTimeBlock, hashProofOfStake)){
+            //Cache could potentially cause false positive stakes in the event of deep reorgs, so check without cache also
+            return CheckKernel(pindexPrev, nBits, nTimeBlock, prevout, view);
+        }
+    }
+    return false;
+}
+
+void CacheKernel(std::map<COutPoint, CStakeCache>& cache, const COutPoint& prevout, CBlockIndex* pindexPrev, CCoinsViewCache& view){
+    if(cache.find(prevout) != cache.end()){
+        return;
+    }
+    Coin coinPrev;
+    if(!view.GetCoin(prevout, coinPrev)){
+        return;
+    }
+    if(pindexPrev->nHeight + 1 - coinPrev.nHeight < COINBASE_MATURITY){
+        return;
+    }
+    CBlockIndex* blockFrom = pindexPrev->GetAncestor(coinPrev.nHeight);
+    if(!blockFrom) {
+        return;
+    }
+    CStakeCache c(blockFrom->nTime, blockFrom->GetBlockHash(), coinPrev.out.nValue);
+    cache.insert({prevout, c});
 }

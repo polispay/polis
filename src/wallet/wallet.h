@@ -33,6 +33,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
+#include <kernel.h>
 
 extern CWallet* pwalletMain;
 
@@ -655,6 +656,7 @@ private:
     unsigned int nHashDrift;
     unsigned int nHashInterval;
     int nStakeSetUpdateTime;
+    std::map<COutPoint, CStakeCache> stakeCache;
     mutable bool fAnonymizableTallyCached;
     mutable std::vector<CompactTallyItem> vecAnonymizableTallyCached;
     mutable bool fAnonymizableTallyCachedNonDenom;
@@ -681,9 +683,8 @@ private:
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
     bool CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
-                               unsigned int nBits, const CBlock& blockFrom,
-                               unsigned int nTxPrevOffset, const CTransactionRef &txPrev,
-                               const COutPoint& prevout, unsigned int &nTimeTx, bool fPrintProofOfStake) const;
+                               unsigned int nBits, CBlockIndex* pindex, const CTransactionRef &txPrev,
+                               const COutPoint& prevout, unsigned int &nTimeTx) const;
     void FillCoinStakePayments(CMutableTransaction &transaction,
                                const CScript &kernelScript,
                                const COutPoint &stakePrevout, CAmount blockReward) const;

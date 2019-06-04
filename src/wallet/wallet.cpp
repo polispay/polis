@@ -206,19 +206,16 @@ CAmount GetStakeReward(CAmount blockReward, unsigned int percentage)
     return (blockReward / 100) * percentage;
 }
 bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
-                                    unsigned int nBits, const CBlock &blockFrom,
-                                    unsigned int nTxPrevOffset, const CTransactionRef &txPrev,
-                                    const COutPoint &prevout, unsigned int &nTimeTx, bool fPrintProofOfStake) const
+                                    unsigned int nBits, CBlockIndex* pindex, const CTransactionRef &txPrev,
+                                    const COutPoint &prevout, unsigned int &nTimeTx) const
 {
     unsigned int nTryTime = 0;
-    uint256 hashProofOfStake;
-
-    if (blockFrom.GetBlockTime() + Params().GetConsensus().nStakeMinAge + nHashDrift > nTimeTx) // Min age requirement
+    if (pindex->GetBlockTime() + Params().GetConsensus().nStakeMinAge + nHashDrift > nTimeTx) // Min age requirement
         return false;
     for(unsigned int i = 0; i < nHashDrift; ++i)
     {
         nTryTime = nTimeTx - i;
-        if (CheckStakeKernelHash(nBits, blockFrom, nTxPrevOffset, txPrev, prevout, nTryTime, hashProofOfStake))
+        if (CheckKernel(pindex, nBits, nTryTime, prevout, *pcoinsTip, stakeCache))
         {
             //Double check that this will pass time requirements
             if (nTryTime <= chainActive.Tip()->GetMedianTimePast()) {
@@ -4076,6 +4073,10 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     bool fKernelFound = false;
     CAmount nCredit = 0;
 
+    if(stakeCache.size() > setStakeCoins.size() + 100){
+        stakeCache.clear();
+    }
+
     for(const std::pair<const CWalletTx*, unsigned int> &pcoin : setStakeCoins)
     {
         //make sure that enough time has elapsed between
@@ -4088,15 +4089,15 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
             continue;
         }
         // Read block header
-        CBlockHeader block = pindex->GetBlockHeader();
         COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
+        CacheKernel(stakeCache, prevoutStake, pindexPrev, *pcoinsTip);
         nTxNewTime = GetAdjustedTime();
         //iterates each utxo inside of CheckStakeKernelHash()
         CScript kernelScript;
         auto stakeScript = pcoin.first->tx->vout[pcoin.second].scriptPubKey;
         fKernelFound = CreateCoinStakeKernel(kernelScript, stakeScript, nBits,
-                                             block, sizeof(CBlock), pcoin.first->tx,
-                                             prevoutStake, nTxNewTime, false);
+                                             pindexPrev, pcoin.first->tx,
+                                             prevoutStake, nTxNewTime);
         if(fKernelFound)
         {
             FillCoinStakePayments(txNew, kernelScript, prevoutStake, blockReward);

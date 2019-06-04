@@ -173,9 +173,12 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
                                         coinstakeTx, nTxNewTime,
                                         vwtxPrev))
             {
+                if(fProofOfStake)
+                    nTxNewTime &= ~STAKE_TIMESTAMP_MASK;
                 pblock->nTime = nTxNewTime;
                 coinbaseTx.vout[0].SetEmpty();
                 pblock->vtx.emplace_back(MakeTransactionRef(coinstakeTx));
+                pblock->prevoutStake = pblock->vtx[1]->vin[0].prevout;
                 fStakeFound = true;
             }
 
@@ -650,14 +653,14 @@ void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
                 // on an obsolete chain. In regtest mode we expect to fly solo.
                 do {
                     bool fvNodesEmpty = connman.GetNodeCount(CConnman::CONNECTIONS_ALL) == 0;
-                    if (!fvNodesEmpty && !IsInitialBlockDownload()  /*&& masternodeSync.IsSynced()*/)
+                    if (/*!fvNodesEmpty &&*/ !IsInitialBlockDownload()  /*&& masternodeSync.IsSynced()*/)
                         break;
                     MilliSleep(1000);
                 } while (true);
             }
             if(fProofOfStake)
             {
-                if (chainActive.Tip()->nHeight < chainparams.GetConsensus().nLastPoWBlock || pwallet->IsLocked(true) || !masternodeSync.IsSynced())
+                if (chainActive.Tip()->nHeight < chainparams.GetConsensus().nLastPoWBlock || pwallet->IsLocked(true))
                 {
                     LogPrintf("Not capable staking \n");
                     nLastCoinStakeSearchInterval = 0;
@@ -704,9 +707,8 @@ void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
             // }
             // process proof of stake block
             if(fProofOfStake) {
-                LogPrintf("Processing POS block");
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                bool ret = ProcessBlockFound(pblock, chainparams);
+                ProcessBlockFound(pblock, chainparams);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
                 MilliSleep(10000);
                 continue;
