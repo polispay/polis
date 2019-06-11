@@ -104,6 +104,12 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action) {
         READWRITE(*(CBlockHeader*)this);
         READWRITE(vtx);
+        if(vtx.size() > 1 && vtx[1]->IsCoinStake())
+        {
+            if (nTime > 1562850000)
+                READWRITE(vchBlockSig);
+        }
+
     }
 
     void SetNull()

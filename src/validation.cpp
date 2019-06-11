@@ -3530,14 +3530,15 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         uint256 hash = block.GetHash();
 
 
-        // TODO validate block signature
-/*         CBlock blockTmp = block;
-         CBlockSigner signer(blockTmp, NULL);
-        if(!signer.CheckBlockSignature()) {
-           return state.DoS(100, error("CheckBlock(): block signature invalid"),
-                           REJECT_INVALID, "bad-block-signature");
-         }*/
-
+        if (block.nTime > 1562850000) {
+            CBlock blockTmp = block;
+            CBlockSigner signer(blockTmp, nullptr);
+            if(!signer.CheckBlockSignature()) {
+                return state.DoS(100, error("CheckBlock(): block signature invalid"),
+                                 REJECT_INVALID, "bad-block-signature");
+            }
+        }
+        
         if(!CheckProofOfStake(block, hashProofOfStake)) {
             return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
         }
