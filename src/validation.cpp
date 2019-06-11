@@ -1199,30 +1199,14 @@ bool GetTransaction(const uint256 &hash, CTransactionRef &txOut, const Consensus
 
 bool CheckHeaderProof(const CBlockHeader& block, const Consensus::Params& consensusParams) {
 
-    if (block.nTime >= 1540526903 ) {
+    uint32_t lastPowBlockTime = Params().NetworkIDString() == CBaseChainParams::MAIN ? 1540526903 : 1600000000; // Not yet known.
+    if (block.nTime >= lastPowBlockTime) {
         return CheckHeaderProofOfStake(block, consensusParams);
     } else {
         return CheckHeaderProofOfWork(block, consensusParams);
     }
 
 }
-
-bool CheckIndexProof(const CBlockIndex& block, const Consensus::Params& consensusParams)
-{
-    // Get the hash of the proof
-    // After validating the PoS block the computed hash proof is saved in the block index, which is used to check the index
-    bool IsPosBlock = block.nTime >= 1540526903;
-    uint256 hashProof = IsPosBlock ? block.GetBlockHash() : block.hashProofOfStake;
-    // Check for proof after the hash proof is computed
-    if (IsPosBlock ) {
-        //blocks are loaded out of order, so checking PoS kernels here is not practical
-        return true;
-    } else {
-        return CheckProofOfWork(hashProof, block.nBits, consensusParams);
-    }
-}
-
-
 
 
 //////////////////////////////////////////////////////////////////////////////
