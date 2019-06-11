@@ -150,6 +150,7 @@ public:
             consensus.fPowNoRetargeting = false;
             consensus.nPowKGWHeight = 551;
             consensus.nPowDGWHeight = 551;
+            consensus.nMaxBlockSpacingFixDeploymentHeight = 390859; // apprx 11 of July
 
             // Stake information
 
@@ -325,9 +326,8 @@ public:
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 650;
             consensus.nPoSDiffAdjustRange = 1;
-            // highest difficulty | 0x1e0ffff0 (?)
-            // smallest difficulty | 0x008000
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
+            consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
             consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
@@ -457,17 +457,14 @@ public:
             consensus.fPowNoRetargeting = false;
             consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
             consensus.nPowDGWHeight = 4001;
+            consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
 
-
-            // Stake information
 
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
             consensus.nPosTargetTimespan = 60 * 40;
             consensus.nStakeMinAge = 60 * 60;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 180675;
-
-
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
             consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
@@ -596,6 +593,7 @@ public:
             consensus.fPowNoRetargeting = true;
             consensus.nPowKGWHeight = 15200; // same as mainnet
             consensus.nPowDGWHeight = 34140; // same as mainnet
+            consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
             consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
             consensus.nMinerConfirmationWindow = 144; // Faster than normal for regtest (144 instead of 2016)
             consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;

@@ -85,12 +85,16 @@ unsigned int static PoSWorkRequired(const CBlockIndex* pindexLast, const Consens
     int64_t nTargetSpacing = Params().GetConsensus().nPosTargetSpacing;
     int64_t nTargetTimespan = Params().GetConsensus().nPosTargetTimespan;
     int64_t nActualSpacing = 0;
-    if (pindexLast->nHeight != 0){
+    if (pindexLast->nHeight != 0)
         nActualSpacing = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
-    }
 
     if (nActualSpacing < 0)
         nActualSpacing = 1;
+
+    if(pindexLast->nHeight > params.nMaxBlockSpacingFixDeploymentHeight)
+    {
+        nActualSpacing = std::min(nActualSpacing, nTargetSpacing * 10);
+    }
     // ppcoin: target change every block
     // ppcoin: retarget with exponential moving toward target spacing
     arith_uint256 bnNew;
@@ -100,6 +104,7 @@ unsigned int static PoSWorkRequired(const CBlockIndex* pindexLast, const Consens
     bnNew /= ((nInterval + 1) * nTargetSpacing);
     if (bnNew <= 0 || bnNew > bnTargetLimit)
         bnNew = bnTargetLimit;
+
     return bnNew.GetCompact();
 }
 

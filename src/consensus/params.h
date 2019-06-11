@@ -97,6 +97,8 @@ struct Params {
     int nLastPoWBlock;
     unsigned int nWSTargetDiff;
     int nPoSDiffAdjustRange;
+    int nMaxBlockSpacingFixDeploymentHeight;
+
 };
 } // namespace Consensus
 
