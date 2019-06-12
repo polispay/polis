@@ -1199,8 +1199,8 @@ bool GetTransaction(const uint256 &hash, CTransactionRef &txOut, const Consensus
 
 bool CheckHeaderProof(const CBlockHeader& block, const Consensus::Params& consensusParams) {
 
-    uint32_t lastPowBlockTime = Params().NetworkIDString() == CBaseChainParams::MAIN ? 1540526903 : 1600000000; // Not yet known.
-    if (block.nTime >= lastPowBlockTime) {
+    uint32_t lastPowBlockTime = Params().NetworkIDString() == CBaseChainParams::MAIN ? 1540526903 : 1560351742; // Not yet known.
+    if (block.nTime > lastPowBlockTime) {
         return CheckHeaderProofOfStake(block, consensusParams);
     } else {
         return CheckHeaderProofOfWork(block, consensusParams);
