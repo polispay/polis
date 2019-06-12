@@ -706,7 +706,7 @@ void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
             if(fProofOfStake) {
                 LogPrintf("Processing POS block");
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                bool ret = ProcessBlockFound(pblock, chainparams);
+                ProcessBlockFound(pblock, chainparams);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
                 MilliSleep(10000);
                 continue;
