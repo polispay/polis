@@ -151,12 +151,14 @@ public:
             consensus.nPowKGWHeight = 551;
             consensus.nPowDGWHeight = 551;
             consensus.nMaxBlockSpacingFixDeploymentHeight = 390859; // apprx 11 of July
+            consensus.nStakeMinAgeSwitchTime = 1562850000; // apprx 11 of July
 
             // Stake information
 
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40; // 40 minutes at max for difficulty adjustment 40 mins
             consensus.nStakeMinAge = 60 * 2;
+            consensus.nStakeMinAge_2 = 60 * 60;
 
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
@@ -323,11 +325,13 @@ public:
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40;
             consensus.nStakeMinAge = 60; //one minute
+            consensus.nStakeMinAge_2 = 60 * 60;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 650;
             consensus.nPoSDiffAdjustRange = 1;
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
             consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
+            consensus.nStakeMinAgeSwitchTime = 1560367000; // apprx 11 of July
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
             consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
@@ -458,6 +462,7 @@ public:
             consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
             consensus.nPowDGWHeight = 4001;
             consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
+            consensus.nStakeMinAgeSwitchTime = 1562850000; // apprx 11 of July
 
 
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
@@ -618,6 +623,7 @@ public:
             // highest difficulty | 0x1e0ffff0 (?)
             // smallest difficulty | 0x008000
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
+            consensus.nStakeMinAgeSwitchTime = 1562850000; // apprx 11 of July
 
             // The best chain should have at least this much work.
             consensus.nMinimumChainWork = uint256S("0x00");

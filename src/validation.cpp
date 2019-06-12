@@ -3514,7 +3514,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         uint256 hash = block.GetHash();
 
 
-        if (block.nTime > 1562850000) {
+        if (block.nTime > Params().GetConsensus().nStakeMinAgeSwitchTime) {
             CBlock blockTmp = block;
             CBlockSigner signer(blockTmp, nullptr);
             if(!signer.CheckBlockSignature()) {

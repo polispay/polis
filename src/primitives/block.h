@@ -106,7 +106,8 @@ public:
         READWRITE(vtx);
         if(vtx.size() > 1 && vtx[1]->IsCoinStake())
         {
-            if (nTime > 1562850000)
+            // Params().GetConsensus().nStakeMinAgeSwitchTime
+            if (nTime > 1560367000)
                 READWRITE(vchBlockSig);
         }
 
