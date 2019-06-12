@@ -213,7 +213,7 @@ bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeS
     unsigned int nTryTime = 0;
     uint256 hashProofOfStake;
 
-    auto nStakeMinAge = blockFrom.GetBlockTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge : Params().GetConsensus().nStakeMinAge_2;
+    auto nStakeMinAge = blockFrom.GetBlockTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge_2 : Params().GetConsensus().nStakeMinAge;
 
     if (blockFrom.GetBlockTime() + nStakeMinAge + nHashDrift > nTimeTx) // Min age requirement
         return false;
@@ -2438,7 +2438,7 @@ CAmount CWallet::GetStake() const
         for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
-            auto nStakeMinAge = pcoin->GetTxTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge : Params().GetConsensus().nStakeMinAge_2;
+            auto nStakeMinAge = pcoin->GetTxTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge_2 : Params().GetConsensus().nStakeMinAge;
             if (pcoin->IsTrusted() && GetTime() - pcoin->GetTxTime() > nStakeMinAge && pcoin->GetBlocksToMaturity() < (pcoin->tx->IsCoinStake() ? COINBASE_MATURITY : 10))
                 nTotal += pcoin->GetAvailableCredit();
         }
@@ -2935,7 +2935,7 @@ bool CWallet::MintableCoins()
     AvailableCoins(vCoins, true);
     for (const COutput& out : vCoins)
     {
-        auto nStakeMinAge = out.tx->GetTxTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge : Params().GetConsensus().nStakeMinAge_2;
+        auto nStakeMinAge = out.tx->GetTxTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge_2 : Params().GetConsensus().nStakeMinAge;
 
         if (GetTime() - out.tx->GetTxTime() > nStakeMinAge)
         {
@@ -2962,7 +2962,7 @@ bool CWallet::SelectStakeCoins(StakeCoinsSet &setCoins, CAmount nTargetAmount, c
         //            continue;
         //        LogPrintf("amount is good\n");
         //check for min age
-        auto nStakeMinAge = out.tx->GetTxTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge : Params().GetConsensus().nStakeMinAge_2;
+        auto nStakeMinAge = out.tx->GetTxTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge_2 : Params().GetConsensus().nStakeMinAge;
         if (GetTime() - out.tx->GetTxTime() < nStakeMinAge)
             continue;
         //  LogPrintf("min age is good\n");

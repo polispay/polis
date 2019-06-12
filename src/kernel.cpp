@@ -308,7 +308,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     if (nTimeTx < txPrevTime)  // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
 
-    auto nStakeMinAge = blockFrom.GetBlockTime() > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge : Params().GetConsensus().nStakeMinAge_2;
+    auto nStakeMinAge = nTimeTx > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge_2 : Params().GetConsensus().nStakeMinAge;
     auto nStakeMaxAge = Params().GetConsensus().nStakeMaxAge;
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
     if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
