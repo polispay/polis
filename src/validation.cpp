@@ -3358,49 +3358,10 @@ bool CheckHeaderProofOfWork(const CBlockHeader& block, const Consensus::Params& 
 
 bool CheckHeaderProofOfStake(const CBlockHeader& block, const Consensus::Params& consensusParams)
 {
-    // Check for proof of stake block header
-    // Get prev block index
-    BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-    if (mi == mapBlockIndex.end()) {
-        LogPrintf("CheckHeaderProofOfStake(): Unable to find block on mapBlockIndex");
-        return false;
-    }
-
-    // Check the kernel hash
-    CBlockIndex* pindexPrev = (*mi).second;
-    return CheckKernel(pindexPrev, block.nBits, block.nTime, /*block.prevoutStake,  */ *pcoinsTip);
-}
-
-bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTimeBlock, /*const COutPoint& prevout ,*/ CCoinsViewCache& view)
-{
-    uint256 hashProofOfStake, targetProofOfStake;
-
-    // not found in cache (shouldn't happen during staking, only during verification which does not use cache)
-    Coin coinPrev;
-/*    if(!view.GetCoin(prevout, coinPrev)){
-        LogPrintf("CheckKernel(): null GetCoinCache \n");
-        return false;
-    }*/
-
-    if(pindexPrev->nHeight + 1 - coinPrev.nHeight < COINBASE_MATURITY){
-        LogPrintf("CheckKernel(): Failed non-mature spent \n");
-        return false;
-    }
-
-    CBlockIndex* blockFrom = pindexPrev->GetAncestor(coinPrev.nHeight);
-/*    if(!blockFrom) {
-        LogPrintf("CheckKernel(): Failed null blockFrom \n");
-        return false;
-    }*/
-
-/*    if(coinPrev.IsSpent()){
-        LogPrintf("CheckKernel(): coinPrev is spent \n");
-        return false;
-    }*/
-
+    // TODO find a way to check the POS header, maybe using qtum POS?
     return true;
-    //return CheckStakeKernelHash(nBits, blockFrom, sizeof(blockFrom), prevout, nTimeBlock, hashProofOfStake, false, true);
 }
+
 
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckPOS)
 {
