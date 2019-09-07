@@ -106,6 +106,61 @@ static CBlock FindDevNetGenesisBlock(const Consensus::Params& params, const CBlo
         assert(false);
 }
 
+// this one is for testing only
+static Consensus::LLMQParams llmq10_60 = {
+        .type = Consensus::LLMQ_10_60,
+        .name = "llmq_10",
+        .size = 10,
+        .minSize = 6,
+        .threshold = 6,
+
+        .dkgInterval = 24, // one DKG per hour
+        .dkgPhaseBlocks = 2,
+        .dkgMiningWindowStart = 10, // dkgPhaseBlocks * 5 = after finalization
+        .dkgMiningWindowEnd = 18,
+};
+
+static Consensus::LLMQParams llmq50_60 = {
+        .type = Consensus::LLMQ_50_60,
+        .name = "llmq_50_60",
+        .size = 50,
+        .minSize = 40,
+        .threshold = 30,
+
+        .dkgInterval = 24, // one DKG per hour
+        .dkgPhaseBlocks = 2,
+        .dkgMiningWindowStart = 10, // dkgPhaseBlocks * 5 = after finalization
+        .dkgMiningWindowEnd = 18,
+};
+
+static Consensus::LLMQParams llmq400_60 = {
+        .type = Consensus::LLMQ_400_60,
+        .name = "llmq_400_51",
+        .size = 400,
+        .minSize = 300,
+        .threshold = 240,
+
+        .dkgInterval = 24 * 12, // one DKG every 12 hours
+        .dkgPhaseBlocks = 4,
+        .dkgMiningWindowStart = 20, // dkgPhaseBlocks * 5 = after finalization
+        .dkgMiningWindowEnd = 28,
+};
+
+// Used for deployment and min-proto-version signalling, so it needs a higher threshold
+static Consensus::LLMQParams llmq400_85 = {
+        .type = Consensus::LLMQ_400_85,
+        .name = "llmq_400_85",
+        .size = 400,
+        .minSize = 350,
+        .threshold = 340,
+
+        .dkgInterval = 24 * 24, // one DKG every 24 hours
+        .dkgPhaseBlocks = 4,
+        .dkgMiningWindowStart = 20, // dkgPhaseBlocks * 5 = after finalization
+        .dkgMiningWindowEnd = 48, // give it a larger mining window to make sure it is mined
+};
+
+
 /**
  * Main network
  */
@@ -152,14 +207,11 @@ public:
             consensus.nPowDGWHeight = 551;
             consensus.nMaxBlockSpacingFixDeploymentHeight = 381587;
             consensus.nStakeMinAgeSwitchTime = 1561734000;
+            consensus.nPosMitigationSwitchTime = 2000000000;
 
             // Stake information
-
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40; // 40 minutes at max for difficulty adjustment 40 mins
-            consensus.nStakeMinAge = 60 * 2;
-            consensus.nStakeMinAge_2 = 60 * 60;
-
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
             consensus.nPoSDiffAdjustRange = 5;
@@ -242,10 +294,13 @@ public:
 
             nPoolMaxTransactions = 3;
             nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
+    
+            vSporkAddresses = {"PAvya6xSBRb755Uhe2aXBFsjuyi68hTP8u"};
+            nMinSporkKeys = 1;
+            fBIP9CheckMasternodesUpgraded = true;
+            consensus.fLLMQAllowDummyCommitments = false;
 
-            strSporkAddress = "PAvya6xSBRb755Uhe2aXBFsjuyi68hTP8u";
-
-        checkpointData = (CCheckpointData) {
+            checkpointData = (CCheckpointData) {
                 boost::assign::map_list_of
                         ( 0, uint256S("0x000009701eb781a8113b1af1d814e2f060f6408a2c990db291bc5108a1345c1e"))
                         ( 10, uint256S("0x000006f686844f1873f4fcf77516eaa0a11f5762b797314c5875438c97fe4562"))
@@ -325,8 +380,6 @@ public:
             // Stake info
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40;
-            consensus.nStakeMinAge = 60; //one minute
-            consensus.nStakeMinAge_2 = 60 * 60;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 650;
             consensus.nPoSDiffAdjustRange = 1;
@@ -407,9 +460,11 @@ public:
 
             nPoolMaxTransactions = 3;
             nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
-
-
-            strSporkAddress = "yMCScEFCuhFGQL8aBS8UPXnKriFtjMVWra";
+    
+            vSporkAddresses = {"yMCScEFCuhFGQL8aBS8UPXnKriFtjMVWra"};
+            nMinSporkKeys = 1;
+            fBIP9CheckMasternodesUpgraded = true;
+            consensus.fLLMQAllowDummyCommitments = true;
 
             checkpointData = (CCheckpointData) {
                     boost::assign::map_list_of
@@ -546,8 +601,12 @@ public:
 
             nPoolMaxTransactions = 3;
             nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
-
-            strSporkAddress = "yjPtiKh2uwk3bDutTEA2q9mCtXyiZRWn55";
+    
+            vSporkAddresses = {"yjPtiKh2uwk3bDutTEA2q9mCtXyiZRWn55"};
+            nMinSporkKeys = 1;
+            // devnets are started with no blocks and no MN, so we can't check for upgraded MN (as there are none)
+            fBIP9CheckMasternodesUpgraded = false;
+            consensus.fLLMQAllowDummyCommitments = true;
 
             checkpointData = (CCheckpointData) {
                     boost::assign::map_list_of
@@ -560,6 +619,13 @@ public:
                     2,                            // * we only have 2 coinbase transactions when a devnet is started up
                     0.01                          // * estimated number of transactions per second
             };
+    }
+
+    void UpdateSubsidyAndDiffParams(int nMinimumDifficultyBlocks, int nHighSubsidyBlocks, int nHighSubsidyFactor)
+    {
+        consensus.nMinimumDifficultyBlocks = nMinimumDifficultyBlocks;
+        consensus.nHighSubsidyBlocks = nHighSubsidyBlocks;
+        consensus.nHighSubsidyFactor = nHighSubsidyFactor;
     }
 };
 static CDevNetParams *devNetParams;
@@ -656,9 +722,13 @@ public:
             fAllowMultiplePorts = true;
 
             nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
-
+    
             // privKey: cP4EKFyJsHT39LDqgdcB43Y3YXjNyjb5Fuas1GQSeAtjnZWmZEQK
-            strSporkAddress = "yj949n1UH6fDhw6HtVE5VMj2iSTaSWBMcW";
+            vSporkAddresses = {"yj949n1UH6fDhw6HtVE5VMj2iSTaSWBMcW"};
+            nMinSporkKeys = 1;
+            // regtest usually has no masternodes in most tests, so don't check for upgraged MNs
+            fBIP9CheckMasternodesUpgraded = false;
+            consensus.fLLMQAllowDummyCommitments = true;
 
             checkpointData = (CCheckpointData){
                     boost::assign::map_list_of
@@ -728,4 +798,10 @@ void SelectParams(const std::string& network)
 void UpdateRegtestBIP9Parameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
 {
         regTestParams.UpdateBIP9Parameters(d, nStartTime, nTimeout);
+}
+
+void UpdateDevnetSubsidyAndDiffParams(int nMinimumDifficultyBlocks, int nHighSubsidyBlocks, int nHighSubsidyFactor)
+{
+    assert(devNetParams);
+    devNetParams->UpdateSubsidyAndDiffParams(nMinimumDifficultyBlocks, nHighSubsidyBlocks, nHighSubsidyFactor);
 }

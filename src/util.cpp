@@ -12,6 +12,7 @@
 
 #include "support/allocators/secure.h"
 #include "chainparamsbase.h"
+#include "ctpl.h"
 #include "random.h"
 #include "serialize.h"
 #include "sync.h"
@@ -905,6 +906,25 @@ std::string GetThreadName()
     return std::string(name);
 }
 
+void RenameThreadPool(ctpl::thread_pool& tp, const char* baseName)
+{
+    auto cond = std::make_shared<std::condition_variable>();
+    auto mutex = std::make_shared<std::mutex>();
+    std::atomic<int> doneCnt(0);
+    for (size_t i = 0; i < tp.size(); i++) {
+        tp.push([baseName, i, cond, mutex, &doneCnt](int threadId) {
+            RenameThread(strprintf("%s-%d", baseName, i).c_str());
+            doneCnt++;
+            std::unique_lock<std::mutex> l(*mutex);
+            cond->wait(l);
+        });
+    }
+    while (doneCnt != tp.size()) {
+        MilliSleep(10);
+    }
+    cond->notify_all();
+}
+
 void SetupEnvironment()
 {
 #ifdef HAVE_MALLOPT_ARENA_MAX
@@ -976,7 +996,7 @@ std::string CopyrightHolders(const std::string& strPrefix, unsigned int nStartYe
     // Check for untranslated substitution to make sure Bitcoin Core copyright is not removed by accident
     if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Bitcoin Core") == std::string::npos) {
         strCopyrightHolders += strPrefix + strprintf(" %u-%u ", 2009, 2017) + "The Bitcoin Core developers";
-        strCopyrightHolders += "\n" + strPrefix + strprintf(" %u-%u ", 2014, 2018) + "The Dash Core developers";
+        strCopyrightHolders += "\n" + strPrefix + strprintf(" %u-%u ", 2014, 2018) + "The Polis Core developers";
         strCopyrightHolders += "\n" + strPrefix + strprintf(" %u-%u ", 2017, 2019) + "The Polis Core developers \n";
     }
 

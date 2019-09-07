@@ -90,10 +90,3 @@ Uncheck everything except Qt Creator during the installation process.
 8. Select the default "Desktop" kit and select "Clang (x86 64bit in /usr/bin)" as compiler
 9. Select LLDB as debugger (you might need to set the path to your installation)
 10. Start debugging with Qt Creator
-
-Notes
------
-
-* Tested on OS X 10.8 through 10.12 on 64-bit Intel processors only.
-
-* Building with downloaded Qt binaries is not officially supported. See the notes in [#7714](https://github.com/bitcoin/bitcoin/issues/7714)

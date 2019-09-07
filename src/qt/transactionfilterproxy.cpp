@@ -99,6 +99,12 @@ void TransactionFilterProxy::setWatchOnlyFilter(WatchOnlyFilter filter)
     invalidateFilter();
 }
 
+void TransactionFilterProxy::setInstantSendFilter(InstantSendFilter filter)
+{
+    this->instantsendFilter = filter;
+    invalidateFilter();
+}
+
 void TransactionFilterProxy::setLimit(int limit)
 {
     this->limitRows = limit;

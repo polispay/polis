@@ -310,7 +310,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     if (nTimeTx < txPrevTime)  // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
 
-    auto nStakeMinAge = nTimeTx > Params().GetConsensus().nStakeMinAgeSwitchTime ? Params().GetConsensus().nStakeMinAge_2 : Params().GetConsensus().nStakeMinAge;
+    auto nStakeMinAge = CurrentMinStakeAge(nTimeTx);
     auto nStakeMaxAge = Params().GetConsensus().nStakeMaxAge;
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
     if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
@@ -345,7 +345,6 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     // Now check if proof-of-stake hash meets target protocol
     if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay)
         return false;
-
 
     return true;
 }
@@ -385,6 +384,8 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
     if (!GetTransaction(txin.prevout.hash, txPrev, cons, hashBlock, true))
         return ("CheckProofOfStake() : INFO: read txPrev failed");
     CTxOut prevTxOut = txPrev->vout[txin.prevout.n];
+    if (block.nTime > Params().GetConsensus().nPosMitigationSwitchTime && prevTxOut.nValue < nMinimumStakeValue)
+        return error("CheckProofOfStake() : INFO: stakeinput value less than minimum required (%llu < %llu), blockhash %s\n", prevTxOut.nValue, nMinimumStakeValue, hashBlock.ToString().c_str());
     CBlockIndex* pindex = NULL;
     BlockMap::iterator it = mapBlockIndex.find(hashBlock);
     if (it != mapBlockIndex.end())

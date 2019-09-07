@@ -645,12 +645,12 @@ UniValue importelectrumwallet(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue dumpprivkey(const UniValue& params, bool fHelp)
+UniValue dumpprivkey(const JSONRPCRequest& request)
 {
-    if (!EnsureWalletIsAvailable(fHelp))
+    if (!EnsureWalletIsAvailable(request.fHelp))
         return NullUniValue;
-
-    if (fHelp || params.size() != 1)
+    
+    if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
             "dumpprivkey \"address\"\n"
             "\nReveals the private key corresponding to 'address'.\n"
@@ -669,7 +669,7 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    std::string strAddress = params[0].get_str();
+    std::string strAddress = request.params[0].get_str();
     CBitcoinAddress address;
     if (!address.SetString(strAddress))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Polis address");
@@ -680,50 +680,6 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp)
     if (!pwalletMain->GetKey(keyID, vchSecret))
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + strAddress + " is not known");
     return CBitcoinSecret(vchSecret).ToString();
-}
-
-UniValue dumpprivkey_polis(const JSONRPCRequest& request)
-{
-    if (request.fHelp || request.params.empty() || request.params.size() > 2)
-        throw std::runtime_error(
-                "dumpprivkey \"address\"\n"
-                "\nReveals the private key corresponding to 'address'.\n"
-                "Then the importprivkey can be used with this output\n"
-                "\nArguments:\n"
-                "1. \"address\"   (string, required) The bitcoin address for the private key\n"
-                "2. \"one-time-auth-code\"   (string, optional) A one time authorization code received from a previous call of dumpprivkey"
-                "\nResult:\n"
-                "\"key\"                (string) The private key\n"
-                "\nExamples:\n"
-                + HelpExampleCli("dumpprivkey", "\"myaddress\"")
-                + HelpExampleCli("dumpprivkey", "\"myaddress\" \"12aB\"")
-                + HelpExampleRpc("dumpprivkey", "\"myaddress\"")
-                + HelpExampleRpc("dumpprivkey", "\"myaddress\",\"12aB\"")
-                + HelpExampleCli("importprivkey", "\"mykey\"")
-        );
-
-    if(request.params.size() == 1 || !AuthorizationHelper::inst().authorize(__FUNCTION__ + request.params[0].get_str(), request.params[1].get_str()))
-    {
-        std::string warning =
-                "WARNING! Your one time authorization code is: " + AuthorizationHelper::inst().generateAuthorizationCode(__FUNCTION__ + request.params[0].get_str()) + "\n"
-                                                                                                                                                               "This command exports your wallet private key. Anyone with this key has complete control over your funds. \n"
-                                                                                                                                                               "If someone asked you to type in this command, chances are they want to steal your coins. \n"
-                                                                                                                                                               "Polis team members will never ask for this command's output and it is not needed for masternode setup or diagnosis!\n"
-                                                                                                                                                               "\n"
-                                                                                                                                                               " Please seek help on one of our public channels. \n"
-                                                                                                                                                               " Telegram: https://t.me/PolisPayOfficial\n"
-                                                                                                                                                               " Discord: https://discord.gg/FgfC53V\n"
-                                                                                                                                                               " Reddit: https://www.reddit.com/r/PolisBlockChain/\n"
-                                                                                                                                                               "\n"
-        ;
-        throw std::runtime_error(warning);
-    }
-
-    UniValue dumpParams;
-    dumpParams.setArray();
-    dumpParams.push_back(request.params[0]);
-
-    return dumpprivkey(dumpParams, false);
 }
 
 UniValue dumphdinfo(const JSONRPCRequest& request)
@@ -769,12 +725,12 @@ UniValue dumphdinfo(const JSONRPCRequest& request)
     return obj;
 }
 
-UniValue dumpwallet(const UniValue& params, bool fHelp)
+UniValue dumpwallet(const JSONRPCRequest& request)
 {
-    if (!EnsureWalletIsAvailable(fHelp))
+    if (!EnsureWalletIsAvailable(request.fHelp))
         return NullUniValue;
-
-    if (fHelp || params.size() != 1)
+    
+    if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
             "dumpwallet \"filename\"\n"
             "\nDumps all wallet keys in a human-readable format.\n"
@@ -790,7 +746,7 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     std::ofstream file;
-    file.open(params[0].get_str().c_str());
+    file.open(request.params[0].get_str().c_str());
     if (!file.is_open())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Cannot open wallet dump file");
 
@@ -815,6 +771,12 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
     file << strprintf("# * Best block at time of backup was %i (%s),\n", chainActive.Height(), chainActive.Tip()->GetBlockHash().ToString());
     file << strprintf("#   mined on %s\n", EncodeDumpTime(chainActive.Tip()->GetBlockTime()));
     file << "\n";
+
+    UniValue obj(UniValue::VOBJ);
+    obj.push_back(Pair("dashcoreversion", CLIENT_BUILD));
+    obj.push_back(Pair("lastblockheight", chainActive.Height()));
+    obj.push_back(Pair("lastblockhash", chainActive.Tip()->GetBlockHash().ToString()));
+    obj.push_back(Pair("lastblocktime", EncodeDumpTime(chainActive.Tip()->GetBlockTime())));
 
     // add the base58check encoded extended master if the wallet uses HD
     CHDChain hdChainCurrent;
@@ -858,6 +820,7 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
                 file << "# WARNING: ACCOUNT " << i << " IS MISSING!" << "\n\n";
             }
         }
+        obj.push_back(Pair("hdaccounts", int(hdChainCurrent.CountAccounts())));
     }
 
     for (std::vector<std::pair<int64_t, CKeyID> >::const_iterator it = vKeyBirth.begin(); it != vKeyBirth.end(); it++) {
@@ -880,47 +843,13 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
     file << "\n";
     file << "# End of dump\n";
     file.close();
-    return NullUniValue;
-}
 
-UniValue dumpwallet_polis(const JSONRPCRequest& request)
-{
-    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
-        throw std::runtime_error(
-                "dumpwallet \"filename\"\n"
-                "\nDumps all wallet keys in a human-readable format.\n"
-                "\nArguments:\n"
-                "1. \"filename\"             (string, required) The filename\n"
-                "2. \"one-time-auth-code\"   (string, optional) A one time authorization code received from a previous call of dumpwallet"
-                "\nExamples:\n"
-                + HelpExampleCli("dumpwallet", "\"test\"")
-                + HelpExampleCli("dumpwallet", "\"test\" \"12aB\"")
-                + HelpExampleRpc("dumpwallet", "\"test\"")
-                + HelpExampleRpc("dumpwallet", "\"test\",\"12aB\"")
-        );
+    std::string strWarning = strprintf(_("%s file contains all private keys from this wallet. Do not share it with anyone!"), request.params[0].get_str().c_str());
+    obj.push_back(Pair("keys", int(vKeyBirth.size())));
+    obj.push_back(Pair("file", request.params[0].get_str().c_str()));
+    obj.push_back(Pair("warning", strWarning));
 
-    if(request.params.size() == 1 || !AuthorizationHelper::inst().authorize(__FUNCTION__ + request.params[0].get_str(), request.params[1].get_str()))
-    {
-        std::string warning =
-                "WARNING! Your one time authorization code is: " + AuthorizationHelper::inst().generateAuthorizationCode(__FUNCTION__ + request.params[0].get_str()) + "\n"
-                                                                                                                                                               "This command exports your wallet private key. Anyone with this key has complete control over your funds. \n"
-                                                                                                                                                               "If someone asked you to type in this command, chances are they want to steal your coins. \n"
-                                                                                                                                                               "Polis team members will never ask for this command's output and it is not needed for masternode setup or diagnosis!\n"
-                                                                                                                                                               "\n"
-                                                                                                                                                               " Please seek help on one of our public channels. \n"
-                                                                                                                                                               " Telegram: https://t.me/PolisPayOfficial\n"
-                                                                                                                                                               " Discord: https://discord.gg/FgfC53V\n"
-                                                                                                                                                               " Reddit: https://www.reddit.com/r/PolisBlockChain/\n"
-                                                                                                                                                               "\n"
-        ;
-        throw std::runtime_error(warning);
-    }
-
-    UniValue dumpParams;
-    dumpParams.setArray();
-    dumpParams.push_back(request.params[0]);
-
-    return dumpwallet(dumpParams, false);
+    return obj;
 }
 
 

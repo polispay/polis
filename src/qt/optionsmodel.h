@@ -50,6 +50,7 @@ public:
         ShowMasternodesTab,     // bool
         ShowGovernanceTab,      // bool
         ShowAdvancedPSUI,       // bool
+        ShowPrivateSendPopups,  // bool
         LowKeysWarning,         // bool
         PrivateSendRounds,      // int
         PrivateSendAmount,      // int

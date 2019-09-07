@@ -211,8 +211,8 @@ This can be disabled with:
 
 Hardening Flags:
 
-	./configure --enable-hardening
-	./configure --disable-hardening
+	./configure --prefix=<prefix> --enable-hardening
+	./configure --prefix=<prefix> --disable-hardening
 
 
 Hardening enables the following features:
@@ -257,7 +257,7 @@ Disable-wallet mode
 When the intention is to run only a P2P node without a wallet, Polis Core may be compiled in
 disable-wallet mode with:
 
-    ./configure --disable-wallet
+    ./configure --prefix=<prefix> --disable-wallet
 
 In this case there is no dependency on Berkeley DB 4.8.
 

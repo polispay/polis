@@ -29,6 +29,13 @@
 #include "validationinterface.h"
 #include "blocksigner.h"
 
+#include "evo/specialtx.h"
+#include "evo/cbtx.h"
+#include "evo/simplifiedmns.h"
+#include "evo/deterministicmns.h"
+
+#include "llmq/quorums_blockprocessor.h"
+
 #include <algorithm>
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -123,13 +130,16 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
         return nullptr;
     pblock = &pblocktemplate->block; // pointer for convenience
 
+    // Add dummy coinbase tx as first transaction
     pblock->vtx.emplace_back();
     pblocktemplate->vTxFees.push_back(-1); // updated at end
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 
     LOCK2(cs_main, mempool.cs);
+
+    bool fDIP0003Active_context = VersionBitsState(chainActive.Tip(), chainparams.GetConsensus(), Consensus::DEPLOYMENT_DIP0003, versionbitscache) == THRESHOLD_ACTIVE;
+
     CBlockIndex* pindexPrev = chainActive.Tip();
-    assert(pindexPrev != nullptr);
     nHeight = pindexPrev->nHeight + 1;
 
     pblock->nVersion = ComputeBlockVersion(pindexPrev, chainparams.GetConsensus());
@@ -169,12 +179,10 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
         bool fStakeFound = false;
         if (nSearchTime >= nLastCoinStakeSearchTime) {
             unsigned int nTxNewTime = 0;
-            if (wallet->CreateCoinStake(pblock->nBits, blockReward,
-                                        coinstakeTx, nTxNewTime,
-                                        vwtxPrev))
-            {
+            if (pwalletMain->CreateCoinStake(pblock->nBits, blockReward, coinstakeTx, nTxNewTime, vwtxPrev)) {
                 pblock->nTime = nTxNewTime;
                 coinbaseTx.vout[0].SetEmpty();
+                FillBlockPayments(coinstakeTx, nHeight, blockReward, pblocktemplate->voutMasternodePayments, pblocktemplate->voutSuperblockPayments);
                 pblock->vtx.emplace_back(MakeTransactionRef(coinstakeTx));
                 fStakeFound = true;
             }
@@ -191,14 +199,48 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
         coinbaseTx.vout[0].nValue = nFees + blockReward;
     }
 
+    if (fDIP0003Active_context) {
+        for (auto& p : Params().GetConsensus().llmqs) {
+            CTransactionRef qcTx;
+            if (llmq::quorumBlockProcessor->GetMinableCommitmentTx(p.first, nHeight, qcTx)) {
+                pblock->vtx.emplace_back(qcTx);
+                pblocktemplate->vTxFees.emplace_back(0);
+                pblocktemplate->vTxSigOps.emplace_back(0);
+                nBlockSize += qcTx->GetTotalSize();
+                ++nBlockTx;
+            }
+        }
+    }
+
     addPriorityTxs();
+
     int nPackagesSelected = 0;
     int nDescendantsUpdated = 0;
-    {
-        LOCK(mempool.cs);
-        addPackageTxs(nPackagesSelected, nDescendantsUpdated);
+    addPackageTxs(nPackagesSelected, nDescendantsUpdated);
+
+    nLastBlockTx = nBlockTx;
+    nLastBlockSize = nBlockSize;
+    LogPrintf("CreateNewBlock(): total size %u txs: %u fees: %ld sigops %d\n", nBlockSize, nBlockTx, nFees, nBlockSigOps);
+
+    if (!fDIP0003Active_context) {
+        coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
+    } else {
+        coinbaseTx.vin[0].scriptSig = CScript() << OP_RETURN;
+
+        coinbaseTx.nVersion = 3;
+        coinbaseTx.nType = TRANSACTION_COINBASE;
+
+        CCbTx cbTx;
+        cbTx.nHeight = nHeight;
+
+        CValidationState state;
+        if (!CalcCbTxMerkleRootMNList(*pblock, pindexPrev, cbTx.merkleRootMNList, state)) {
+            throw std::runtime_error(strprintf("%s: CalcSMLMerkleRootForNewBlock failed: %s", __func__, FormatStateMessage(state)));
+        }
+
+        SetTxPayload(coinbaseTx, cbTx);
     }
-    coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
+
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     pblocktemplate->vTxFees[0] = -nFees;
 
@@ -208,8 +250,13 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
         UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
     pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());
     pblock->nNonce         = 0;
+    pblocktemplate->nPrevBits = pindexPrev->nBits;
     pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(*pblock->vtx[0]);
 
+    CValidationState state;
+    if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
+        throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
+    }
     int64_t nTime2 = GetTimeMicros();
 
     LogPrint("bench", "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (nTime1 - nTimeStart), nPackagesSelected, nDescendantsUpdated, 0.001 * (nTime2 - nTime1), 0.001 * (nTime2 - nTimeStart));

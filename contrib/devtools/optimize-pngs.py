@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2014-2015 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,7 +10,7 @@ import os
 import sys
 import subprocess
 import hashlib
-from PIL import Image
+from PIL import Image  # pip3 install Pillow
 
 def file_hash(filename):
     '''Return hash of raw file contents'''
