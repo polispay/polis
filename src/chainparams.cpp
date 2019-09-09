@@ -207,7 +207,7 @@ public:
             consensus.nPowDGWHeight = 551;
             consensus.nMaxBlockSpacingFixDeploymentHeight = 381587;
             consensus.nStakeMinAgeSwitchTime = 1561734000;
-            consensus.nPosMitigationSwitchTime = 2000000000;
+            consensus.nPosMitigationSwitchTime = 1569942000;
 
             // Stake information
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
@@ -386,6 +386,7 @@ public:
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
             consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
             consensus.nStakeMinAgeSwitchTime = 1561734000;
+            consensus.nPosMitigationSwitchTime = 1568991600;
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
             consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
