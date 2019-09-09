@@ -24,7 +24,7 @@ bool CMessageSigner::GetKeysFromSecret(const std::string& strSecret, CKey& keyRe
 bool CMessageSigner::SignMessage(const std::string& strMessage, std::vector<unsigned char>& vchSigRet, const CKey& key)
 {
     CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
+    ss << strMessageMagicNew;
     ss << strMessage;
 
     return CHashSigner::SignHash(ss.GetHash(), key, vchSigRet);
@@ -37,11 +37,19 @@ bool CMessageSigner::VerifyMessage(const CPubKey& pubkey, const std::vector<unsi
 
 bool CMessageSigner::VerifyMessage(const CKeyID& keyID, const std::vector<unsigned char>& vchSig, const std::string& strMessage, std::string& strErrorRet)
 {
-    CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
-    ss << strMessage;
-
-    return CHashSigner::VerifyHash(ss.GetHash(), keyID, vchSig, strErrorRet);
+    // TODO must only be used before network upgrade to v1.5.0
+    CHashWriter firstTryHash(SER_GETHASH, 0);
+    firstTryHash << strMessageMagic;
+    firstTryHash << strMessage;
+    bool firstTry = CHashSigner::VerifyHash(firstTryHash.GetHash(), keyID, vchSig, strErrorRet);
+    if (!firstTry) {
+        CHashWriter secondTryHash(SER_GETHASH, 0);
+        secondTryHash << strMessageMagicNew;
+        secondTryHash << strMessage;
+        return CHashSigner::VerifyHash(secondTryHash.GetHash(), keyID, vchSig, strErrorRet);
+    } else {
+        return firstTry;
+    }
 }
 
 bool CHashSigner::SignHash(const uint256& hash, const CKey& key, std::vector<unsigned char>& vchSigRet)
