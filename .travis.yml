@@ -67,10 +67,6 @@ jobs:
     - <<: *builddepends
       env: BUILD_TARGET=linux32
     - <<: *builddepends
-      env: BUILD_TARGET=linux64
-    - <<: *builddepends
-      env: BUILD_TARGET=linux64_nowallet
-    - <<: *builddepends
       env: BUILD_TARGET=linux64_release DOCKER_BUILD=true
     - <<: *builddepends
       env: BUILD_TARGET=mac
@@ -84,10 +80,6 @@ jobs:
     - <<: *buildsrc
       env: BUILD_TARGET=linux32
     - <<: *buildsrc
-      env: BUILD_TARGET=linux64
-    - <<: *buildsrc
-      env: BUILD_TARGET=linux64_nowallet
-    - <<: *buildsrc
       env: BUILD_TARGET=linux64_release DOCKER_BUILD=true
     - <<: *buildsrc
       env: BUILD_TARGET=mac
@@ -98,10 +90,6 @@ jobs:
       env: BUILD_TARGET=win64
     - <<: *runtests
       env: BUILD_TARGET=linux32
-    - <<: *runtests
-      env: BUILD_TARGET=linux64
-    - <<: *runtests
-      env: BUILD_TARGET=linux64_nowallet
     - <<: *runtests
       env: BUILD_TARGET=linux64_release DOCKER_BUILD=true
     # build docker
