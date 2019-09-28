@@ -183,7 +183,6 @@ struct Params {
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
     // Stake
-    int nStakeMinAge;
     int nStakeMaxAge;
     int64_t nPosTargetSpacing;
     int64_t nPosTargetTimespan;

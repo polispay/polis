@@ -179,7 +179,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
         bool fStakeFound = false;
         if (nSearchTime >= nLastCoinStakeSearchTime) {
             unsigned int nTxNewTime = 0;
-            if (pwalletMain->CreateCoinStake(pblock->nBits, blockReward, coinstakeTx, nTxNewTime, vwtxPrev)) {
+            if (wallet->CreateCoinStake(pblock->nBits, blockReward, coinstakeTx, nTxNewTime, vwtxPrev)) {
                 pblock->nTime = nTxNewTime;
                 coinbaseTx.vout[0].SetEmpty();
                 FillBlockPayments(coinstakeTx, nHeight, blockReward, pblocktemplate->voutMasternodePayments, pblocktemplate->voutSuperblockPayments);
@@ -697,7 +697,7 @@ void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
                 // on an obsolete chain. In regtest mode we expect to fly solo.
                 do {
                     bool fvNodesEmpty = connman.GetNodeCount(CConnman::CONNECTIONS_ALL) == 0;
-                    if (!fvNodesEmpty && !IsInitialBlockDownload()  /*&& masternodeSync.IsSynced()*/)
+                    if (!fvNodesEmpty && !IsInitialBlockDownload() && masternodeSync.IsSynced())
                         break;
                     MilliSleep(1000);
                 } while (true);
@@ -713,9 +713,7 @@ void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
                 }
             }
             if(!fProofOfStake && chainActive.Tip()->nHeight >= chainparams.GetConsensus().nLastPoWBlock)
-            {
                 return;
-            }
             //
             // Create new block
             //

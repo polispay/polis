@@ -582,7 +582,6 @@ public:
 
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
             consensus.nPosTargetTimespan = 60 * 40;
-            consensus.nStakeMinAge = 60 * 60;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 180675;
 
@@ -771,7 +770,6 @@ public:
             // Stake info
             consensus.nPosTargetSpacing = 30; // PoSW: 1 minutes
             consensus.nPosTargetTimespan = 60 * 40;
-            consensus.nStakeMinAge = 60;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 25;
             // highest difficulty | 0x1e0ffff0 (?)
