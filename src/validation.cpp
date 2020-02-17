@@ -3474,7 +3474,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     const int nHeight = pindexPrev->nHeight + 1;
 
     // Test PoW block difficulty
-    if (block.nNonce != uint32_t(0) && (block.nBits != GetNextWorkRequired(pindexPrev, consensusParams))) {
+    if (block.nNonce != uint32_t(0) && (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))) {
         return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, strprintf("incorrect proof of work at %d", nHeight));
     }
 
@@ -3514,13 +3514,6 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
     // nullptr check to prevent segfaults
     if (!pindexPrev)
         return state.DoS(100, false, REJECT_INVALID, "bad-pindex-prev", false, strprintf("current block is not genesis but has null previous"));
-
-
-    if (block.IsProofOfWork()) {
-        if (block.nBits != GetNextWorkRequired(pindexPrev, consensusParams))
-            return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, strprintf("incorrect difficulty: block pow=Y bits=%08x calc=%08x",
-                             block.nBits, GetNextWorkRequired(pindexPrev, consensusParams)));
-    }
 
     // Start enforcing BIP113 (Median Time Past) using versionbits logic.
     int nLockTimeFlags = 0;
@@ -3740,9 +3733,6 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
         uint256 hash = block.GetHash();
         if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
             mapProofOfStake.insert(std::make_pair(hash, hashProofOfStake));
-
-        LogPrintf("Block pow=N bits=%08x found=%08x hashProof=%s\n",
-                  GetNextWorkRequired(pindex->pprev, Params().GetConsensus()),block.nBits, hashProofOfStake.ToString().c_str());
     }
 
     // Write block to history file
