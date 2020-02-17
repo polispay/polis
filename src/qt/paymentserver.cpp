@@ -80,7 +80,7 @@ namespace // Anon namespace
 //
 static QString ipcServerName()
 {
-    QString name("PACGlobalQt");
+    QString name("PolisCore");
 
     // Append a simple hash of the datadir
     // Note that GetDataDir(true) returns a different path
