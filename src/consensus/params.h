@@ -203,7 +203,7 @@ struct Params {
 
     std::map<LLMQType, LLMQParams> llmqs;
     LLMQType llmqChainLocks;
-    LLMQType llmqForInstaPAC{LLMQ_NONE};
+    LLMQType llmqForInstantSend{LLMQ_NONE};
 };
 } // namespace Consensus
 

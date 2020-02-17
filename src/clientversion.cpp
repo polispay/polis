@@ -13,7 +13,7 @@
  * for both pacglobald and pacglobal-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("PACGlobal");
+const std::string CLIENT_NAME("PolisCore");
 
 /**
  * Client version number

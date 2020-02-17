@@ -1,7 +1,7 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin Core developers
 // Copyright (c) 2014-2019 The Dash Core developers
-// Copyright (c) 2018-2019 The PACGlobal developers
+// Copyright (c) 2018-2019 The Polis developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -327,18 +327,18 @@ public:
         vSeeds.push_back(CDNSSeedData("pacnode.net", "seed2.pacnode.net"));
         vSeeds.push_back(CDNSSeedData("pacnode.net", "seed3.pacnode.net"));
 
-        // PAC addresses start with 'P'
+        // POLIS addresses start with 'P'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);
-        // PAC script addresses start with '5'
+        // POLIS script addresses start with '5'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,10);
-        // PAC private keys start with '7' or 'X'
+        // POLIS private keys start with '7' or 'X'
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,204);
-        // PAC BIP32 pubkeys start with 'xpub' (Bitcoin defaults)
+        // POLIS BIP32 pubkeys start with 'xpub' (Bitcoin defaults)
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
-        // PAC BIP32 prvkeys start with 'xprv' (Bitcoin defaults)
+        // POLIS BIP32 prvkeys start with 'xprv' (Bitcoin defaults)
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
 
-        // PAC BIP44 coin type is '5'
+        // POLIS BIP44 coin type is '5'
         nExtCoinType = 5;
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
@@ -348,7 +348,7 @@ public:
         consensus.llmqs[Consensus::LLMQ_400_60] = llmq400_60;
         consensus.llmqs[Consensus::LLMQ_400_85] = llmq400_85;
         consensus.llmqChainLocks = Consensus::LLMQ_400_60;
-        consensus.llmqForInstaPAC = Consensus::LLMQ_50_60;
+        consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
 
         fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
@@ -510,24 +510,24 @@ public:
 
         vSeeds.clear();
 
-        // Testnet PACGlobal addresses start with 'y'
+        // Testnet polis addresses start with 'y'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,140);
-        // Testnet PACGlobal script addresses start with '8' or '9'
+        // Testnet polis script addresses start with '8' or '9'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,19);
         // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        // Testnet PACGlobal BIP32 pubkeys start with 'tpub' (Bitcoin defaults)
+        // Testnet polis BIP32 pubkeys start with 'tpub' (Bitcoin defaults)
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
-        // Testnet PACGlobal BIP32 prvkeys start with 'tprv' (Bitcoin defaults)
+        // Testnet polis BIP32 prvkeys start with 'tprv' (Bitcoin defaults)
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >();
 
-        // Testnet PACGlobal BIP44 coin type is '1' (All coin's testnet default)
+        // Testnet polis BIP44 coin type is '1' (All coin's testnet default)
         nExtCoinType = 1;
 
         // long living quorum params
         consensus.llmqs[Consensus::LLMQ_5_60] = llmq5_60;
         consensus.llmqChainLocks = Consensus::LLMQ_5_60;
-        consensus.llmqForInstaPAC = Consensus::LLMQ_5_60;
+        consensus.llmqForInstantSend = Consensus::LLMQ_5_60;
 
         fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
@@ -596,8 +596,8 @@ public:
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 1
         consensus.posLimit = uint256S("007ffff000000000000000000000000000000000000000000000000000000000");
         consensus.nLastPoWBlock = 100;
-        consensus.nPowTargetTimespan = 24 * 60 * 60; // PACGlobal: 1 day
-        consensus.nPowTargetSpacing = 2.5 * 60; // PACGlobal: 2.5 minutes
+        consensus.nPowTargetTimespan = 24 * 60 * 60; // polis: 1 day
+        consensus.nPowTargetSpacing = 2.5 * 60; // polis: 2.5 minutes
         consensus.nPosTargetSpacing = consensus.nPowTargetSpacing;
         consensus.nPosTargetTimespan = consensus.nPowTargetTimespan;
         consensus.nMinimumStakeValue = 10000 * COIN;
@@ -673,18 +673,18 @@ public:
         vSeeds.clear();
         //vSeeds.push_back(CDNSSeedData("dashevo.org",  "devnet-seed.dashevo.org"));
 
-        // Testnet PACGlobal addresses start with 'y'
+        // Testnet polis addresses start with 'y'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,140);
-        // Testnet PACGlobal script addresses start with '8' or '9'
+        // Testnet polis script addresses start with '8' or '9'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,19);
         // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        // Testnet PACGlobal BIP32 pubkeys start with 'tpub' (Bitcoin defaults)
+        // Testnet polis BIP32 pubkeys start with 'tpub' (Bitcoin defaults)
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
-        // Testnet PACGlobal BIP32 prvkeys start with 'tprv' (Bitcoin defaults)
+        // Testnet polis BIP32 prvkeys start with 'tprv' (Bitcoin defaults)
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >();
 
-        // Testnet PACGlobal BIP44 coin type is '1' (All coin's testnet default)
+        // Testnet polis BIP44 coin type is '1' (All coin's testnet default)
         nExtCoinType = 1;
 
         // long living quorum params
@@ -692,7 +692,7 @@ public:
         consensus.llmqs[Consensus::LLMQ_400_60] = llmq400_60;
         consensus.llmqs[Consensus::LLMQ_400_85] = llmq400_85;
         consensus.llmqChainLocks = Consensus::LLMQ_50_60;
-        consensus.llmqForInstaPAC = Consensus::LLMQ_50_60;
+        consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
 
         fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
@@ -773,8 +773,8 @@ public:
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 1
         consensus.posLimit = uint256S("007ffff000000000000000000000000000000000000000000000000000000000");
         consensus.nLastPoWBlock = 100;
-        consensus.nPowTargetTimespan = 24 * 60 * 60; // PACGlobal: 1 day
-        consensus.nPowTargetSpacing = 2.5 * 60; // PACGlobal: 2.5 minutes
+        consensus.nPowTargetTimespan = 24 * 60 * 60; // polis: 1 day
+        consensus.nPowTargetSpacing = 2.5 * 60; // polis: 2.5 minutes
         consensus.nPosTargetSpacing = consensus.nPowTargetSpacing;
         consensus.nPosTargetTimespan = consensus.nPowTargetTimespan;
         consensus.nStakeMinAge = 10 * 60;
@@ -853,25 +853,25 @@ public:
             0
         };
 
-        // Regtest PACGlobal addresses start with 'y'
+        // Regtest polis addresses start with 'y'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,140);
-        // Regtest PACGlobal script addresses start with '8' or '9'
+        // Regtest polis script addresses start with '8' or '9'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,19);
         // Regtest private keys start with '9' or 'c' (Bitcoin defaults)
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        // Regtest PACGlobal BIP32 pubkeys start with 'tpub' (Bitcoin defaults)
+        // Regtest polis BIP32 pubkeys start with 'tpub' (Bitcoin defaults)
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
-        // Regtest PACGlobal BIP32 prvkeys start with 'tprv' (Bitcoin defaults)
+        // Regtest polis BIP32 prvkeys start with 'tprv' (Bitcoin defaults)
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >();
 
-        // Regtest PACGlobal BIP44 coin type is '1' (All coin's testnet default)
+        // Regtest polis BIP44 coin type is '1' (All coin's testnet default)
         nExtCoinType = 1;
 
         // long living quorum params
         consensus.llmqs[Consensus::LLMQ_5_60] = llmq5_60;
         consensus.llmqs[Consensus::LLMQ_50_60] = llmq50_60;
         consensus.llmqChainLocks = Consensus::LLMQ_5_60;
-        consensus.llmqForInstaPAC = Consensus::LLMQ_5_60;
+        consensus.llmqForInstantSend = Consensus::LLMQ_5_60;
     }
 
     void UpdateBIP9Parameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout, int64_t nWindowSize, int64_t nThreshold)

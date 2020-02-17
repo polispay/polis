@@ -116,13 +116,13 @@ UniValue getnewaddress(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() > 1)
         throw std::runtime_error(
             "getnewaddress ( \"account\" )\n"
-            "\nReturns a new PACGlobal address for receiving payments.\n"
+            "\nReturns a new Polis address for receiving payments.\n"
             "If 'account' is specified (DEPRECATED), it is added to the address book \n"
             "so payments received with the address will be credited to 'account'.\n"
             "\nArguments:\n"
             "1. \"account\"        (string, optional) DEPRECATED. The account name for the address to be linked to. If not provided, the default account \"\" is used. It can also be set to the empty string \"\" to represent the default account. The account does not need to exist, it will be created if there is no account by the given name.\n"
             "\nResult:\n"
-            "\"address\"    (string) The new dash address\n"
+            "\"address\"    (string) The new polis address\n"
             "\nExamples:\n"
             + HelpExampleCli("getnewaddress", "")
             + HelpExampleRpc("getnewaddress", "")
@@ -172,11 +172,11 @@ UniValue getaccountaddress(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
             "getaccountaddress \"account\"\n"
-            "\nDEPRECATED. Returns the current PACGlobal address for receiving payments to this account.\n"
+            "\nDEPRECATED. Returns the current Polis address for receiving payments to this account.\n"
             "\nArguments:\n"
             "1. \"account\"       (string, required) The account name for the address. It can also be set to the empty string \"\" to represent the default account. The account does not need to exist, it will be created and a new address created  if there is no account by the given name.\n"
             "\nResult:\n"
-            "\"address\"          (string) The account dash address\n"
+            "\"address\"          (string) The account polis address\n"
             "\nExamples:\n"
             + HelpExampleCli("getaccountaddress", "")
             + HelpExampleCli("getaccountaddress", "\"\"")
@@ -206,7 +206,7 @@ UniValue getrawchangeaddress(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() > 1)
         throw std::runtime_error(
             "getrawchangeaddress\n"
-            "\nReturns a new PACGlobal address, for receiving change.\n"
+            "\nReturns a new Polis address, for receiving change.\n"
             "This is for use with raw transactions, NOT normal use.\n"
             "\nResult:\n"
             "\"address\"    (string) The address\n"
@@ -246,7 +246,7 @@ UniValue setaccount(const JSONRPCRequest& request)
             "setaccount \"address\" \"account\"\n"
             "\nDEPRECATED. Sets the account associated with the given address.\n"
             "\nArguments:\n"
-            "1. \"address\"         (string, required) The dash address to be associated with an account.\n"
+            "1. \"address\"         (string, required) The polis address to be associated with an account.\n"
             "2. \"account\"         (string, required) The account to assign the address to.\n"
             "\nExamples:\n"
             + HelpExampleCli("setaccount", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwG\" \"tabby\"")
@@ -257,7 +257,7 @@ UniValue setaccount(const JSONRPCRequest& request)
 
     CBitcoinAddress address(request.params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid PACGlobal address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Polis address");
 
     std::string strAccount;
     if (request.params.size() > 1)
@@ -293,7 +293,7 @@ UniValue getaccount(const JSONRPCRequest& request)
             "getaccount \"address\"\n"
             "\nDEPRECATED. Returns the account associated with the given address.\n"
             "\nArguments:\n"
-            "1. \"address\"         (string, required) The dash address for account lookup.\n"
+            "1. \"address\"         (string, required) The polis address for account lookup.\n"
             "\nResult:\n"
             "\"accountname\"        (string) the account address\n"
             "\nExamples:\n"
@@ -305,7 +305,7 @@ UniValue getaccount(const JSONRPCRequest& request)
 
     CBitcoinAddress address(request.params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid PACGlobal address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Polis address");
 
     std::string strAccount;
     std::map<CTxDestination, CAddressBookData>::iterator mi = pwallet->mapAddressBook.find(address.Get());
@@ -331,7 +331,7 @@ UniValue getaddressesbyaccount(const JSONRPCRequest& request)
             "1. \"account\"        (string, required) The account name.\n"
             "\nResult:\n"
             "[                     (json array of string)\n"
-            "  \"address\"         (string) a dash address associated with the given account\n"
+            "  \"address\"         (string) a polis address associated with the given account\n"
             "  ,...\n"
             "]\n"
             "\nExamples:\n"
@@ -369,7 +369,7 @@ static void SendMoney(CWallet * const pwallet, const CTxDestination &address, CA
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
     }
 
-    // Parse PACGlobal address
+    // Parse Polis address
     CScript scriptPubKey = GetScriptForDestination(address);
 
     // Create and send the transaction
@@ -411,7 +411,7 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
             "\nSend an amount to a given address.\n"
             + HelpRequiringPassphrase(pwallet) +
             "\nArguments:\n"
-            "1. \"address\"            (string, required) The dash address to send to.\n"
+            "1. \"address\"            (string, required) The polis address to send to.\n"
             "2. \"amount\"             (numeric or string, required) The amount in " + CURRENCY_UNIT + " to send. eg 0.1\n"
             "3. \"comment\"            (string, optional) A comment used to store what the transaction is for. \n"
             "                             This is not part of the transaction, just kept in your wallet.\n"
@@ -419,8 +419,8 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
             "                             to which you're sending the transaction. This is not part of the \n"
             "                             transaction, just kept in your wallet.\n"
             "5. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
-            "                             The recipient will receive less amount of PACGlobal than you enter in the amount field.\n"
-            "6. \"use_is\"             (bool, optional, default=false) Send this transaction as InstaPAC\n"
+            "                             The recipient will receive less amount of Polis than you enter in the amount field.\n"
+            "6. \"use_is\"             (bool, optional, default=false) Send this transaction as InstantSend\n"
             "7. \"use_ps\"             (bool, optional, default=false) Use anonymized funds only\n"
             "\nResult:\n"
             "\"txid\"                  (string) The transaction id.\n"
@@ -435,7 +435,7 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
 
     CBitcoinAddress address(request.params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid PACGlobal address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Polis address");
 
     // Amount
     CAmount nAmount = AmountFromValue(request.params[1]);
@@ -479,7 +479,7 @@ UniValue instantsendtoaddress(const JSONRPCRequest& request)
             "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n"
             + HelpRequiringPassphrase(pwallet) +
             "\nArguments:\n"
-            "1. \"address\"     (string, required) The dash address to send to.\n"
+            "1. \"address\"     (string, required) The polis address to send to.\n"
             "2. \"amount\"      (numeric, required) The amount in " + CURRENCY_UNIT + " to send. eg 0.1\n"
             "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
             "                             This is not part of the transaction, just kept in your wallet.\n"
@@ -487,7 +487,7 @@ UniValue instantsendtoaddress(const JSONRPCRequest& request)
             "                             to which you're sending the transaction. This is not part of the \n"
             "                             transaction, just kept in your wallet.\n"
             "5. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
-            "                             The recipient will receive less amount of PACGlobal than you enter in the amount field.\n"
+            "                             The recipient will receive less amount of Polis than you enter in the amount field.\n"
             "\nResult:\n"
             "\"transactionid\"  (string) The transaction id.\n"
             "\nExamples:\n"
@@ -501,7 +501,7 @@ UniValue instantsendtoaddress(const JSONRPCRequest& request)
 
     CBitcoinAddress address(request.params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid PACGlobal address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Polis address");
 
     // Amount
     CAmount nAmount = AmountFromValue(request.params[1]);
@@ -543,7 +543,7 @@ UniValue listaddressgroupings(const JSONRPCRequest& request)
             "[\n"
             "  [\n"
             "    [\n"
-            "      \"address\",            (string) The dash address\n"
+            "      \"address\",            (string) The polis address\n"
             "      amount,                 (numeric) The amount in " + CURRENCY_UNIT + "\n"
             "      \"account\"             (string, optional) DEPRECATED. The account\n"
             "    ]\n"
@@ -593,7 +593,7 @@ UniValue listaddressbalances(const JSONRPCRequest& request)
             "1. minamount               (numeric, optional, default=0) Minimum balance in " + CURRENCY_UNIT + " an address should have to be shown in the list\n"
             "\nResult:\n"
             "{\n"
-            "  \"address\": amount,       (string) The dash address and the amount in " + CURRENCY_UNIT + "\n"
+            "  \"address\": amount,       (string) The polis address and the amount in " + CURRENCY_UNIT + "\n"
             "  ,...\n"
             "}\n"
             "\nExamples:\n"
@@ -634,7 +634,7 @@ UniValue signmessage(const JSONRPCRequest& request)
             "\nSign a message with the private key of an address"
             + HelpRequiringPassphrase(pwallet) + "\n"
             "\nArguments:\n"
-            "1. \"address\"         (string, required) The dash address to use for the private key.\n"
+            "1. \"address\"         (string, required) The polis address to use for the private key.\n"
             "2. \"message\"         (string, required) The message to create a signature of.\n"
             "\nResult:\n"
             "\"signature\"          (string) The signature of the message encoded in base 64\n"
@@ -692,9 +692,9 @@ UniValue getreceivedbyaddress(const JSONRPCRequest& request)
             "getreceivedbyaddress \"address\" ( minconf addlocked )\n"
             "\nReturns the total amount received by the given address in transactions with at least minconf confirmations.\n"
             "\nArguments:\n"
-            "1. \"address\"         (string, required) The dash address for transactions.\n"
+            "1. \"address\"         (string, required) The polis address for transactions.\n"
             "2. minconf             (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
-            "3. addlocked           (bool, optional, default=false) Whether to include transactions locked via InstaPAC.\n"
+            "3. addlocked           (bool, optional, default=false) Whether to include transactions locked via InstantSend.\n"
             "\nResult:\n"
             "amount   (numeric) The total amount in " + CURRENCY_UNIT + " received at this address.\n"
             "\nExamples:\n"
@@ -710,10 +710,10 @@ UniValue getreceivedbyaddress(const JSONRPCRequest& request)
 
     LOCK2(cs_main, pwallet->cs_wallet);
 
-    // PACGlobal address
+    // Polis address
     CBitcoinAddress address = CBitcoinAddress(request.params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid PACGlobal address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Polis address");
     CScript scriptPubKey = GetScriptForDestination(address.Get());
     if (!IsMine(*pwallet, scriptPubKey)) {
         return ValueFromAmount(0);
@@ -734,7 +734,7 @@ UniValue getreceivedbyaddress(const JSONRPCRequest& request)
 
         BOOST_FOREACH(const CTxOut& txout, wtx.tx->vout)
             if (txout.scriptPubKey == scriptPubKey)
-                if ((wtx.GetDepthInMainChain() >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstaPAC()))
+                if ((wtx.GetDepthInMainChain() >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstantSend()))
                     nAmount += txout.nValue;
     }
 
@@ -756,7 +756,7 @@ UniValue getreceivedbyaccount(const JSONRPCRequest& request)
             "\nArguments:\n"
             "1. \"account\"      (string, required) The selected account, may be the default account using \"\".\n"
             "2. minconf        (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
-            "3. addlocked      (bool, optional, default=false) Whether to include transactions locked via InstaPAC.\n"
+            "3. addlocked      (bool, optional, default=false) Whether to include transactions locked via InstantSend.\n"
             "\nResult:\n"
             "amount            (numeric) The total amount in " + CURRENCY_UNIT + " received for this account.\n"
             "\nExamples:\n"
@@ -793,7 +793,7 @@ UniValue getreceivedbyaccount(const JSONRPCRequest& request)
         {
             CTxDestination address;
             if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*pwallet, address) && setAddress.count(address)) {
-                if ((wtx.GetDepthInMainChain() >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstaPAC()))
+                if ((wtx.GetDepthInMainChain() >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstantSend()))
                     nAmount += txout.nValue;
             }
         }
@@ -820,7 +820,7 @@ UniValue getbalance(const JSONRPCRequest& request)
             "\nArguments:\n"
             "1. \"account\"        (string, optional) DEPRECATED. The selected account, or \"*\" for entire wallet. It may be the default account using \"\".\n"
             "2. minconf          (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
-            "3. addlocked      (bool, optional, default=false) Whether to include the value of transactions locked via InstaPAC in the wallet's balance.\n"
+            "3. addlocked      (bool, optional, default=false) Whether to include the value of transactions locked via InstantSend in the wallet's balance.\n"
             "4. include_watchonly (bool, optional, default=false) Also include balance in watch-only addresses (see 'importaddress')\n"
             "\nResult:\n"
             "amount              (numeric) The total amount in " + CURRENCY_UNIT + " received for this account.\n"
@@ -862,7 +862,7 @@ UniValue getbalance(const JSONRPCRequest& request)
             std::list<COutputEntry> listReceived;
             std::list<COutputEntry> listSent;
             wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
-            if ((wtx.GetDepthInMainChain() >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstaPAC()))
+            if ((wtx.GetDepthInMainChain() >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstantSend()))
             {
                 BOOST_FOREACH(const COutputEntry& r, listReceived)
                     nBalance += r.amount;
@@ -959,17 +959,17 @@ UniValue sendfrom(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() < 3 || request.params.size() > 7)
         throw std::runtime_error(
             "sendfrom \"fromaccount\" \"toaddress\" amount ( minconf addlocked \"comment\" \"comment_to\" )\n"
-            "\nDEPRECATED (use sendtoaddress). Sent an amount from an account to a dash address."
+            "\nDEPRECATED (use sendtoaddress). Sent an amount from an account to a polis address."
             + HelpRequiringPassphrase(pwallet) + "\n"
             "\nArguments:\n"
             "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default account using \"\".\n"
             "                       Specifying an account does not influence coin selection, but it does associate the newly created\n"
             "                       transaction with the account, so the account's balance computation and transaction history can reflect\n"
             "                       the spend.\n"
-            "2. \"toaddress\"         (string, required) The dash address to send funds to.\n"
+            "2. \"toaddress\"         (string, required) The polis address to send funds to.\n"
             "3. amount              (numeric or string, required) The amount in " + CURRENCY_UNIT + " (transaction fee is added on top).\n"
             "4. minconf             (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
-            "5. addlocked         (bool, optional, default=false) Whether to include transactions locked via InstaPAC.\n"
+            "5. addlocked         (bool, optional, default=false) Whether to include transactions locked via InstantSend.\n"
             "6. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
             "                       This is not part of the transaction, just kept in your wallet.\n"
             "7. \"comment_to\"        (string, optional) An optional comment to store the name of the person or organization \n"
@@ -991,7 +991,7 @@ UniValue sendfrom(const JSONRPCRequest& request)
     std::string strAccount = AccountFromValue(request.params[0]);
     CBitcoinAddress address(request.params[1].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid PACGlobal address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Polis address");
     CAmount nAmount = AmountFromValue(request.params[2]);
     if (nAmount <= 0)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
@@ -1036,11 +1036,11 @@ UniValue sendmany(const JSONRPCRequest& request)
             "1. \"fromaccount\"           (string, required) DEPRECATED. The account to send the funds from. Should be \"\" for the default account\n"
             "2. \"amounts\"               (string, required) A json object with addresses and amounts\n"
             "    {\n"
-            "      \"address\":amount     (numeric or string) The dash address is the key, the numeric amount (can be string) in " + CURRENCY_UNIT + " is the value\n"
+            "      \"address\":amount     (numeric or string) The polis address is the key, the numeric amount (can be string) in " + CURRENCY_UNIT + " is the value\n"
             "      ,...\n"
             "    }\n"
             "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many times.\n"
-            "4. addlocked               (bool, optional, default=false) Whether to include transactions locked via InstaPAC.\n"
+            "4. addlocked               (bool, optional, default=false) Whether to include transactions locked via InstantSend.\n"
             "5. \"comment\"               (string, optional) A comment\n"
             "6. subtractfeefromamount   (array, optional) A json array with addresses.\n"
             "                           The fee will be equally deducted from the amount of each selected address.\n"
@@ -1050,7 +1050,7 @@ UniValue sendmany(const JSONRPCRequest& request)
             "      \"address\"          (string) Subtract fee from this address\n"
             "      ,...\n"
             "    ]\n"
-            "7. \"use_is\"                (bool, optional, default=false) Send this transaction as InstaPAC\n"
+            "7. \"use_is\"                (bool, optional, default=false) Send this transaction as InstantSend\n"
             "8. \"use_ps\"                (bool, optional, default=false) Use anonymized funds only\n"
             "\nResult:\n"
             "\"txid\"                   (string) The transaction id for the send. Only 1 transaction is created regardless of \n"
@@ -1095,7 +1095,7 @@ UniValue sendmany(const JSONRPCRequest& request)
     {
         CBitcoinAddress address(name_);
         if (!address.IsValid())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid PACGlobal address: ")+name_);
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Polis address: ")+name_);
 
         if (setAddress.count(address))
             throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ")+name_);
@@ -1169,20 +1169,20 @@ UniValue addmultisigaddress(const JSONRPCRequest& request)
     {
         std::string msg = "addmultisigaddress nrequired [\"key\",...] ( \"account\" )\n"
             "\nAdd a nrequired-to-sign multisignature address to the wallet.\n"
-            "Each key is a PACGlobal address or hex-encoded public key.\n"
+            "Each key is a Polis address or hex-encoded public key.\n"
             "If 'account' is specified (DEPRECATED), assign address to that account.\n"
 
             "\nArguments:\n"
             "1. nrequired        (numeric, required) The number of required signatures out of the n keys or addresses.\n"
-            "2. \"keys\"         (string, required) A json array of dash addresses or hex-encoded public keys\n"
+            "2. \"keys\"         (string, required) A json array of polis addresses or hex-encoded public keys\n"
             "     [\n"
-            "       \"address\"  (string) dash address or hex-encoded public key\n"
+            "       \"address\"  (string) polis address or hex-encoded public key\n"
             "       ...,\n"
             "     ]\n"
             "3. \"account\"      (string, optional) DEPRECATED. An account to assign the addresses to.\n"
 
             "\nResult:\n"
-            "\"address\"         (string) A dash address associated with the keys.\n"
+            "\"address\"         (string) A polis address associated with the keys.\n"
 
             "\nExamples:\n"
             "\nAdd a multisig address from 2 addresses\n"
@@ -1250,7 +1250,7 @@ UniValue ListReceived(CWallet * const pwallet, const UniValue& params, bool fByA
             continue;
 
         int nDepth = wtx.GetDepthInMainChain();
-        if ((nDepth < nMinDepth) && !(fAddLocked && wtx.IsLockedByInstaPAC()))
+        if ((nDepth < nMinDepth) && !(fAddLocked && wtx.IsLockedByInstantSend()))
             continue;
 
         BOOST_FOREACH(const CTxOut& txout, wtx.tx->vout)
@@ -1359,7 +1359,7 @@ UniValue listreceivedbyaddress(const JSONRPCRequest& request)
             "\nList incoming payments grouped by receiving address.\n"
             "\nArguments:\n"
             "1. minconf           (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
-            "2. addlocked         (bool, optional, default=false) Whether to include transactions locked via InstaPAC.\n"
+            "2. addlocked         (bool, optional, default=false) Whether to include transactions locked via InstantSend.\n"
             "3. include_empty     (bool, optional, default=false) Whether to include addresses that haven't received any payments.\n"
             "4. include_watchonly (bool, optional, default=false) Whether to include watch-only addresses (see 'importaddress').\n"
 
@@ -1372,7 +1372,7 @@ UniValue listreceivedbyaddress(const JSONRPCRequest& request)
             "    \"amount\" : x.xxx,                  (numeric) The total amount in " + CURRENCY_UNIT + " received by the address\n"
             "    \"confirmations\" : n                (numeric) The number of confirmations of the most recent transaction included.\n"
             "                                                 If 'addlocked' is true, the number of confirmations can be less than\n"
-            "                                                 configured for transactions locked via InstaPAC\n"
+            "                                                 configured for transactions locked via InstantSend\n"
             "    \"label\" : \"label\",               (string) A comment for the address/transaction, if any\n"
             "    \"txids\": [\n"
             "       n,                                (numeric) The ids of transactions received with the address \n"
@@ -1406,7 +1406,7 @@ UniValue listreceivedbyaccount(const JSONRPCRequest& request)
             "\nDEPRECATED. List incoming payments grouped by account.\n"
             "\nArguments:\n"
             "1. minconf           (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
-            "2. addlocked         (bool, optional, default=false) Whether to include transactions locked via InstaPAC.\n"
+            "2. addlocked         (bool, optional, default=false) Whether to include transactions locked via InstantSend.\n"
             "3. include_empty     (bool, optional, default=false) Whether to include accounts that haven't received any payments.\n"
             "4. include_watchonly (bool, optional, default=false) Whether to include watch-only addresses (see 'importaddress').\n"
 
@@ -1479,7 +1479,7 @@ void ListTransactions(CWallet * const pwallet, const CWalletTx& wtx, const std::
     }
 
     // Received
-    if (listReceived.size() > 0 && ((wtx.GetDepthInMainChain() >= nMinDepth) || wtx.IsLockedByInstaPAC()))
+    if (listReceived.size() > 0 && ((wtx.GetDepthInMainChain() >= nMinDepth) || wtx.IsLockedByInstantSend()))
     {
         BOOST_FOREACH(const COutputEntry& r, listReceived)
         {
@@ -1559,7 +1559,7 @@ UniValue listtransactions(const JSONRPCRequest& request)
             "  {\n"
             "    \"account\":\"accountname\",  (string) DEPRECATED. The account name associated with the transaction. \n"
             "                                                It will be \"\" for the default account.\n"
-            "    \"address\":\"address\",    (string) The dash address of the transaction. Not present for \n"
+            "    \"address\":\"address\",    (string) The polis address of the transaction. Not present for \n"
             "                                                move transactions (category = move).\n"
             "    \"category\":\"send|receive|move\", (string) The transaction category. 'move' is a local (off blockchain)\n"
             "                                                transaction between accounts, and not associated with an address,\n"
@@ -1682,7 +1682,7 @@ UniValue listaccounts(const JSONRPCRequest& request)
             "\nDEPRECATED. Returns Object that has account names as keys, account balances as values.\n"
             "\nArguments:\n"
             "1. minconf             (numeric, optional, default=1) Only include transactions with at least this many confirmations\n"
-            "2. addlocked           (bool, optional, default=false) Whether to include transactions locked via InstaPAC.\n"
+            "2. addlocked           (bool, optional, default=false) Whether to include transactions locked via InstantSend.\n"
             "3. include_watchonly   (bool, optional, default=false) Include balances in watch-only addresses (see 'importaddress')\n"
             "\nResult:\n"
             "{                    (json object where keys are account names, and values are numeric balances\n"
@@ -1731,7 +1731,7 @@ UniValue listaccounts(const JSONRPCRequest& request)
         mapAccountBalances[strSentAccount] -= nFee;
         BOOST_FOREACH(const COutputEntry& s, listSent)
             mapAccountBalances[strSentAccount] -= s.amount;
-        if ((nDepth >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstaPAC()))
+        if ((nDepth >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstantSend()))
         {
             BOOST_FOREACH(const COutputEntry& r, listReceived)
                 if (pwallet->mapAddressBook.count(r.destination)) {
@@ -1772,7 +1772,7 @@ UniValue listsinceblock(const JSONRPCRequest& request)
             "{\n"
             "  \"transactions\": [\n"
             "    \"account\":\"accountname\",  (string) DEPRECATED. The account name associated with the transaction. Will be \"\" for the default account.\n"
-            "    \"address\":\"address\",    (string) The dash address of the transaction. Not present for move transactions (category = move).\n"
+            "    \"address\":\"address\",    (string) The polis address of the transaction. Not present for move transactions (category = move).\n"
             "    \"category\":\"send|receive\",  (string) The transaction category. 'send' has negative amounts, 'receive' has positive amounts.\n"
             "    \"amount\": x.xxx,          (numeric) The amount in " + CURRENCY_UNIT + ". This is negative for the 'send' category, and for the 'move' category for moves \n"
             "                                          outbound. It is positive for the 'receive' category, and for the 'move' category for inbound funds.\n"
@@ -1895,7 +1895,7 @@ UniValue gettransaction(const JSONRPCRequest& request)
             "  \"details\" : [\n"
             "    {\n"
             "      \"account\" : \"accountname\",      (string) DEPRECATED. The account name involved in the transaction, can be \"\" for the default account.\n"
-            "      \"address\" : \"address\",          (string) The dash address involved in the transaction\n"
+            "      \"address\" : \"address\",          (string) The polis address involved in the transaction\n"
             "      \"category\" : \"send|receive\",    (string) The category, either 'send' or 'receive'\n"
             "      \"amount\" : x.xxx,               (numeric) The amount in " + CURRENCY_UNIT + "\n"
             "      \"label\" : \"label\",              (string) A comment for the address/transaction, if any\n"
@@ -2250,7 +2250,7 @@ UniValue encryptwallet(const JSONRPCRequest& request)
             "\nExamples:\n"
             "\nEncrypt you wallet\n"
             + HelpExampleCli("encryptwallet", "\"my pass phrase\"") +
-            "\nNow set the passphrase to use the wallet, such as for signing or sending dash\n"
+            "\nNow set the passphrase to use the wallet, such as for signing or sending polis\n"
             + HelpExampleCli("walletpassphrase", "\"my pass phrase\"") +
             "\nNow we can so something like sign\n"
             + HelpExampleCli("signmessage", "\"address\" \"test message\"") +
@@ -2288,7 +2288,7 @@ UniValue encryptwallet(const JSONRPCRequest& request)
     // slack space in .dat files; that is bad if the old data is
     // unencrypted private keys. So:
     StartShutdown();
-    return "Wallet encrypted; PACGlobal Core server stopping, restart to run with encrypted wallet. The keypool has been flushed and a new HD seed was generated (if you are using HD). You need to make a new backup.";
+    return "Wallet encrypted; Polis Core server stopping, restart to run with encrypted wallet. The keypool has been flushed and a new HD seed was generated (if you are using HD). You need to make a new backup.";
 }
 
 UniValue lockunspent(const JSONRPCRequest& request)
@@ -2534,7 +2534,7 @@ UniValue getwalletinfo(const JSONRPCRequest& request)
             "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
             "  \"balance\": xxxxxxx,         (numeric) the total confirmed balance of the wallet in " + CURRENCY_UNIT + "\n"
             + (!fLiteMode ?
-            "  \"privatesend_balance\": xxxxxx, (numeric) the anonymized dash balance of the wallet in " + CURRENCY_UNIT + "\n" : "") +
+            "  \"privatesend_balance\": xxxxxx, (numeric) the anonymized polis balance of the wallet in " + CURRENCY_UNIT + "\n" : "") +
             "  \"unconfirmed_balance\": xxx, (numeric) the total unconfirmed balance of the wallet in " + CURRENCY_UNIT + "\n"
             "  \"immature_balance\": xxxxxx, (numeric) the total immature balance of the wallet in " + CURRENCY_UNIT + "\n"
             "  \"txcount\": xxxxxxx,         (numeric) the total number of transactions in the wallet\n"
@@ -2702,9 +2702,9 @@ UniValue listunspent(const JSONRPCRequest& request)
             "\nArguments:\n"
             "1. minconf          (numeric, optional, default=1) The minimum confirmations to filter\n"
             "2. maxconf          (numeric, optional, default=9999999) The maximum confirmations to filter\n"
-            "3. \"addresses\"      (string) A json array of dash addresses to filter\n"
+            "3. \"addresses\"      (string) A json array of polis addresses to filter\n"
             "    [\n"
-            "      \"address\"     (string) dash address\n"
+            "      \"address\"     (string) polis address\n"
             "      ,...\n"
             "    ]\n"
             "4. include_unsafe (bool, optional, default=true) Include outputs that are not safe to spend\n"
@@ -2714,7 +2714,7 @@ UniValue listunspent(const JSONRPCRequest& request)
             "  {\n"
             "    \"txid\" : \"txid\",          (string) the transaction id \n"
             "    \"vout\" : n,               (numeric) the vout value\n"
-            "    \"address\" : \"address\",    (string) the dash address\n"
+            "    \"address\" : \"address\",    (string) the polis address\n"
             "    \"account\" : \"account\",    (string) DEPRECATED. The associated account, or \"\" for the default account\n"
             "    \"scriptPubKey\" : \"key\",   (string) the script key\n"
             "    \"amount\" : x.xxx,         (numeric) the transaction output amount in " + CURRENCY_UNIT + "\n"
@@ -2756,7 +2756,7 @@ UniValue listunspent(const JSONRPCRequest& request)
             const UniValue& input = inputs[idx];
             CBitcoinAddress address(input.get_str());
             if (!address.IsValid())
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid PACGlobal address: ")+input.get_str());
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Polis address: ")+input.get_str());
             if (setAddress.count(address))
                 throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ")+input.get_str());
            setAddress.insert(address);
@@ -2842,7 +2842,7 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
                             "1. \"hexstring\"           (string, required) The hex string of the raw transaction\n"
                             "2. options                 (object, optional)\n"
                             "   {\n"
-                            "     \"changeAddress\"          (string, optional, default pool address) The dash address to receive the change\n"
+                            "     \"changeAddress\"          (string, optional, default pool address) The polis address to receive the change\n"
                             "     \"changePosition\"         (numeric, optional, default random) The index of the change output\n"
                             "     \"includeWatching\"        (boolean, optional, default false) Also select inputs which are watch only\n"
                             "     \"lockUnspents\"           (boolean, optional, default false) Lock selected unspent outputs\n"
@@ -2851,7 +2851,7 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
                             "     \"subtractFeeFromOutputs\" (array, optional) A json array of integers.\n"
                             "                              The fee will be equally deducted from the amount of each specified output.\n"
                             "                              The outputs are specified by their zero-based index, before any change output is added.\n"
-                            "                              Those recipients will receive less dash than you enter in their corresponding amount field.\n"
+                            "                              Those recipients will receive less polis than you enter in their corresponding amount field.\n"
                             "                              If no outputs are specified here, the sender pays the fee.\n"
                             "                                  [vout_index,...]\n"
                             "   }\n"
@@ -2911,7 +2911,7 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
             CBitcoinAddress address(options["changeAddress"].get_str());
 
             if (!address.IsValid())
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "changeAddress must be a valid dash address");
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "changeAddress must be a valid polis address");
 
             changeAddress = address.Get();
         }

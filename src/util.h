@@ -43,7 +43,7 @@
 #define DBG( x ) 
 #endif
 
-//PACGlobal only features
+//Polis only features
 
 extern bool fMasternodeMode;
 extern bool fLiteMode;

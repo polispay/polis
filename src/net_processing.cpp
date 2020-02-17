@@ -58,7 +58,7 @@
 #include <boost/thread.hpp>
 
 #if defined(NDEBUG)
-# error "PACGlobal Core cannot be compiled without assertions."
+# error "PolisCore cannot be compiled without assertions."
 #endif
 
 std::atomic<int64_t> nTimeBestReceived(0); // Used only to inform the wallet of when we last received a block
@@ -999,7 +999,7 @@ bool static AlreadyHave(const CInv& inv) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
         return mapBlockIndex.count(inv.hash);
 
     /*
-        PACGlobal Related Inventory Messages
+        Polis Related Inventory Messages
 
         --
 
@@ -1717,7 +1717,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         if (pfrom->nVersion >= LLMQS_PROTO_VERSION) {
             // Tell our peer that we're interested in plain LLMQ recovered signatures.
             // Otherwise the peer would only announce/send messages resulting from QRECSIG,
-            // e.g. InstaPAC locks or ChainLocks. SPV nodes should not send this message
+            // e.g. InstantSend locks or ChainLocks. SPV nodes should not send this message
             // as they are usually only interested in the higher level messages
             connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::QSENDRECSIGS, true));
         }

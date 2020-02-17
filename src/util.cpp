@@ -113,7 +113,7 @@ namespace boost {
 
 
 
-//PACGlobal only features
+//Polis only features
 bool fMasternodeMode = false;
 bool fLiteMode = false;
 /**
@@ -287,7 +287,7 @@ bool LogAcceptCategory(const char* category)
                 const std::vector<std::string>& categories = mapMultiArgs.at("-debug");
                 ptrCategory.reset(new std::set<std::string>(categories.begin(), categories.end()));
                 // thread_specific_ptr automatically deletes the set when the thread ends.
-                // "dash" is a composite category enabling all PACGlobal-related debug output
+                // "polis" is a composite category enabling all Polis-related debug output
                 if(ptrCategory->count(std::string("pacglobal"))) {
                     ptrCategory->insert(std::string("chainlocks"));
                     ptrCategory->insert(std::string("gobject"));
@@ -574,7 +574,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Unix: ~/.dashcore
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "PACGlobal";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "PolisCore";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -584,10 +584,10 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/PACGlobal";
+    return pathRet / "Library/Application Support/PolisCore";
 #else
     // Unix
-    return pathRet / ".PACGlobal";
+    return pathRet / ".poliscore";
 #endif
 #endif
 }
@@ -657,7 +657,7 @@ void ReadConfigFile(const std::string& confPath)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile(confPath));
     if (!streamConfig.good()){
-        // Create empty dash.conf if it does not excist
+        // Create empty polis.conf if it does not excist
         FILE* configFile = fopen(GetConfigFile(confPath).string().c_str(), "a");
         if (configFile != NULL)
             fclose(configFile);
@@ -671,7 +671,7 @@ void ReadConfigFile(const std::string& confPath)
 
         for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it)
         {
-            // Don't overwrite existing settings so command line settings override dash.conf
+            // Don't overwrite existing settings so command line settings override polis.conf
             std::string strKey = std::string("-") + it->string_key;
             std::string strValue = it->value[0];
             InterpretNegativeSetting(strKey, strValue);

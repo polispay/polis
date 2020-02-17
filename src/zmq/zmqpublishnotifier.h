@@ -108,7 +108,7 @@ public:
     bool NotifyGovernanceObject(const CGovernanceObject &object) override;
 };
 
-class CZMQPublishRawInstaPACDoubleSpendNotifier : public CZMQAbstractPublishNotifier
+class CZMQPublishRawInstantSendDoubleSpendNotifier : public CZMQAbstractPublishNotifier
 {
 public:
     bool NotifyInstantSendDoubleSpendAttempt(const CTransaction &currentTx, const CTransaction &previousTx) override;

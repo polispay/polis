@@ -270,7 +270,7 @@ void PrepareShutdown()
         flatdb4.Dump(netfulfilledman);
         if(fEnableInstantSend)
         {
-            CFlatDB<CInstantSend> flatdb5("instantsend.dat", "magicInstaPACCache");
+            CFlatDB<CInstantSend> flatdb5("instantsend.dat", "magicInstantSendCache");
             flatdb5.Dump(instantsend);
         }
         CFlatDB<CSporkManager> flatdb6("sporks.dat", "magicSporkCache");
@@ -520,14 +520,14 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageGroup(_("ZeroMQ notification options:"));
     strUsage += HelpMessageOpt("-zmqpubhashblock=<address>", _("Enable publish hash block in <address>"));
     strUsage += HelpMessageOpt("-zmqpubhashtx=<address>", _("Enable publish hash transaction in <address>"));
-    strUsage += HelpMessageOpt("-zmqpubhashtxlock=<address>", _("Enable publish hash transaction (locked via InstaPAC) in <address>"));
+    strUsage += HelpMessageOpt("-zmqpubhashtxlock=<address>", _("Enable publish hash transaction (locked via InstantSend) in <address>"));
     strUsage += HelpMessageOpt("-zmqpubhashgovernancevote=<address>", _("Enable publish hash of governance votes in <address>"));
     strUsage += HelpMessageOpt("-zmqpubhashgovernanceobject=<address>", _("Enable publish hash of governance objects (like proposals) in <address>"));
-    strUsage += HelpMessageOpt("-zmqpubhashinstantsenddoublespend=<address>", _("Enable publish transaction hashes of attempted InstaPAC double spend in <address>"));
+    strUsage += HelpMessageOpt("-zmqpubhashinstantsenddoublespend=<address>", _("Enable publish transaction hashes of attempted InstantSend double spend in <address>"));
     strUsage += HelpMessageOpt("-zmqpubrawblock=<address>", _("Enable publish raw block in <address>"));
     strUsage += HelpMessageOpt("-zmqpubrawtx=<address>", _("Enable publish raw transaction in <address>"));
-    strUsage += HelpMessageOpt("-zmqpubrawtxlock=<address>", _("Enable publish raw transaction (locked via InstaPAC) in <address>"));
-    strUsage += HelpMessageOpt("-zmqpubrawinstantsenddoublespend=<address>", _("Enable publish raw transactions of attempted InstaPAC double spend in <address>"));
+    strUsage += HelpMessageOpt("-zmqpubrawtxlock=<address>", _("Enable publish raw transaction (locked via InstantSend) in <address>"));
+    strUsage += HelpMessageOpt("-zmqpubrawinstantsenddoublespend=<address>", _("Enable publish raw transactions of attempted InstantSend double spend in <address>"));
 #endif
 
     strUsage += HelpMessageGroup(_("Debugging/Testing options:"));
@@ -552,7 +552,7 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-watchquorums=<n>", strprintf("Watch and validate quorum communication (default: %u)", llmq::DEFAULT_WATCH_QUORUMS));
     }
     std::string debugCategories = "addrman, alert, bench, cmpctblock, coindb, db, http, leveldb, libevent, lock, mempool, mempoolrej, net, proxy, prune, rand, reindex, rpc, selectcoins, tor, zmq, "
-                                  "dash (or specifically: chainlocks, gobject, instantsend, keepass, llmq, llmq-dkg, llmq-sigs, masternode, mnpayments, mnsync, privatesend, spork)"; // Don't translate these and qt below
+                                  "polis (or specifically: chainlocks, gobject, instantsend, keepass, llmq, llmq-dkg, llmq-sigs, masternode, mnpayments, mnsync, privatesend, spork)"; // Don't translate these and qt below
     if (mode == HMM_BITCOIN_QT)
         debugCategories += ", qt";
     strUsage += HelpMessageOpt("-debug=<category>", strprintf(_("Output debugging information (default: %u, supplying <category> is optional)"), 0) + ". " +
@@ -582,7 +582,7 @@ std::string HelpMessage(HelpMessageMode mode)
     }
     strUsage += HelpMessageOpt("-shrinkdebugfile", _("Shrink debug.log file on client startup (default: 1 when no -debug)"));
     AppendParamsHelpMessages(strUsage, showDebug);
-    strUsage += HelpMessageOpt("-litemode", strprintf(_("Disable all PACGlobal specific functionality (Masternodes, PrivateSend, InstaPAC, Governance) (0-1, default: %u)"), 0));
+    strUsage += HelpMessageOpt("-litemode", strprintf(_("Disable all Polis specific functionality (Masternodes, PrivateSend, InstantSend, Governance) (0-1, default: %u)"), 0));
     strUsage += HelpMessageOpt("-sporkaddr=<dashaddress>", strprintf(_("Override spork address. Only useful for regtest and devnet. Using this on mainnet or testnet will ban you.")));
     strUsage += HelpMessageOpt("-minsporkkeys=<n>", strprintf(_("Overrides minimum spork signers to change spork value. Only useful for regtest and devnet. Using this on mainnet or testnet will ban you.")));
 
@@ -596,15 +596,15 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-privatesendmultisession", strprintf(_("Enable multiple PrivateSend mixing sessions per block, experimental (0-1, default: %u)"), DEFAULT_PRIVATESEND_MULTISESSION));
     strUsage += HelpMessageOpt("-privatesendsessions=<n>", strprintf(_("Use N separate masternodes in parallel to mix funds (%u-%u, default: %u)"), MIN_PRIVATESEND_SESSIONS, MAX_PRIVATESEND_SESSIONS, DEFAULT_PRIVATESEND_SESSIONS));
     strUsage += HelpMessageOpt("-privatesendrounds=<n>", strprintf(_("Use N separate masternodes for each denominated input to mix funds (%u-%u, default: %u)"), MIN_PRIVATESEND_ROUNDS, MAX_PRIVATESEND_ROUNDS, DEFAULT_PRIVATESEND_ROUNDS));
-    strUsage += HelpMessageOpt("-privatesendamount=<n>", strprintf(_("Keep N PAC anonymized (%u-%u, default: %u)"), MIN_PRIVATESEND_AMOUNT, MAX_PRIVATESEND_AMOUNT, DEFAULT_PRIVATESEND_AMOUNT));
+    strUsage += HelpMessageOpt("-privatesendamount=<n>", strprintf(_("Keep N POLIS anonymized (%u-%u, default: %u)"), MIN_PRIVATESEND_AMOUNT, MAX_PRIVATESEND_AMOUNT, DEFAULT_PRIVATESEND_AMOUNT));
     strUsage += HelpMessageOpt("-privatesenddenoms=<n>", strprintf(_("Create up to N inputs of each denominated amount (%u-%u, default: %u)"), MIN_PRIVATESEND_DENOMS, MAX_PRIVATESEND_DENOMS, DEFAULT_PRIVATESEND_DENOMS));
     strUsage += HelpMessageOpt("-liquidityprovider=<n>", strprintf(_("Provide liquidity to PrivateSend by infrequently mixing coins on a continual basis (%u-%u, default: %u, 1=very frequent, high fees, %u=very infrequent, low fees)"),
         MIN_PRIVATESEND_LIQUIDITY, MAX_PRIVATESEND_LIQUIDITY, DEFAULT_PRIVATESEND_LIQUIDITY, MAX_PRIVATESEND_LIQUIDITY));
 #endif // ENABLE_WALLET
 
-    strUsage += HelpMessageGroup(_("InstaPAC options:"));
-    strUsage += HelpMessageOpt("-enableinstantsend", strprintf(_("Enable InstaPAC, show confirmations for locked transactions (0-1, default: %u)"), 1));
-    strUsage += HelpMessageOpt("-instantsendnotify=<cmd>", _("Execute command when a wallet InstaPAC transaction is successfully locked (%s in cmd is replaced by TxID)"));
+    strUsage += HelpMessageGroup(_("InstantSend options:"));
+    strUsage += HelpMessageOpt("-enableinstantsend", strprintf(_("Enable InstantSend, show confirmations for locked transactions (0-1, default: %u)"), 1));
+    strUsage += HelpMessageOpt("-instantsendnotify=<cmd>", _("Execute command when a wallet InstantSend transaction is successfully locked (%s in cmd is replaced by TxID)"));
 
 
     strUsage += HelpMessageGroup(_("Node relay options:"));
@@ -644,8 +644,8 @@ std::string HelpMessage(HelpMessageMode mode)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/PACGlobalOfficial/PAC>";
-    const std::string URL_WEBSITE = "<https://pacglobal.io>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/polispay/polis>";
+    const std::string URL_WEBSITE = "<https://polispay.com>";
 
     return CopyrightHolders(_("Copyright (C)"), 2014, COPYRIGHT_YEAR) + "\n" +
            "\n" +
@@ -835,7 +835,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
 }
 
 /** Sanity checks
- *  Ensure that PACGlobal is running in a usable environment with all
+ *  Ensure that Polis is running in a usable environment with all
  *  necessary library support.
  */
 bool InitSanityCheck(void)
@@ -1004,7 +1004,7 @@ void InitLogging()
     fLogIPs = GetBoolArg("-logips", DEFAULT_LOGIPS);
 
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("PACGlobal Core version %s\n", FormatFullVersion());
+    LogPrintf("PolisCore version %s\n", FormatFullVersion());
 }
 
 namespace { // Variables internal to initialization process only
@@ -1394,7 +1394,7 @@ static bool LockDataDirectory(bool probeOnly)
 {
     std::string strDataDir = GetDataDir().string();
 
-    // Make sure only a single PACGlobal Core process is using the data directory.
+    // Make sure only a single Polis Core process is using the data directory.
     boost::filesystem::path pathLockFile = GetDataDir() / ".lock";
     FILE* file = fopen(pathLockFile.string().c_str(), "a"); // empty lock file; created if it doesn't exist.
     if (file) fclose(file);
@@ -1695,16 +1695,16 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     // ********************************************************* Step 7a: check lite mode and load sporks
 
-    // lite mode disables all PACGlobal-specific functionality
+    // lite mode disables all polis-specific functionality
     fLiteMode = GetBoolArg("-litemode", false);
     LogPrintf("fLiteMode %d\n", fLiteMode);
 
     if(fLiteMode) {
-        InitWarning(_("You are starting in lite mode, all PACGlobal-specific functionality is disabled."));
+        InitWarning(_("You are starting in lite mode, all polis-specific functionality is disabled."));
     }
 
     if((!fLiteMode && fTxIndex == false)
-       && chainparams.NetworkIDString() != CBaseChainParams::REGTEST) { // TODO remove this when pruning is fixed. See https://github.com/PACGlobalOfficial/PAC/pull/1817 and https://github.com/PACGlobalOfficial/PAC/pull/1743
+       && chainparams.NetworkIDString() != CBaseChainParams::REGTEST) {
         return InitError(_("Transaction index can't be disabled in full mode. Either start with -litemode command line switch or enable transaction index."));
     }
 
@@ -1973,7 +1973,7 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     CPrivateSend::InitStandardDenominations();
 
-    // ********************************************************* Step 10b: setup InstaPAC
+    // ********************************************************* Step 10b: setup InstantSend
 
     fEnableInstantSend = GetBoolArg("-enableinstantsend", 1);
 
@@ -2011,15 +2011,15 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         if(fEnableInstantSend)
         {
             strDBName = "instantsend.dat";
-            uiInterface.InitMessage(_("Loading InstaPAC data cache..."));
-            CFlatDB<CInstantSend> flatdb5(strDBName, "magicInstaPACCache");
+            uiInterface.InitMessage(_("Loading InstantSend data cache..."));
+            CFlatDB<CInstantSend> flatdb5(strDBName, "magicInstantSendCache");
             if(!flatdb5.Load(instantsend)) {
                 return InitError(_("Failed to load InstantSend data cache from") + "\n" + (pathDB / strDBName).string());
             }
         }
     }
 
-    // ********************************************************* Step 10d: schedule PACGlobal-specific tasks
+    // ********************************************************* Step 10d: schedule polis-specific tasks
 
     if (!fLiteMode) {
         scheduler.scheduleEvery(boost::bind(&CNetFulfilledRequestManager::DoMaintenance, boost::ref(netfulfilledman)), 60 * 1000);

@@ -1,5 +1,5 @@
 ---
-name: "dash-linux-0.14"
+name: "polis-linux-0.14"
 enable_cache: true
 suites:
 - "bionic"
@@ -31,8 +31,8 @@ packages:
 - "python3"
 - "libxkbcommon0"
 remotes:
-- "url": "https://github.com/dashpay/dash.git"
-  "dir": "dash"
+- "url": "https://github.com/dashpay/polis.git"
+  "dir": "polis"
 files: []
 script: |
 
@@ -142,7 +142,7 @@ script: |
   touch -d "${REFERENCE_DATETIME}" ${WRAP_DIR}/${prog}
   done
 
-  cd dash
+  cd polis
   BASEPREFIX=`pwd`/depends
   # Build dependencies for each host
   for i in $HOSTS; do

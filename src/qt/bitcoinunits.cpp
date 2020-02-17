@@ -19,10 +19,10 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(PAC);
-    unitlist.append(mPAC);
-    unitlist.append(uPAC);
-    unitlist.append(duffs);
+    unitlist.append(POLIS);
+    unitlist.append(mPOLIS);
+    unitlist.append(uPOLIS);
+    unitlist.append(politoshis);
     return unitlist;
 }
 
@@ -30,10 +30,10 @@ bool BitcoinUnits::valid(int unit)
 {
     switch(unit)
     {
-    case PAC:
-    case mPAC:
-    case uPAC:
-    case duffs:
+    case POLIS:
+    case mPOLIS:
+    case uPOLIS:
+    case politoshis:
         return true;
     default:
         return false;
@@ -46,10 +46,10 @@ QString BitcoinUnits::name(int unit)
     {
         switch(unit)
         {
-            case PAC: return QString("PAC");
-            case mPAC: return QString("mPAC");
-            case uPAC: return QString::fromUtf8("μPAC");
-            case duffs: return QString("duffs");
+            case POLIS: return QString("POLIS");
+            case mPOLIS: return QString("mPOLIS");
+            case uPOLIS: return QString::fromUtf8("μPOLIS");
+            case politoshis: return QString("politoshis");
             default: return QString("???");
         }
     }
@@ -57,10 +57,10 @@ QString BitcoinUnits::name(int unit)
     {
         switch(unit)
         {
-            case PAC: return QString("tPAC");
-            case mPAC: return QString("mtPAC");
-            case uPAC: return QString::fromUtf8("μtPAC");
-            case duffs: return QString("tduffs");
+            case POLIS: return QString("tPOLIS");
+            case mPOLIS: return QString("mtPOLIS");
+            case uPOLIS: return QString::fromUtf8("μtPOLIS");
+            case politoshis: return QString("tpolitoshis");
             default: return QString("???");
         }
     }
@@ -72,10 +72,10 @@ QString BitcoinUnits::description(int unit)
     {
         switch(unit)
         {
-            case PAC: return QString("PACGlobal");
-            case mPAC: return QString("Milli-PACGlobal (1 / 1" THIN_SP_UTF8 "000)");
-            case uPAC: return QString("Micro-PACGlobal (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-            case duffs: return QString("Ten Nano-PACGlobal (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+            case POLIS: return QString("POLIS");
+            case mPOLIS: return QString("Milli-POLIS (1 / 1" THIN_SP_UTF8 "000)");
+            case uPOLIS: return QString("Micro-POLIS (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+            case politoshis: return QString("Ten Nano-POLIS (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
             default: return QString("???");
         }
     }
@@ -83,10 +83,10 @@ QString BitcoinUnits::description(int unit)
     {
         switch(unit)
         {
-            case PAC: return QString("TestPACGlobals");
-            case mPAC: return QString("Milli-TestPACGlobal (1 / 1" THIN_SP_UTF8 "000)");
-            case uPAC: return QString("Micro-TestPACGlobal (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-            case duffs: return QString("Ten Nano-TestPACGlobal (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+            case POLIS: return QString("TestPOLIS");
+            case mPOLIS: return QString("Milli-POLIS (1 / 1" THIN_SP_UTF8 "000)");
+            case uPOLIS: return QString("Micro-TestPOLIS (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+            case politoshis: return QString("Ten Nano-TestPOLIS (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
             default: return QString("???");
         }
     }
@@ -96,10 +96,10 @@ qint64 BitcoinUnits::factor(int unit)
 {
     switch(unit)
     {
-    case PAC:  return 100000000;
-    case mPAC: return 100000;
-    case uPAC: return 100;
-    case duffs: return 1;
+    case POLIS:  return 100000000;
+    case mPOLIS: return 100000;
+    case uPOLIS: return 100;
+    case politoshis: return 1;
     default:   return 100000000;
     }
 }
@@ -108,10 +108,10 @@ int BitcoinUnits::decimals(int unit)
 {
     switch(unit)
     {
-    case PAC: return 8;
-    case mPAC: return 5;
-    case uPAC: return 2;
-    case duffs: return 0;
+    case POLIS: return 8;
+    case mPOLIS: return 5;
+    case uPOLIS: return 2;
+    case politoshis: return 0;
     default: return 0;
     }
 }

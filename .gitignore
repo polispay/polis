@@ -82,7 +82,7 @@ libconftest.dylib*
 *.qm
 Makefile
 pacglobal-qt
-PACGlobal-Qt.app
+Polis-Qt.app
 !/depends/Makefile
 
 # Unit-tests

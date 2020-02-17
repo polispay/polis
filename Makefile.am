@@ -40,8 +40,8 @@ OSX_PLIST=$(top_builddir)/share/qt/Info.plist #not installed
 OSX_QT_TRANSLATIONS = da,de,es,hu,ru,uk,zh_CN,zh_TW
 
 DIST_DOCS = $(wildcard doc/*.md) $(wildcard doc/release-notes/*.md)
-DIST_CONTRIB = $(top_srcdir)/contrib/dash-cli.bash-completion \
-	       $(top_srcdir)/contrib/dash-tx.bash-completion \
+DIST_CONTRIB = $(top_srcdir)/contrib/polis-cli.bash-completion \
+	       $(top_srcdir)/contrib/polis-tx.bash-completion \
 	       $(top_srcdir)/contrib/dashd.bash-completion \
 	       $(top_srcdir)/contrib/init
 

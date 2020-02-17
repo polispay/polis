@@ -34,7 +34,7 @@ static const bool DEFAULT_SPLASHSCREEN = true;
 #define COLOR_TX_STATUS_DANGER QColor(200, 100, 100)
 /* Transaction list -- TX status decoration - default color */
 #define COLOR_BLACK QColor(0, 0, 0)
-/* Transaction list -- TX status decoration - LockedByInstaPAC color */
+/* Transaction list -- TX status decoration - LockedByInstantSend color */
 #define COLOR_TX_STATUS_LOCKED QColor(0, 128, 255)
 
 /* Tooltips longer than this (in characters) are converted into rich text,
@@ -51,10 +51,10 @@ static const int MAX_URI_LENGTH = 255;
 /* Number of frames in spinner animation */
 #define SPINNER_FRAMES 36
 
-#define QAPP_ORG_NAME "PACGlobal"
+#define QAPP_ORG_NAME "Polis"
 #define QAPP_ORG_DOMAIN "pacglobal.io"
-#define QAPP_APP_NAME_DEFAULT "PACGlobal-Qt"
-#define QAPP_APP_NAME_TESTNET "PACGlobal-Qt-testnet"
-#define QAPP_APP_NAME_DEVNET "PACGlobal-Qt-%s"
+#define QAPP_APP_NAME_DEFAULT "Polis-Qt"
+#define QAPP_APP_NAME_TESTNET "Polis-Qt-testnet"
+#define QAPP_APP_NAME_DEVNET "Polis-Qt-%s"
 
 #endif // BITCOIN_QT_GUICONSTANTS_H

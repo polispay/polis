@@ -58,8 +58,8 @@ QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
             }
         }
 
-        if (wtx.IsLockedByLLMQInstaPAC()) {
-            strTxStatus += " (" + tr("verified via LLMQ based InstaPAC") + ")";
+        if (wtx.IsLockedByLLMQInstantSend()) {
+            strTxStatus += " (" + tr("verified via LLMQ based InstantSend") + ")";
             return strTxStatus;
         }
 
@@ -70,11 +70,11 @@ QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
         // InstantSend
         strTxStatus += " (";
         if(instantsend.IsLockedInstantSendTransaction(wtx.GetHash())) {
-            strTxStatus += tr("verified via InstaPAC");
+            strTxStatus += tr("verified via InstantSend");
         } else if(!instantsend.IsTxLockCandidateTimedOut(wtx.GetHash())) {
-            strTxStatus += tr("InstaPAC verification in progress - %1 of %2 signatures").arg(nSignatures).arg(nSignaturesMax);
+            strTxStatus += tr("InstantSend verification in progress - %1 of %2 signatures").arg(nSignatures).arg(nSignaturesMax);
         } else {
-            strTxStatus += tr("InstaPAC verification failed");
+            strTxStatus += tr("InstantSend verification failed");
         }
         strTxStatus += ")";
 
@@ -279,7 +279,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx, TransactionReco
     strHTML += "<b>" + tr("Output index") + ":</b> " + QString::number(rec->getOutputIndex()) + "<br>";
     strHTML += "<b>" + tr("Transaction total size") + ":</b> " + QString::number(wtx.tx->GetTotalSize()) + " bytes<br>";
 
-    // Message from normal pac:URI (pac:XyZ...?message=example)
+    // Message from normal polis:URI (polis:XyZ...?message=example)
     Q_FOREACH (const PAIRTYPE(std::string, std::string)& r, wtx.vOrderForm)
         if (r.first == "Message")
             strHTML += "<br><b>" + tr("Message") + ":</b><br>" + GUIUtil::HtmlEscape(r.second, true) + "<br>";

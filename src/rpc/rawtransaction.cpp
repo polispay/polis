@@ -256,7 +256,7 @@ UniValue getrawtransaction(const JSONRPCRequest& request)
             "         \"reqSigs\" : n,            (numeric) The required sigs\n"
             "         \"type\" : \"pubkeyhash\",  (string) The type, eg 'pubkeyhash'\n"
             "         \"addresses\" : [           (json array of string)\n"
-            "           \"address\"        (string) dash address\n"
+            "           \"address\"        (string) polis address\n"
             "           ,...\n"
             "         ]\n"
             "       }\n"
@@ -467,7 +467,7 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
             "     ]\n"
             "2. \"outputs\"               (object, required) a json object with outputs\n"
             "    {\n"
-            "      \"address\": x.xxx,    (numeric or string, required) The key is the dash address, the numeric value (can be string) is the " + CURRENCY_UNIT + " amount\n"
+            "      \"address\": x.xxx,    (numeric or string, required) The key is the polis address, the numeric value (can be string) is the " + CURRENCY_UNIT + " amount\n"
             "      \"data\": \"hex\"      (string, required) The key is \"data\", the value is hex encoded data\n"
             "      ,...\n"
             "    }\n"
@@ -540,7 +540,7 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
         } else {
             CBitcoinAddress address(name_);
             if (!address.IsValid())
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid PACGlobal address: ")+name_);
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Polis address: ")+name_);
 
             if (setAddress.count(address))
                 throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ")+name_);
@@ -596,7 +596,7 @@ UniValue decoderawtransaction(const JSONRPCRequest& request)
             "         \"reqSigs\" : n,            (numeric) The required sigs\n"
             "         \"type\" : \"pubkeyhash\",  (string) The type, eg 'pubkeyhash'\n"
             "         \"addresses\" : [           (json array of string)\n"
-            "           \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwG\"   (string) PACGlobal address\n"
+            "           \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwG\"   (string) Polis address\n"
             "           ,...\n"
             "         ]\n"
             "       }\n"
@@ -641,7 +641,7 @@ UniValue decodescript(const JSONRPCRequest& request)
             "  \"type\":\"type\", (string) The output type\n"
             "  \"reqSigs\": n,    (numeric) The required signatures\n"
             "  \"addresses\": [   (json array of string)\n"
-            "     \"address\"     (string) dash address\n"
+            "     \"address\"     (string) polis address\n"
             "     ,...\n"
             "  ],\n"
             "  \"p2sh\",\"address\" (string) address of P2SH script wrapping this redeem script (not returned if the script is already a P2SH).\n"
@@ -961,7 +961,7 @@ UniValue sendrawtransaction(const JSONRPCRequest& request)
             "\nArguments:\n"
             "1. \"hexstring\"    (string, required) The hex string of the raw transaction)\n"
             "2. allowhighfees  (boolean, optional, default=false) Allow high fees\n"
-            "3. instantsend    (boolean, optional, default=false) Use InstaPAC to send this transaction\n"
+            "3. instantsend    (boolean, optional, default=false) Use InstantSend to send this transaction\n"
             "4. bypasslimits   (boolean, optional, default=false) Bypass transaction policy limits\n"
             "\nResult:\n"
             "\"hex\"             (string) The transaction hash in hex\n"
@@ -991,9 +991,9 @@ UniValue sendrawtransaction(const JSONRPCRequest& request)
     if (request.params.size() > 1 && request.params[1].get_bool())
         nMaxRawTxFee = 0;
 
-    bool fInstaPAC = false;
+    bool fInstantSend = false;
     if (request.params.size() > 2)
-        fInstaPAC = request.params[2].get_bool();
+        fInstantSend = request.params[2].get_bool();
 
     bool fBypassLimits = false;
     if (request.params.size() > 3)
@@ -1008,8 +1008,8 @@ UniValue sendrawtransaction(const JSONRPCRequest& request)
     bool fHaveMempool = mempool.exists(hashTx);
     if (!fHaveMempool && !fHaveChain) {
         // push to local node and sync with wallets
-        if (fInstaPAC && !instantsend.ProcessTxLockRequest(*tx, *g_connman)) {
-            throw JSONRPCError(RPC_TRANSACTION_ERROR, "Not a valid InstaPAC transaction, see debug.log for more info");
+        if (fInstantSend && !instantsend.ProcessTxLockRequest(*tx, *g_connman)) {
+            throw JSONRPCError(RPC_TRANSACTION_ERROR, "Not a valid InstantSend transaction, see debug.log for more info");
         }
         CValidationState state;
         bool fMissingInputs;

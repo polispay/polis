@@ -56,10 +56,10 @@ static int AppInitRawTx(int argc, char* argv[])
     if (argc<2 || IsArgSet("-?") || IsArgSet("-h") || IsArgSet("-help"))
     {
         // First part of help message is specific to this utility
-        std::string strUsage = strprintf(_("%s dash-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
+        std::string strUsage = strprintf(_("%s polis-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
             _("Usage:") + "\n" +
-              "  dash-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded dash transaction") + "\n" +
-              "  dash-tx [options] -create [commands]   " + _("Create hex-encoded dash transaction") + "\n" +
+              "  polis-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded polis transaction") + "\n" +
+              "  polis-tx [options] -create [commands]   " + _("Create hex-encoded polis transaction") + "\n" +
               "\n";
 
         fprintf(stdout, "%s", strUsage.c_str());
@@ -737,7 +737,7 @@ static int CommandLineRawTx(int argc, char* argv[])
             if (argc < 2)
                 throw std::runtime_error("too few parameters");
 
-            // param: hex-encoded dash transaction
+            // param: hex-encoded polis transaction
             std::string strHexTx(argv[1]);
             if (strHexTx == "-")                 // "-" implies standard input
                 strHexTx = readStdin();

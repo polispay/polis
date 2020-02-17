@@ -30,7 +30,7 @@ public:
     enum ColumnIndex {
         Status = 0,
         Watchonly = 1,
-        InstaPAC = 2,
+        InstantSend = 2,
         Date = 3,
         Type = 4,
         ToAddress = 5,
@@ -49,10 +49,10 @@ public:
         WatchonlyRole,
         /** Watch-only icon */
         WatchonlyDecorationRole,
-        /** InstaPAC boolean */
-        InstaPACRole,
-        /** InstaPAC icon */
-        InstaPACDecorationRole,
+        /** InstantSend boolean */
+        InstantSendRole,
+        /** InstantSend icon */
+        InstantSendDecorationRole,
         /** Long description (HTML format) */
         LongDescriptionRole,
         /** Address of transaction */
@@ -113,7 +113,7 @@ private:
     QString formatTooltip(const TransactionRecord *rec) const;
     QVariant txStatusDecoration(const TransactionRecord *wtx) const;
     QVariant txWatchonlyDecoration(const TransactionRecord *wtx) const;
-    QVariant txInstaPACDecoration(const TransactionRecord *wtx) const;
+    QVariant txInstantSendDecoration(const TransactionRecord *wtx) const;
     QVariant txAddressDecoration(const TransactionRecord *wtx) const;
 
 public Q_SLOTS:

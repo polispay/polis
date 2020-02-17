@@ -307,7 +307,7 @@ bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBl
     int64_t nTimeWeight = std::min<int64_t>(nTimeTx - txPrevTime, nStakeMaxAge - nStakeMinAge);
     arith_uint256 bnCoinDayWeight = nValueIn * nTimeWeight / COIN / 200;
 
-    // discard stakes generated from inputs of less than x PAC
+    // discard stakes generated from inputs of less than x POLIS
     if (nValueIn < Params().GetConsensus().nMinimumStakeValue)
         return error("CheckStakeKernelHash() : min amount violation");
 

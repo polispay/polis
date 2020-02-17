@@ -32,7 +32,7 @@ Run `test_dash --help` for the full list.
 ### Note on adding test cases
 
 The sources in this directory are unit test cases.  Boost includes a
-unit testing framework, and since PACGlobal Core already uses boost, it makes
+unit testing framework, and since PolisCore already uses boost, it makes
 sense to simply use this framework rather than require developers to
 configure some other framework (we want as few impediments to creating
 unit tests as possible).
@@ -53,7 +53,7 @@ explaining how the boost unit test framework works:
 
 ### bitcoin-util-test.py
 
-The test directory also contains the bitcoin-util-test.py tool, which tests bitcoin utils (currently just dash-tx). This test gets run automatically during the `make check` build process. It is also possible to run the test manually from the src directory:
+The test directory also contains the bitcoin-util-test.py tool, which tests bitcoin utils (currently just polis-tx). This test gets run automatically during the `make check` build process. It is also possible to run the test manually from the src directory:
 
 ```
 test/bitcoin-util-test.py --srcdir=[current directory]

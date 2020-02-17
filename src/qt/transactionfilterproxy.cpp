@@ -23,7 +23,7 @@ TransactionFilterProxy::TransactionFilterProxy(QObject *parent) :
     addrPrefix(),
     typeFilter(COMMON_TYPES),
     watchOnlyFilter(WatchOnlyFilter_All),
-    instantsendFilter(InstaPACFilter_All),
+    instantsendFilter(InstantSendFilter_All),
     minAmount(0),
     limitRows(-1),
     showInactive(true)
@@ -37,7 +37,7 @@ bool TransactionFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex &
     int type = index.data(TransactionTableModel::TypeRole).toInt();
     QDateTime datetime = index.data(TransactionTableModel::DateRole).toDateTime();
     bool involvesWatchAddress = index.data(TransactionTableModel::WatchonlyRole).toBool();
-    bool lockedByInstaPAC = index.data(TransactionTableModel::InstaPACRole).toBool();
+    bool lockedByInstantSend = index.data(TransactionTableModel::InstantSendRole).toBool();
     QString address = index.data(TransactionTableModel::AddressRole).toString();
     QString label = index.data(TransactionTableModel::LabelRole).toString();
     qint64 amount = llabs(index.data(TransactionTableModel::AmountRole).toLongLong());
@@ -51,9 +51,9 @@ bool TransactionFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex &
         return false;
     if (!involvesWatchAddress && watchOnlyFilter == WatchOnlyFilter_Yes)
         return false;
-    if (lockedByInstaPAC && instantsendFilter == InstaPACFilter_No)
+    if (lockedByInstantSend && instantsendFilter == InstantSendFilter_No)
         return false;
-    if (!lockedByInstaPAC && instantsendFilter == InstaPACFilter_Yes)
+    if (!lockedByInstantSend && instantsendFilter == InstantSendFilter_Yes)
         return false;
     if(datetime < dateFrom || datetime > dateTo)
         return false;
@@ -96,7 +96,7 @@ void TransactionFilterProxy::setWatchOnlyFilter(WatchOnlyFilter filter)
     invalidateFilter();
 }
 
-void TransactionFilterProxy::setInstaPACFilter(InstaPACFilter filter)
+void TransactionFilterProxy::setInstantSendFilter(InstantSendFilter filter)
 {
     this->instantsendFilter = filter;
     invalidateFilter();

@@ -206,7 +206,7 @@ def initialize_datadir(dirname, n):
     if not os.path.isdir(datadir):
         os.makedirs(datadir)
     rpc_u, rpc_p = rpc_auth_pair(n)
-    with open(os.path.join(datadir, "dash.conf"), 'w', encoding='utf8') as f:
+    with open(os.path.join(datadir, "polis.conf"), 'w', encoding='utf8') as f:
         f.write("regtest=1\n")
         f.write("rpcuser=" + rpc_u + "\n")
         f.write("rpcpassword=" + rpc_p + "\n")
@@ -325,7 +325,7 @@ def initialize_chain(test_dir, num_nodes, cachedir, extra_args=None, redirect_st
         from_dir = os.path.join(cachedir, "node"+str(i))
         to_dir = os.path.join(test_dir,  "node"+str(i))
         shutil.copytree(from_dir, to_dir)
-        initialize_datadir(test_dir, i) # Overwrite port/rpcport in dash.conf
+        initialize_datadir(test_dir, i) # Overwrite port/rpcport in polis.conf
 
 def initialize_chain_clean(test_dir, num_nodes):
     """
@@ -537,10 +537,10 @@ def assert_fee_amount(fee, tx_size, fee_per_kB):
     """Assert the fee was in range"""
     target_fee = tx_size * fee_per_kB / 1000
     if fee < target_fee:
-        raise AssertionError("Fee of %s DASH too low! (Should be %s DASH)"%(str(fee), str(target_fee)))
+        raise AssertionError("Fee of %s POLIS too low! (Should be %s POLIS)"%(str(fee), str(target_fee)))
     # allow the wallet's estimation to be at most 2 bytes off
     if fee > (tx_size + 2) * fee_per_kB / 1000:
-        raise AssertionError("Fee of %s DASH too high! (Should be %s DASH)"%(str(fee), str(target_fee)))
+        raise AssertionError("Fee of %s POLIS too high! (Should be %s POLIS)"%(str(fee), str(target_fee)))
 
 def assert_equal(thing1, thing2, *args):
     if thing1 != thing2 or any(thing1 != arg for arg in args):

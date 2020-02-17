@@ -127,7 +127,7 @@ void gobject_prepare_help(CWallet* const pwallet)
                 "2. revision      (numeric, required) object revision in the system\n"
                 "3. time          (numeric, required) time this object was created\n"
                 "4. data-hex      (string, required)  data in hex string form\n"
-                "5. use-IS        (boolean, optional, default=false) InstaPAC lock the collateral, only requiring one chain confirmation\n"
+                "5. use-IS        (boolean, optional, default=false) InstantSend lock the collateral, only requiring one chain confirmation\n"
                 "6. outputHash    (string, optional) the single output to submit the proposal fee from\n"
                 "7. outputIndex   (numeric, optional) The output index.\n"
                 );
@@ -167,7 +167,7 @@ UniValue gobject_prepare(const JSONRPCRequest& request)
 
     CGovernanceObject govobj(hashParent, nRevision, nTime, uint256(), strDataHex);
 
-    // This command is dangerous because it consumes 5 PAC irreversibly.
+    // This command is dangerous because it consumes 5 POLIS irreversibly.
     // If params are lost, it's very hard to bruteforce them and yet
     // users ignore all instructions on dashcentral etc. and do not save them...
     // Let's log them here and hope users do not mess with debug.log
@@ -341,7 +341,7 @@ void gobject_vote_conf_help()
 {
     throw std::runtime_error(
                 "gobject vote-conf <governance-hash> <vote> <vote-outcome>\n"
-                "Vote on a governance object by masternode configured in dash.conf\n"
+                "Vote on a governance object by masternode configured in polis.conf\n"
                 "\nArguments:\n"
                 "1. governance-hash   (string, required) hash of the governance object\n"
                 "2. vote              (string, required) vote, possible values: [funding|valid|delete|endorsed]\n"
@@ -396,7 +396,7 @@ UniValue gobject_vote_conf(const JSONRPCRequest& request)
         nFailed++;
         statusObj.push_back(Pair("result", "failed"));
         statusObj.push_back(Pair("errorMessage", "Can't find masternode by collateral output"));
-        resultsObj.push_back(Pair("dash.conf", statusObj));
+        resultsObj.push_back(Pair("polis.conf", statusObj));
         returnObj.push_back(Pair("overall", strprintf("Voted successfully %d time(s) and failed %d time(s).", nSuccessful, nFailed)));
         returnObj.push_back(Pair("detail", resultsObj));
         return returnObj;
@@ -416,7 +416,7 @@ UniValue gobject_vote_conf(const JSONRPCRequest& request)
         nFailed++;
         statusObj.push_back(Pair("result", "failed"));
         statusObj.push_back(Pair("errorMessage", "Failure to sign."));
-        resultsObj.push_back(Pair("dash.conf", statusObj));
+        resultsObj.push_back(Pair("polis.conf", statusObj));
         returnObj.push_back(Pair("overall", strprintf("Voted successfully %d time(s) and failed %d time(s).", nSuccessful, nFailed)));
         returnObj.push_back(Pair("detail", resultsObj));
         return returnObj;
@@ -432,7 +432,7 @@ UniValue gobject_vote_conf(const JSONRPCRequest& request)
         statusObj.push_back(Pair("errorMessage", exception.GetMessage()));
     }
 
-    resultsObj.push_back(Pair("dash.conf", statusObj));
+    resultsObj.push_back(Pair("polis.conf", statusObj));
 
     returnObj.push_back(Pair("overall", strprintf("Voted successfully %d time(s) and failed %d time(s).", nSuccessful, nFailed)));
     returnObj.push_back(Pair("detail", resultsObj));
@@ -889,7 +889,7 @@ UniValue gobject_getcurrentvotes(const JSONRPCRequest& request)
 #ifdef ENABLE_WALLET
             "  vote-alias         - Vote on a governance object by masternode proTxHash\n"
 #endif // ENABLE_WALLET
-            "  vote-conf          - Vote on a governance object by masternode configured in dash.conf\n"
+            "  vote-conf          - Vote on a governance object by masternode configured in polis.conf\n"
 #ifdef ENABLE_WALLET
             "  vote-many          - Vote on a governance object by all masternodes for which the voting key is in the wallet\n"
 #endif // ENABLE_WALLET
@@ -1089,11 +1089,11 @@ UniValue getsuperblockbudget(const JSONRPCRequest& request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafe argNames
   //  --------------------- ------------------------  -----------------------  ------ ----------
-    /* PACGlobal features */
-    { "dash",               "getgovernanceinfo",      &getgovernanceinfo,      true,  {} },
-    { "dash",               "getsuperblockbudget",    &getsuperblockbudget,    true,  {"index"} },
-    { "dash",               "gobject",                &gobject,                true,  {} },
-    { "dash",               "voteraw",                &voteraw,                true,  {} },
+    /* polis features */
+    { "polis",               "getgovernanceinfo",      &getgovernanceinfo,      true,  {} },
+    { "polis",               "getsuperblockbudget",    &getsuperblockbudget,    true,  {"index"} },
+    { "polis",               "gobject",                &gobject,                true,  {} },
+    { "polis",               "voteraw",                &voteraw,                true,  {} },
 
 };
 

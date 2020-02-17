@@ -9,8 +9,8 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between dash-cli and dashd)
- * of a given instance of the PACGlobal system.
+ * CBaseChainParams defines the base parameters (shared between polis-cli and dashd)
+ * of a given instance of the polis system.
  */
 class CBaseChainParams
 {

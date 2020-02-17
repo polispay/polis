@@ -20,7 +20,7 @@ extern CInstantSend instantsend;
 
 /*
     At 15 signatures, 1/2 of the masternode network can be owned by
-    one party without compromising the security of InstaPAC
+    one party without compromising the security of InstantSend
     (1000/2150.0)**10 = 0.00047382219560689856
     (1000/2900.0)**10 = 2.3769498616783657e-05
 
@@ -40,7 +40,7 @@ static const int INSTANTSEND_FAILED_TIMEOUT_SECONDS = 60;
 extern bool fEnableInstantSend;
 
 /**
- * Manages InstaPAC. Processes lock requests, candidates, and votes.
+ * Manages InstantSend. Processes lock requests, candidates, and votes.
  */
 class CInstantSend
 {
@@ -162,7 +162,7 @@ public:
 };
 
 /**
- * An InstaPAC transaction lock request.
+ * An InstantSend transaction lock request.
  */
 class CTxLockRequest
 {
@@ -222,7 +222,7 @@ public:
 };
 
 /**
- * An InstaPAC transaction lock vote. Sent by a masternode in response to a
+ * An InstantSend transaction lock vote. Sent by a masternode in response to a
  * transaction lock request (ix message) to indicate the transaction input can
  * be locked. Contains the proposed transaction's hash and the outpoint being
  * locked along with the masternodes outpoint and signature.
@@ -299,7 +299,7 @@ public:
 };
 
 /**
- * An InstaPAC OutpointLock.
+ * An InstantSend OutpointLock.
  */
 class COutPointLock
 {
@@ -338,7 +338,7 @@ public:
 };
 
 /**
- * An InstaPAC transaction lock candidate.
+ * An InstantSend transaction lock candidate.
  */
 class CTxLockCandidate
 {

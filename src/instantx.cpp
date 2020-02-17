@@ -41,7 +41,7 @@ std::atomic<bool> CInstantSend::isAutoLockBip9Active{false};
 const double CInstantSend::AUTO_IX_MEMPOOL_THRESHOLD = 0.1;
 
 CInstantSend instantsend;
-const std::string CInstantSend::SERIALIZATION_VERSION_STRING = "CInstaPAC-Version-1";
+const std::string CInstantSend::SERIALIZATION_VERSION_STRING = "CInstantSend-Version-1";
 
 // Transaction Locks
 //
@@ -56,7 +56,7 @@ const std::string CInstantSend::SERIALIZATION_VERSION_STRING = "CInstaPAC-Versio
 
 void CInstantSend::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
 {
-    if (fLiteMode) return; // disable all PACGlobal specific functionality
+    if (fLiteMode) return; // disable all polis specific functionality
     if (!llmq::IsOldInstantSendEnabled()) return;
 
     // NOTE: NetMsgType::TXLOCKREQUEST is handled via ProcessMessage() in net_processing.cpp
@@ -80,7 +80,7 @@ void CInstantSend::ProcessMessage(CNode* pfrom, const std::string& strCommand, C
             connman.RemoveAskFor(nVoteHash);
         }
 
-        // Ignore any InstaPAC messages until blockchain is synced
+        // Ignore any InstantSend messages until blockchain is synced
         if (!masternodeSync.IsBlockchainSynced()) return;
 
         {

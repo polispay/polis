@@ -20,7 +20,7 @@ const std::string CSporkManager::SERIALIZATION_VERSION_STRING = "CSporkManager-V
 std::map<int, int64_t> mapSporkDefaults = {
     {SPORK_2_INSTANTSEND_ENABLED,            0},             // ON
     {SPORK_3_INSTANTSEND_BLOCK_FILTERING,    0},             // ON
-    {SPORK_5_INSTANTSEND_MAX_VALUE,          100000},        // 100000 PAC
+    {SPORK_5_INSTANTSEND_MAX_VALUE,          100000},        // 100000 POLIS
     {SPORK_6_NEW_SIGS,                       4070908800ULL}, // OFF
     {SPORK_7_CHOKE_CONTROL,                  4070908800ULL}, // OFF
     {SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT, 1538355542},
@@ -116,7 +116,7 @@ void CSporkManager::CheckAndRemove()
 
 void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
 {
-    if(fLiteMode) return; // disable all PACGlobal specific functionality
+    if(fLiteMode) return; // disable all Polis specific functionality
 
     if (strCommand == NetMsgType::SPORK) {
 

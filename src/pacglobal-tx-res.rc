@@ -16,14 +16,14 @@ BEGIN
     BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
-            VALUE "CompanyName",        "PACGlobal"
-            VALUE "FileDescription",    "pacglobal-tx (CLI PACGlobal transaction editor utility)"
+            VALUE "CompanyName",        "PolisCore"
+            VALUE "FileDescription",    "polis-tx (CLI polis transaction editor utility)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
-            VALUE "InternalName",       "pacglobal-tx"
+            VALUE "InternalName",       "polis-tx"
             VALUE "LegalCopyright",     COPYRIGHT_STR
             VALUE "LegalTrademarks1",   "Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
-            VALUE "OriginalFilename",   "pacglobal-tx.exe"
-            VALUE "ProductName",        "pacglobal-tx"
+            VALUE "OriginalFilename",   "polis-tx.exe"
+            VALUE "ProductName",        "polis-tx"
             VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
         END
     END

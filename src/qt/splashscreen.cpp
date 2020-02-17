@@ -40,8 +40,8 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     // define text to place
     QString titleText           = tr(PACKAGE_NAME);
     QString versionText         = QString(tr("Version %1")).arg(QString::fromStdString(FormatFullVersion()));
-    QString copyrightTextDash   = QChar(0xA9) + QString("2014 ") + QString(tr("The Dash developers"));
-    QString copyrightTextPac    = QChar(0xA9) + QString("2018 ") + QString(tr("The PACGlobal developers"));
+    QString copyrightTextDash   = QChar(0xA9) + QString("2014 ") + QString(tr("The DashCore developers"));
+    QString copyrightTextPac    = QChar(0xA9) + QString("2017 ") + QString(tr("The PolisCore developers"));
     QString titleAddText        = networkStyle->getTitleAddText();
 
     // networkstyle.cpp can't (yet) read themes, so we do it here to get the correct Splash-screen

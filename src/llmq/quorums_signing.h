@@ -143,11 +143,11 @@ public:
     void ProcessMessage(CNode* pnode, const std::string& strCommand, CDataStream& vRecv, CConnman& connman);
 
     // This is called when a recovered signature was was reconstructed from another P2P message and is known to be valid
-    // This is the case for example when a signature appears as part of InstaPAC or ChainLocks
+    // This is the case for example when a signature appears as part of InstantSend or ChainLocks
     void PushReconstructedRecoveredSig(const CRecoveredSig& recoveredSig, const CQuorumCPtr& quorum);
 
     // This is called when a recovered signature can be safely removed from the DB. This is only safe when some other
-    // mechanism prevents possible conflicts. As an example, ChainLocks prevent conflicts in confirmed TXs InstaPAC votes
+    // mechanism prevents possible conflicts. As an example, ChainLocks prevent conflicts in confirmed TXs InstantSend votes
     void RemoveRecoveredSig(Consensus::LLMQType llmqType, const uint256& id);
 
 private:

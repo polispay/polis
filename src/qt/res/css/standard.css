@@ -766,16 +766,16 @@ QDialog#HelpMessageDialog QScrollBar:vertical, QDialog#HelpMessageDialog QScroll
 border:0;
 }
 
-/* About PACGlobal Dialog */
+/* About Polis Dialog */
 QDialog#AboutDialog {
 background-color:#F8F6F6;
 }
 
-QDialog#AboutDialog QLabel#label, QDialog#AboutDialog QLabel#copyrightLabel, QDialog#AboutDialog QLabel#label_2 { /* About PACGlobal Contents */
+QDialog#AboutDialog QLabel#label, QDialog#AboutDialog QLabel#copyrightLabel, QDialog#AboutDialog QLabel#label_2 { /* About Polis Contents */
 margin-left:10px;
 }
 
-QDialog#AboutDialog QLabel#label_2 { /* Margin for About PACGlobal text */
+QDialog#AboutDialog QLabel#label_2 { /* Margin for About Polis text */
 margin-right:10px;
 }
 
@@ -1282,7 +1282,7 @@ padding-top:20px;
 padding-bottom:18px;
 }
 
-QDialog#SendCoinsDialog .QCheckBox#checkUseInstaPAC { /* InstaPAC Checkbox */
+QDialog#SendCoinsDialog .QCheckBox#checkUseInstantSend { /* InstantSend Checkbox */
 color:#616161;
 font-weight:bold;
 background: qradialgradient(cx:0.5, cy:0.5, radius: 0.5, fx:0.5, fy:0.5, stop:0 rgba(248, 246, 246, 128), stop: 1 rgba(0, 0, 0, 0));

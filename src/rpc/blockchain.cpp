@@ -372,8 +372,8 @@ std::string EntryDescriptionString()
            "    \"depends\" : [               (array) unconfirmed transactions used as inputs for this transaction\n"
            "        \"transactionid\",        (string) parent transaction id\n"
            "       ... ],\n"
-           "    \"instantsend\" : true|false, (boolean) True if this transaction was sent as an InstaPAC one\n"
-           "    \"instantlock\" : true|false  (boolean) True if this transaction was locked via InstaPAC\n";
+           "    \"instantsend\" : true|false, (boolean) True if this transaction was sent as an InstantSend one\n"
+           "    \"instantlock\" : true|false  (boolean) True if this transaction was locked via InstantSend\n";
 }
 
 void entryToJSON(UniValue &info, const CTxMemPoolEntry &e)
@@ -1108,8 +1108,8 @@ UniValue gettxout(const JSONRPCRequest& request)
             "     \"hex\" : \"hex\",        (string) \n"
             "     \"reqSigs\" : n,          (numeric) Number of required signatures\n"
             "     \"type\" : \"pubkeyhash\", (string) The type, eg pubkeyhash\n"
-            "     \"addresses\" : [          (array of string) array of dash addresses\n"
-            "        \"address\"     (string) dash address\n"
+            "     \"addresses\" : [          (array of string) array of polis addresses\n"
+            "        \"address\"     (string) polis address\n"
             "        ,...\n"
             "     ]\n"
             "  },\n"

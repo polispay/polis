@@ -66,7 +66,7 @@
 #include <boost/thread.hpp>
 
 #if defined(NDEBUG)
-# error "PACGlobal Core cannot be compiled without assertions."
+# error "Polis Core cannot be compiled without assertions."
 #endif
 
 static std::map<uint256, uint256> mapProofOfStake;
@@ -748,7 +748,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                                         hash.ToString(), ptxConflicting->GetHash().ToString()),
                                 REJECT_INVALID, "txlockreq-tx-mempool-conflict");
             }
-            // Transaction conflicts with mempool and RBF doesn't exist in PACGlobal
+            // Transaction conflicts with mempool and RBF doesn't exist in Polis
             return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
         }
     }
@@ -2060,7 +2060,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
         }
     }
 
-    /// PAC: Check superblock start
+    /// POLIS: Check superblock start
 
     // make sure old budget is the real one
     if (pindex->nHeight == chainparams.GetConsensus().nSuperblockStartBlock &&
@@ -2069,7 +2069,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
             return state.DoS(100, error("ConnectBlock(): invalid superblock start"),
                              REJECT_INVALID, "bad-sb-start");
 
-    /// END PAC
+    /// END POLIS
 
     // BIP16 didn't become active until Apr 1 2012
     int64_t nBIP16SwitchTime = 1333238400;
@@ -2282,7 +2282,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime4 - nTime2), nInputs <= 1 ? 0 : 0.001 * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * 0.000001);
 
 
-    // PAC
+    // POLIS
 
     // It's possible that we simply don't have enough data and this could fail
     // (i.e. block itself could be a correct one and we need to store it),
@@ -2290,7 +2290,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     // the peer who sent us this block is missing some data and wasn't able
     // to recognize that block is actually invalid.
 
-    // PAC : CHECK TRANSACTIONS FOR INSTANTSEND
+    // POLIS : CHECK TRANSACTIONS FOR INSTANTSEND
 
     if (sporkManager.IsSporkActive(SPORK_3_INSTANTSEND_BLOCK_FILTERING)) {
         // Require other nodes to comply, send them some data in case they are missing it.
@@ -2305,7 +2305,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
                     // TODO: relay instantsend data/proof.
                     LOCK(cs_main);
                     mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
-                    return state.DoS(10, error("ConnectBlock(PAC): transaction %s conflicts with transaction lock %s", tx->GetHash().ToString(), hashLocked.ToString()),
+                    return state.DoS(10, error("ConnectBlock(POLIS): transaction %s conflicts with transaction lock %s", tx->GetHash().ToString(), hashLocked.ToString()),
                                      REJECT_INVALID, "conflict-tx-lock");
                 }
             }
@@ -2321,18 +2321,18 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
                 // TODO: relay instantsend data/proof.
                 LOCK(cs_main);
                 mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
-                return state.DoS(10, error("ConnectBlock(PAC): transaction %s conflicts with transaction lock %s", tx->GetHash().ToString(), conflictLock->txid.ToString()),
+                return state.DoS(10, error("ConnectBlock(POLIS): transaction %s conflicts with transaction lock %s", tx->GetHash().ToString(), conflictLock->txid.ToString()),
                                  REJECT_INVALID, "conflict-tx-lock");
             }
         }
     } else {
-        LogPrintf("ConnectBlock(PAC): spork is off, skipping transaction locking checks\n");
+        LogPrintf("ConnectBlock(POLIS): spork is off, skipping transaction locking checks\n");
     }
 
     int64_t nTime5_1 = GetTimeMicros(); nTimeISFilter += nTime5_1 - nTime4;
     LogPrint("bench", "      - IS filter: %.2fms [%.2fs]\n", 0.001 * (nTime5_1 - nTime4), nTimeISFilter * 0.000001);
 
-    // PAC : MODIFIED TO CHECK MASTERNODE PAYMENTS AND SUPERBLOCKS
+    // POLIS : MODIFIED TO CHECK MASTERNODE PAYMENTS AND SUPERBLOCKS
 
     // TODO: resync data (both ways?) and try to reprocess this block later.
     CAmount blockReward = nFees + GetBlockSubsidy(pindex->pprev->nBits, pindex->pprev->nHeight, chainparams.GetConsensus());
@@ -2342,7 +2342,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     LogPrint("bench", "      - GetBlockSubsidy: %.2fms [%.2fs]\n", 0.001 * (nTime5_2 - nTime5_1), nTimeSubsidy * 0.000001);
 
     if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
-        return state.DoS(0, error("ConnectBlock(PAC): %s", strError), REJECT_INVALID, "bad-cb-amount");
+        return state.DoS(0, error("ConnectBlock(POLIS): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }
 
     int64_t nTime5_3 = GetTimeMicros(); nTimeValueValid += nTime5_3 - nTime5_2;
@@ -2355,7 +2355,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
         pindex->nHeight == Params().GetConsensus().nGenerationHeight2) {
         if (!IsBlockPayeeValid(*block.vtx[isProofOfStake], pindex->nHeight, blockReward)) {
             mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
-            return state.DoS(0, error("ConnectBlock(PAC): couldn't find masternode or superblock payments"), REJECT_INVALID, "bad-cb-payee");
+            return state.DoS(0, error("ConnectBlock(POLIS): couldn't find masternode or superblock payments"), REJECT_INVALID, "bad-cb-payee");
        }
     }
 
@@ -2363,16 +2363,16 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     LogPrint("bench", "      - IsBlockPayeeValid: %.2fms [%.2fs]\n", 0.001 * (nTime5_4 - nTime5_3), nTimePayeeValid * 0.000001);
 
     if (!ProcessSpecialTxsInBlock(block, pindex, state, fJustCheck, fScriptChecks)) {
-        return error("ConnectBlock(PAC): ProcessSpecialTxsInBlock for block failed with %s", FormatStateMessage(state));
+        return error("ConnectBlock(POLIS): ProcessSpecialTxsInBlock for block failed with %s", FormatStateMessage(state));
     }
 
     int64_t nTime5_5 = GetTimeMicros(); nTimeProcessSpecial += nTime5_5 - nTime5_4;
     LogPrint("bench", "      - ProcessSpecialTxsInBlock: %.2fms [%.2fs]\n", 0.001 * (nTime5_5 - nTime5_4), nTimeProcessSpecial * 0.000001);
 
     int64_t nTime5 = GetTimeMicros(); nTimePACGlobalSpecific += nTime5 - nTime4;
-    LogPrint("bench", "    - PACGlobal specific: %.2fms [%.2fs]\n", 0.001 * (nTime5 - nTime4), nTimePACGlobalSpecific * 0.000001);
+    LogPrint("bench", "    - Polis specific: %.2fms [%.2fs]\n", 0.001 * (nTime5 - nTime4), nTimePACGlobalSpecific * 0.000001);
 
-    // END PAC
+    // END POLIS
 
     if (fJustCheck)
         return true;

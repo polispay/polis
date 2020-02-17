@@ -1195,7 +1195,7 @@ bool CWallet::AbandonTransaction(const uint256& hashTx)
     // Can't mark abandoned if confirmed or in mempool
     assert(mapWallet.count(hashTx));
     CWalletTx& origtx = mapWallet[hashTx];
-    if (origtx.GetDepthInMainChain() > 0 || origtx.InMempool() || origtx.IsLockedByInstaPAC()) {
+    if (origtx.GetDepthInMainChain() > 0 || origtx.InMempool() || origtx.IsLockedByInstantSend()) {
         return false;
     }
 
@@ -1888,7 +1888,7 @@ void CWallet::ReacceptWalletTransactions()
 
         int nDepth = wtx.GetDepthInMainChain();
 
-        if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0 && !wtx.IsLockedByInstaPAC() && !wtx.isAbandoned()) {
+        if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0 && !wtx.IsLockedByInstantSend() && !wtx.isAbandoned()) {
             mapSorted.insert(std::make_pair(wtx.nOrderPos, &wtx));
         }
     }
@@ -2203,7 +2203,7 @@ bool CWalletTx::IsTrusted() const
         return true;
     if (nDepth < 0)
         return false;
-    if (IsLockedByInstaPAC())
+    if (IsLockedByInstantSend())
         return true;
     if (!bSpendZeroConfChange || !IsFromMe(ISMINE_ALL)) // using wtx's cached debit
         return false;
@@ -2428,7 +2428,7 @@ CAmount CWallet::GetUnconfirmedBalance() const
         for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
-            if (!pcoin->IsTrusted() && pcoin->GetDepthInMainChain() == 0 && !pcoin->IsLockedByInstaPAC() && pcoin->InMempool())
+            if (!pcoin->IsTrusted() && pcoin->GetDepthInMainChain() == 0 && !pcoin->IsLockedByInstantSend() && pcoin->InMempool())
                 nTotal += pcoin->GetAvailableCredit();
         }
     }
@@ -2473,7 +2473,7 @@ CAmount CWallet::GetUnconfirmedWatchOnlyBalance() const
         for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
-            if (!pcoin->IsTrusted() && pcoin->GetDepthInMainChain() == 0 && !pcoin->IsLockedByInstaPAC() && pcoin->InMempool())
+            if (!pcoin->IsTrusted() && pcoin->GetDepthInMainChain() == 0 && !pcoin->IsLockedByInstantSend() && pcoin->InMempool())
                 nTotal += pcoin->GetAvailableWatchOnlyCredit();
         }
     }
@@ -2569,7 +2569,7 @@ static void ApproximateBestSubset(std::vector<std::pair<CAmount, std::pair<const
     int nBestInputCount = 0;
 
     if (!llmq::IsOldInstantSendEnabled()) {
-        // The new system does not require special handling for InstaPAC as this is all done in CInstantSendManager.
+        // The new system does not require special handling for InstantSend as this is all done in CInstantSendManager.
         // There is also no need for an extra fee anymore.
         fUseInstantSend = false;
     }
@@ -2651,7 +2651,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const int nConfMin
     nValueRet = 0;
 
     if (!llmq::IsOldInstantSendEnabled()) {
-        // The new system does not require special handling for InstaPAC as this is all done in CInstantSendManager.
+        // The new system does not require special handling for InstantSend as this is all done in CInstantSendManager.
         // There is also no need for an extra fee anymore.
         fUseInstantSend = false;
     }
@@ -2696,7 +2696,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const int nConfMin
 
             const CWalletTx *pcoin = output.tx;
 
-            bool fLockedByIS = pcoin->IsLockedByInstaPAC();
+            bool fLockedByIS = pcoin->IsLockedByInstantSend();
 
 //            if (fDebug) LogPrint("selectcoins", "value %s confirms %d\n", FormatMoney(pcoin->vout[output.i].nValue), output.nDepth);
             if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs) && !fLockedByIS)
@@ -3342,7 +3342,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletT
                                 int& nChangePosInOut, std::string& strFailReason, const CCoinControl* coinControl, bool sign, AvailableCoinsType nCoinType, bool fUseInstantSend, int nExtraPayloadSize)
 {
     if (!llmq::IsOldInstantSendEnabled()) {
-        // The new system does not require special handling for InstaPAC as this is all done in CInstantSendManager.
+        // The new system does not require special handling for InstantSend as this is all done in CInstantSendManager.
         // There is also no need for an extra fee anymore.
         fUseInstantSend = false;
     }
@@ -3468,14 +3468,14 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletT
                         strFailReason = _("Insufficient funds.");
                         if (fUseInstantSend) {
                             // could be not true but most likely that's the reason
-                            strFailReason += " " + strprintf(_("InstaPAC requires inputs with at least %d confirmations, you might need to wait a few minutes and try again."), nInstantSendConfirmationsRequired);
+                            strFailReason += " " + strprintf(_("InstantSend requires inputs with at least %d confirmations, you might need to wait a few minutes and try again."), nInstantSendConfirmationsRequired);
                         }
                     }
 
                     return false;
                 }
                 if (fUseInstantSend && nValueIn > sporkManager.GetSporkValue(SPORK_5_INSTANTSEND_MAX_VALUE)*COIN) {
-                    strFailReason += " " + strprintf(_("InstaPAC doesn't support sending values that high yet. Transactions are currently limited to %1 PAC."), sporkManager.GetSporkValue(SPORK_5_INSTANTSEND_MAX_VALUE));
+                    strFailReason += " " + strprintf(_("InstantSend doesn't support sending values that high yet. Transactions are currently limited to %1 POLIS."), sporkManager.GetSporkValue(SPORK_5_INSTANTSEND_MAX_VALUE));
                     return false;
                 }
 
@@ -3493,7 +3493,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletT
 
                         // Fill a vout to ourself
                         // TODO: pass in scriptChange instead of reservekey so
-                        // change transaction isn't always pay-to-dash-address
+                        // change transaction isn't always pay-to-polis-address
                         CScript scriptChange;
 
                         // coin control: send change to custom address
@@ -4453,7 +4453,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
                 continue;
 
             int nDepth = pcoin->GetDepthInMainChain();
-            if ((nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? 0 : 1)) && !pcoin->IsLockedByInstaPAC())
+            if ((nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? 0 : 1)) && !pcoin->IsLockedByInstantSend())
                 continue;
 
             for (unsigned int i = 0; i < pcoin->tx->vout.size(); i++)
@@ -4589,7 +4589,7 @@ CAmount CWallet::GetAccountBalance(CWalletDB& walletdb, const std::string& strAc
         CAmount nReceived, nSent, nFee;
         wtx.GetAccountAmounts(strAccount, nReceived, nSent, nFee, filter);
 
-        if (nReceived != 0 && ((wtx.GetDepthInMainChain() >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstaPAC())))
+        if (nReceived != 0 && ((wtx.GetDepthInMainChain() >= nMinDepth) || (fAddLocked && wtx.IsLockedByInstantSend())))
             nBalance += nReceived;
         nBalance -= nSent + nFee;
     }
@@ -5578,12 +5578,12 @@ int CMerkleTx::GetDepthInMainChain(const CBlockIndex* &pindexRet) const
     return nResult;
 }
 
-bool CMerkleTx::IsLockedByInstaPAC() const
+bool CMerkleTx::IsLockedByInstantSend() const
 {
     return instantsend.IsLockedInstantSendTransaction(GetHash()) || llmq::quorumInstantSendManager->IsLocked(GetHash());
 }
 
-bool CMerkleTx::IsLockedByLLMQInstaPAC() const
+bool CMerkleTx::IsLockedByLLMQInstantSend() const
 {
     return llmq::quorumInstantSendManager->IsLocked(GetHash());
 }
