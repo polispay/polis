@@ -237,6 +237,11 @@ public:
 
         consensus.nStakeMinAge = 10 * 60;
         consensus.nStakeMaxAge = 60 * 60 * 24 * 30;
+        consensus.nStakeMinAgeSwitchTime = -1;
+        consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
+        consensus.nStakeMinAgeSwitchTime = 1561734000;
+        consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
+        consensus.nPoSDiffAdjustRange = 5;
         consensus.nModifierInterval = 60 * 20;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;

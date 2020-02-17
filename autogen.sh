@@ -1,3 +1,4 @@
+
 #!/bin/sh
 # Copyright (c) 2013-2016 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying

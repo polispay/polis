@@ -182,7 +182,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     if(fProofOfStake) {
         assert(pwalletMain);
         boost::this_thread::interruption_point();
-        pblock->nBits = GetNextWorkRequired(pindexPrev, chainparams.GetConsensus());
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());
         CMutableTransaction coinstakeTx;
         int64_t nSearchTime = pblock->nTime; // search to current time
         bool fStakeFound = false;
@@ -266,7 +266,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
     if(!fProofOfStake)
         UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
-    pblock->nBits          = GetNextWorkRequired(pindexPrev, chainparams.GetConsensus());
+    pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());
     pblock->nNonce         = 0;
     pblocktemplate->nPrevBits = pindexPrev->nBits;
     pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(*pblock->vtx[0]);

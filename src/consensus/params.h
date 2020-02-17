@@ -183,6 +183,11 @@ struct Params {
     int nPowKGWHeight;
     int nPowDGWHeight;
     int nLastPoWBlock;
+    unsigned int nWSTargetDiff;
+    int nPoSDiffAdjustRange;
+    int nMaxBlockSpacingFixDeploymentHeight;
+    int nStakeMinAgeSwitchTime;
+    int nPosMitigationSwitchTime;
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
