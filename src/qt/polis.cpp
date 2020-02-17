@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/pacglobal-config.h"
+#include "config/polis-config.h"
 #endif
 
 #include "bitcoingui.h"
@@ -586,7 +586,7 @@ int main(int argc, char *argv[])
 #endif
 
     Q_INIT_RESOURCE(polis);
-    Q_INIT_RESOURCE(dash_locale);
+    Q_INIT_RESOURCE(polis_locale);
 
     BitcoinApplication app(argc, argv);
 #if QT_VERSION > 0x050100

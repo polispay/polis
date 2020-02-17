@@ -3,33 +3,33 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-bin_PROGRAMS += qt/pacglobal-qt
-EXTRA_LIBRARIES += qt/libpacglobalqt.a
+bin_PROGRAMS += qt/polis-qt
+EXTRA_LIBRARIES += qt/libpolisqt.a
 
 # polis qt core #
 QT_TS = \
-  qt/locale/dash_ar.ts \
-  qt/locale/dash_bg.ts \
-  qt/locale/dash_de.ts \
-  qt/locale/dash_en.ts \
-  qt/locale/dash_es.ts \
-  qt/locale/dash_fi.ts \
-  qt/locale/dash_fr.ts \
-  qt/locale/dash_it.ts \
-  qt/locale/dash_ja.ts \
-  qt/locale/dash_ko.ts \
-  qt/locale/dash_nl.ts \
-  qt/locale/dash_pl.ts \
-  qt/locale/dash_pt.ts \
-  qt/locale/dash_ru.ts \
-  qt/locale/dash_sk.ts \
-  qt/locale/dash_sv.ts \
-  qt/locale/dash_th.ts \
-  qt/locale/dash_tr.ts \
-  qt/locale/dash_vi.ts \
-  qt/locale/dash_zh_CN.ts \
-  qt/locale/dash_zh_TW.ts \
-  qt/locale/dash_ua.ts
+  qt/locale/polis_ar.ts \
+  qt/locale/polis_bg.ts \
+  qt/locale/polis_de.ts \
+  qt/locale/polis_en.ts \
+  qt/locale/polis_es.ts \
+  qt/locale/polis_fi.ts \
+  qt/locale/polis_fr.ts \
+  qt/locale/polis_it.ts \
+  qt/locale/polis_ja.ts \
+  qt/locale/polis_ko.ts \
+  qt/locale/polis_nl.ts \
+  qt/locale/polis_pl.ts \
+  qt/locale/polis_pt.ts \
+  qt/locale/polis_ru.ts \
+  qt/locale/polis_sk.ts \
+  qt/locale/polis_sv.ts \
+  qt/locale/polis_th.ts \
+  qt/locale/polis_tr.ts \
+  qt/locale/polis_vi.ts \
+  qt/locale/polis_zh_CN.ts \
+  qt/locale/polis_zh_TW.ts \
+  qt/locale/polis_ua.ts
 
 QT_FORMS_UI = \
   qt/forms/addressbookpage.ui \
@@ -117,10 +117,10 @@ QT_MOC = \
   qt/overviewpage.moc \
   qt/rpcconsole.moc
 
-QT_QRC_CPP = qt/qrc_dash.cpp
+QT_QRC_CPP = qt/qrc_polis.cpp
 QT_QRC = qt/polis.qrc
-QT_QRC_LOCALE_CPP = qt/qrc_dash_locale.cpp
-QT_QRC_LOCALE = qt/dash_locale.qrc
+QT_QRC_LOCALE_CPP = qt/qrc_polis_locale.cpp
+QT_QRC_LOCALE = qt/polis_locale.qrc
 
 PROTOBUF_CC = qt/paymentrequest.pb.cc
 PROTOBUF_H = qt/paymentrequest.pb.h
@@ -320,7 +320,7 @@ RES_IMAGES = \
   qt/res/images/about.png \
   qt/res/images/splash.png \
   qt/res/images/splash_testnet.png \
-  qt/res/images/dash_logo_horizontal.png \
+  qt/res/images/polis_logo_horizontal.png \
   qt/res/images/unchecked.png \
   qt/res/images/checked.png \
   qt/res/images/downArrow.png \
@@ -336,19 +336,19 @@ RES_CSS = \
 
 RES_MOVIES = $(wildcard $(srcdir)/qt/res/movies/spinner-*.png)
 
-BITCOIN_RC = qt/res/pacglobal-qt-res.rc
+BITCOIN_RC = qt/res/polis-qt-res.rc
 
 BITCOIN_QT_INCLUDES = -I$(builddir)/qt -I$(srcdir)/qt -I$(srcdir)/qt/forms \
   -I$(builddir)/qt/forms -DQT_NO_KEYWORDS
 
-qt_libpacglobalqt_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
+qt_libpolisqt_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
   $(QT_INCLUDES) $(QT_DBUS_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
-qt_libpacglobalqt_a_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
+qt_libpolisqt_a_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
 
-qt_libpacglobalqt_a_SOURCES = $(BITCOIN_QT_CPP) $(BITCOIN_QT_H) $(QT_FORMS_UI) \
+qt_libpolisqt_a_SOURCES = $(BITCOIN_QT_CPP) $(BITCOIN_QT_H) $(QT_FORMS_UI) \
   $(QT_QRC) $(QT_QRC_LOCALE) $(QT_TS) $(PROTOBUF_PROTO) $(RES_ICONS) $(RES_IMAGES) $(RES_CSS) $(RES_MOVIES)
 
-nodist_qt_libpacglobalqt_a_SOURCES = $(QT_MOC_CPP) $(QT_MOC) $(PROTOBUF_CC) \
+nodist_qt_libpolisqt_a_SOURCES = $(QT_MOC_CPP) $(QT_MOC) $(PROTOBUF_CC) \
   $(PROTOBUF_H) $(QT_QRC_CPP) $(QT_QRC_LOCALE_CPP)
 
 # forms/foo.h -> forms/ui_foo.h
@@ -357,55 +357,55 @@ QT_FORMS_H=$(join $(dir $(QT_FORMS_UI)),$(addprefix ui_, $(notdir $(QT_FORMS_UI:
 # Most files will depend on the forms and moc files as includes. Generate them
 # before anything else.
 $(QT_MOC): $(QT_FORMS_H)
-$(qt_libpacglobalqt_a_OBJECTS) $(qt_pacglobal_qt_OBJECTS) : | $(QT_MOC)
+$(qt_libpolisqt_a_OBJECTS) $(qt_polis_qt_OBJECTS) : | $(QT_MOC)
 
 #Generating these with a half-written protobuf header leads to wacky results.
 #This makes sure it's done.
 $(QT_MOC): $(PROTOBUF_H)
 $(QT_MOC_CPP): $(PROTOBUF_H)
 
-# pacglobal-qt binary #
-qt_pacglobal_qt_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
+# polis-qt binary #
+qt_polis_qt_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
   $(QT_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
-qt_pacglobal_qt_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
+qt_polis_qt_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
 
-qt_pacglobal_qt_SOURCES = qt/polis.cpp
+qt_polis_qt_SOURCES = qt/polis.cpp
 if TARGET_DARWIN
-  qt_pacglobal_qt_SOURCES += $(BITCOIN_MM)
+  qt_polis_qt_SOURCES += $(BITCOIN_MM)
 endif
 if TARGET_WINDOWS
-  qt_pacglobal_qt_SOURCES += $(BITCOIN_RC)
+  qt_polis_qt_SOURCES += $(BITCOIN_RC)
 endif
-qt_pacglobal_qt_LDADD = qt/libpacglobalqt.a $(LIBBITCOIN_SERVER)
+qt_polis_qt_LDADD = qt/libpolisqt.a $(LIBBITCOIN_SERVER)
 if ENABLE_WALLET
-qt_pacglobal_qt_LDADD += $(LIBBITCOIN_WALLET)
+qt_polis_qt_LDADD += $(LIBBITCOIN_WALLET)
 endif
 if ENABLE_ZMQ
-qt_pacglobal_qt_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
+qt_polis_qt_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
 endif
-qt_pacglobal_qt_LDADD += $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CONSENSUS) $(LIBBITCOIN_CRYPTO) $(LIBUNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
+qt_polis_qt_LDADD += $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CONSENSUS) $(LIBBITCOIN_CRYPTO) $(LIBUNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
   $(BACKTRACE_LIB) $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1) \
   $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
-qt_pacglobal_qt_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
-qt_pacglobal_qt_LIBTOOLFLAGS = --tag CXX
+qt_polis_qt_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+qt_polis_qt_LIBTOOLFLAGS = --tag CXX
 
 #locale/foo.ts -> locale/foo.qm
 QT_QM=$(QT_TS:.ts=.qm)
 
 SECONDARY: $(QT_QM)
 
-$(srcdir)/qt/dashstrings.cpp: $(libpacglobal_server_a_SOURCES) $(libpacglobal_wallet_a_SOURCES) $(libpacglobal_common_a_SOURCES) $(libpacglobal_zmq_a_SOURCES) $(libpacglobal_consensus_a_SOURCES) $(libpacglobal_util_a_SOURCES)
+$(srcdir)/qt/polisstrings.cpp: $(libpolis_server_a_SOURCES) $(libpolis_wallet_a_SOURCES) $(libpolis_common_a_SOURCES) $(libpolis_zmq_a_SOURCES) $(libpolis_consensus_a_SOURCES) $(libpolis_util_a_SOURCES)
 	@test -n $(XGETTEXT) || echo "xgettext is required for updating translations"
 	$(AM_V_GEN) cd $(srcdir); XGETTEXT=$(XGETTEXT) PACKAGE_NAME="$(PACKAGE_NAME)" COPYRIGHT_HOLDERS="$(COPYRIGHT_HOLDERS)" COPYRIGHT_HOLDERS_SUBSTITUTION="$(COPYRIGHT_HOLDERS_SUBSTITUTION)" $(PYTHON) ../share/qt/extract_strings_qt.py $^
 
-translate: $(srcdir)/qt/dashstrings.cpp $(QT_FORMS_UI) $(QT_FORMS_UI) $(BITCOIN_QT_BASE_CPP) qt/polis.cpp $(BITCOIN_QT_WINDOWS_CPP) $(BITCOIN_QT_WALLET_CPP) $(BITCOIN_QT_H) $(BITCOIN_MM)
+translate: $(srcdir)/qt/polisstrings.cpp $(QT_FORMS_UI) $(QT_FORMS_UI) $(BITCOIN_QT_BASE_CPP) qt/polis.cpp $(BITCOIN_QT_WINDOWS_CPP) $(BITCOIN_QT_WALLET_CPP) $(BITCOIN_QT_H) $(BITCOIN_MM)
 	@test -n $(LUPDATE) || echo "lupdate is required for updating translations"
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(LUPDATE) $^ -locations relative -no-obsolete -ts $(srcdir)/qt/locale/dash_en.ts
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(LUPDATE) $^ -locations relative -no-obsolete -ts $(srcdir)/qt/locale/polis_en.ts
 
 $(QT_QRC_LOCALE_CPP): $(QT_QRC_LOCALE) $(QT_QM)
 	@test -f $(RCC)
 	@cp -f $< $(@D)/temp_$(<F)
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) $(RCCFLAGS) -name dash_locale $(@D)/temp_$(<F) | \
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) $(RCCFLAGS) -name polis_locale $(@D)/temp_$(<F) | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
 	@rm $(@D)/temp_$(<F)
 
@@ -414,14 +414,14 @@ $(QT_QRC_CPP): $(QT_QRC) $(QT_FORMS_H) $(RES_ICONS) $(RES_IMAGES) $(RES_CSS) $(R
 	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) $(RCCFLAGS) -name polis $< | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
 
-CLEAN_QT = $(nodist_qt_libpacglobalqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno
+CLEAN_QT = $(nodist_qt_libpolisqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno
 
 CLEANFILES += $(CLEAN_QT)
 
-dash_qt_clean: FORCE
-	rm -f $(CLEAN_QT) $(qt_libpacglobalqt_a_OBJECTS) $(qt_pacglobal_qt_OBJECTS) qt/pacglobal-qt$(EXEEXT) $(LIBBITCOINQT)
+polis_qt_clean: FORCE
+	rm -f $(CLEAN_QT) $(qt_libpolisqt_a_OBJECTS) $(qt_polis_qt_OBJECTS) qt/polis-qt$(EXEEXT) $(LIBBITCOINQT)
 
-dash_qt : qt/pacglobal-qt$(EXEEXT)
+polis_qt : qt/polis-qt$(EXEEXT)
 
 ui_%.h: %.ui
 	@test -f $(UIC)

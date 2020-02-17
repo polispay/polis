@@ -318,12 +318,12 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0xf3939e4de05e537431ef32bbebd9bc7c4e701f7205d72016f04686557af58dbf"));
 
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("pacglobal.io", "seed2.pacglobal.io"));
-        vSeeds.push_back(CDNSSeedData("pacglobal.io", "seed3.pacglobal.io"));
+        vSeeds.push_back(CDNSSeedData("polis.io", "seed2.polis.io"));
+        vSeeds.push_back(CDNSSeedData("polis.io", "seed3.polis.io"));
         vSeeds.push_back(CDNSSeedData("pacnode.net", "seed0.pacnode.net"));
         vSeeds.push_back(CDNSSeedData("pacnode.net", "seed1.pacnode.net"));
-        vSeeds.push_back(CDNSSeedData("pacglobal.io", "seed0.pacglobal.io"));
-        vSeeds.push_back(CDNSSeedData("pacglobal.io", "seed1.pacglobal.io"));
+        vSeeds.push_back(CDNSSeedData("polis.io", "seed0.polis.io"));
+        vSeeds.push_back(CDNSSeedData("polis.io", "seed1.polis.io"));
         vSeeds.push_back(CDNSSeedData("pacnode.net", "seed2.pacnode.net"));
         vSeeds.push_back(CDNSSeedData("pacnode.net", "seed3.pacnode.net"));
 
@@ -671,7 +671,7 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        //vSeeds.push_back(CDNSSeedData("dashevo.org",  "devnet-seed.dashevo.org"));
+        //vSeeds.push_back(CDNSSeedData("polisevo.org",  "devnet-seed.polisevo.org"));
 
         // Testnet polis addresses start with 'y'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,140);

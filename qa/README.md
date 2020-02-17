@@ -50,9 +50,9 @@ Possible options, which apply to each individual test run:
 
 ```
   -h, --help            show this help message and exit
-  --nocleanup           Leave dashds and test.* datadir on exit or error
-  --noshutdown          Don't stop dashds after the test execution
-  --srcdir=SRCDIR       Source directory containing dashd/polis-cli
+  --nocleanup           Leave polisds and test.* datadir on exit or error
+  --noshutdown          Don't stop polisds after the test execution
+  --srcdir=SRCDIR       Source directory containing polisd/polis-cli
                         (default: ../../src)
   --tmpdir=TMPDIR       Root directory for datadirs
   --tracerpc            Print out all RPC calls as they are made
@@ -77,7 +77,7 @@ to recover with:
 
 ```bash
 rm -rf cache
-killall dashd
+killall polisd
 ```
 
 Writing tests

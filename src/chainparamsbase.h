@@ -9,7 +9,7 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between polis-cli and dashd)
+ * CBaseChainParams defines the base parameters (shared between polis-cli and polisd)
  * of a given instance of the polis system.
  */
 class CBaseChainParams

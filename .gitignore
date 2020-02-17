@@ -6,13 +6,13 @@ reset-files.bash
 *.tar.gz
 
 *.exe
-src/pacglobal
-src/pacglobal
-src/pacglobal-cli
-src/pacglobal-tx
-src/test/test_pacglobal
-src/qt/test/test_pacglobal-qt
-src/bench/bench_pacglobal
+src/polisd
+src/polis
+src/polis-cli
+src/polis-tx
+src/test/test_polis
+src/qt/test/test_polis-qt
+src/bench/bench_polis
 
 # autoreconf
 Makefile.in
@@ -35,8 +35,8 @@ config.log
 config.status
 configure
 libtool
-src/config/pacglobal-config.h
-src/config/pacglobal-config.h.in
+src/config/polis-config.h
+src/config/polis-config.h.in
 src/config/stamp-h1
 share/setup.nsi
 share/qt/Info.plist
@@ -81,13 +81,13 @@ libconftest.dylib*
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
-pacglobal-qt
+polis-qt
 Polis-Qt.app
 !/depends/Makefile
 
 # Unit-tests
 Makefile.test
-pacglobal-qt_test
+polis-qt_test
 src/test/buildenv.py
 
 # Resources cpp
@@ -103,7 +103,7 @@ dist/
 *.gcno
 *.gcda
 /*.info
-test_pacglobal.coverage/
+test_polis.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -122,15 +122,15 @@ qa/cache/*
 .autotools
 /doc/doxygen/
 
-libpacglobalconsensus.pc
+libpolisconsensus.pc
 contrib/devtools/split-debug.sh
-src/qt/pacglobal-qt.bash
+src/qt/polis-qt.bash
 qa/pull-tester/tests-config.sh
 
 #development symlinks
-pacglobal-cli
-pacglobald
-pacglobal-qt
+polis-cli
+polisd
+polis-qt
 make
 
 /docker/bin

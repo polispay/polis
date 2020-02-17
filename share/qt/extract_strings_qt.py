@@ -11,7 +11,7 @@ import operator
 import os
 import sys
 
-OUT_CPP="qt/dashstrings.cpp"
+OUT_CPP="qt/polisstrings.cpp"
 EMPTY=['""']
 
 def parse_po(text):
@@ -75,7 +75,7 @@ f.write("""
 #define UNUSED
 #endif
 """)
-f.write('static const char UNUSED *dash_strings[] = {\n')
+f.write('static const char UNUSED *polis_strings[] = {\n')
 f.write('QT_TRANSLATE_NOOP("polis-core", "%s"),\n' % (os.getenv('PACKAGE_NAME'),))
 f.write('QT_TRANSLATE_NOOP("polis-core", "%s"),\n' % (os.getenv('COPYRIGHT_HOLDERS'),))
 if os.getenv('COPYRIGHT_HOLDERS_SUBSTITUTION') != os.getenv('PACKAGE_NAME'):

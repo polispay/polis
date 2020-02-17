@@ -5,7 +5,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/pacglobal-config.h"
+#include "config/polis-config.h"
 #endif
 
 #include "util.h"
@@ -125,8 +125,8 @@ bool fLiteMode = false;
 */
 int nWalletBackups = 10;
 
-const char * const BITCOIN_CONF_FILENAME = "pacglobal.conf";
-const char * const BITCOIN_PID_FILENAME = "pacglobal.pid";
+const char * const BITCOIN_CONF_FILENAME = "polis.conf";
+const char * const BITCOIN_PID_FILENAME = "polis.pid";
 
 CCriticalSection cs_args;
 std::unordered_map<std::string, std::string> mapArgs;
@@ -288,7 +288,7 @@ bool LogAcceptCategory(const char* category)
                 ptrCategory.reset(new std::set<std::string>(categories.begin(), categories.end()));
                 // thread_specific_ptr automatically deletes the set when the thread ends.
                 // "polis" is a composite category enabling all Polis-related debug output
-                if(ptrCategory->count(std::string("pacglobal"))) {
+                if(ptrCategory->count(std::string("polis"))) {
                     ptrCategory->insert(std::string("chainlocks"));
                     ptrCategory->insert(std::string("gobject"));
                     ptrCategory->insert(std::string("instantsend"));
@@ -571,7 +571,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\PACGlobalCore
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\PACGlobalCore
     // Mac: ~/Library/Application Support/PACGlobalCore
-    // Unix: ~/.dashcore
+    // Unix: ~/.poliscore
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "PolisCore";

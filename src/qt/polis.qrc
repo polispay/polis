@@ -62,7 +62,7 @@
     </qresource>
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>
-        <file alias="dash_logo_horizontal">res/images/dash_logo_horizontal.png</file>
+        <file alias="polis_logo_horizontal">res/images/polis_logo_horizontal.png</file>
         <file alias="unchecked">res/images/unchecked.png</file>
         <file alias="checked">res/images/checked.png</file>
         <file alias="downArrow">res/images/downArrow.png</file>
