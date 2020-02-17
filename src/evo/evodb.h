@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_EVODB_H
-#define DASH_EVODB_H
+#ifndef POLIS_EVODB_H
+#define POLIS_EVODB_H
 
 #include "dbwrapper.h"
 #include "sync.h"

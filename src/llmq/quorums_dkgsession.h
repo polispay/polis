@@ -2,8 +2,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_QUORUMS_DKGSESSION_H
-#define DASH_QUORUMS_DKGSESSION_H
+#ifndef POLIS_QUORUMS_DKGSESSION_H
+#define POLIS_QUORUMS_DKGSESSION_H
 
 #include "consensus/params.h"
 #include "net.h"
@@ -344,4 +344,4 @@ void SetSimulatedDKGErrorRate(const std::string& type, double rate);
 
 }
 
-#endif //PAC_QUORUMS_DKGSESSION_H
+#endif //POLIS_QUORUMS_DKGSESSION_H

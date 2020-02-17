@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_PROVIDERTX_H
-#define DASH_PROVIDERTX_H
+#ifndef POLIS_PROVIDERTX_H
+#define POLIS_PROVIDERTX_H
 
 #include "bls/bls.h"
 #include "consensus/validation.h"

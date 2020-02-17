@@ -1,7 +1,7 @@
 // Copyright (c) 2014-2018 The Dash Core developers
 // Distributed under the MIT software license, see the accompanying
-#ifndef DASH_HDCHAIN_H
-#define DASH_HDCHAIN_H
+#ifndef POLIS_HDCHAIN_H
+#define POLIS_HDCHAIN_H
 
 #include "key.h"
 #include "sync.h"

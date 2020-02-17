@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_QUORUMS_UTILS_H
-#define DASH_QUORUMS_UTILS_H
+#ifndef POLIS_QUORUMS_UTILS_H
+#define POLIS_QUORUMS_UTILS_H
 
 #include "consensus/params.h"
 #include "net.h"
@@ -69,4 +69,4 @@ public:
 
 }
 
-#endif//PAC_QUORUMS_UTILS_H
+#endif//POLIS_QUORUMS_UTILS_H

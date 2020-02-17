@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_SIMPLIFIEDMNS_H
-#define DASH_SIMPLIFIEDMNS_H
+#ifndef POLIS_SIMPLIFIEDMNS_H
+#define POLIS_SIMPLIFIEDMNS_H
 
 #include "bls/bls.h"
 #include "merkleblock.h"

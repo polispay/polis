@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_CBTX_H
-#define DASH_CBTX_H
+#ifndef POLIS_CBTX_H
+#define POLIS_CBTX_H
 
 #include "consensus/validation.h"
 #include "primitives/transaction.h"

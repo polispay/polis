@@ -1,8 +1,8 @@
 /* src/config/polis-config.h.in.  Generated from configure.ac by autoheader.  */
 
-#ifndef DASH_CONFIG_H
+#ifndef POLIS_CONFIG_H
 
-#define DASH_CONFIG_H
+#define POLIS_CONFIG_H
 
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
@@ -327,7 +327,7 @@
 #undef LT_OBJDIR
 
 /* Define to the address where bug reports for this package should be sent. */
-#undef PACKAGE_BUGREPORT
+#undef POLISKAGE_BUGREPORT
 
 /* Define to the full name of this package. */
 #undef PACKAGE_NAME
@@ -402,4 +402,4 @@
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
 
-#endif //DASH_CONFIG_H
+#endif //POLIS_CONFIG_H

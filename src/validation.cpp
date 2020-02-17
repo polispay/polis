@@ -1186,70 +1186,63 @@ double GetSubsidyMultiplier(int nPrevHeight, int nSubsidyAdjustmentInterval)
 
 CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params& consensusParams, bool fSuperblockPartOnly)
 {
-    // proof of stake
-    if (nPrevHeight + 1 > Params().GetConsensus().nLastPoWBlock ||
-        Params().NetworkIDString() == CBaseChainParams::TESTNET)
-    {
-        if (fSuperblockPartOnly) {
-            if (nPrevHeight < 1471680)      return 10119 * COIN;
-            else if (nPrevHeight < 3994560) return 12649 * COIN;
-            else if (nPrevHeight < 4204800) return 9486 * COIN;
-            else if (nPrevHeight < 4414050) return 7589 * COIN;
-            else if (nPrevHeight < 4835520) return 5059 * COIN;
-            else                            return 2529 * COIN;
-        }
+    CAmount nSubsidyBase = 10;
+    /*
+    NOTE:   unlike bitcoin we are using PREVIOUS block height here,
+            might be a good idea to change this to use prev bits
+            but current height to avoid confusion.
+    */
+    // Old Block reward
+    if(nPrevHeight <= 4) {nSubsidyBase = 50000;}
+    if(nPrevHeight == 9) {nSubsidyBase = 1;}
+    if(nPrevHeight == 19) {nSubsidyBase = 1;}
+    if(nPrevHeight == 719) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 1439) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 2159) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 2879) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 3599) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 4319) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 5039) {nSubsidyBase = 1000;}
+    if(nPrevHeight > 6000) {nSubsidyBase = 20;}
+    if(nPrevHeight == 10079) {nSubsidyBase = 2000;}
+    if(nPrevHeight == 15119) {nSubsidyBase = 2000;}
+    if(nPrevHeight == 20159) {nSubsidyBase = 2000;}
+    if(nPrevHeight == 40319) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 60479) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 80639) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 100799) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 120959) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 141119) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 161279) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 201599) {nSubsidyBase = 5000;}
 
-        if (Params().NetworkIDString() == CBaseChainParams::TESTNET &&
-            nPrevHeight < Params().GetConsensus().nLastPoWBlock)
-        {
-	    return 1000000 * COIN;
-        }
+    // New Block Reward
+    if(nPrevHeight > 201599) {nSubsidyBase = 20;}
 
-        if (nPrevHeight + 1 < Params().GetConsensus().DIP0003EnforcementHeight)
-            return GetMasternodePayment(nPrevHeight + 1, 0) + (1 * COIN);
-        else
-            return GetMasternodePayment(nPrevHeight + 1, 0) + (100 * COIN);
+    // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
+    CAmount nSubsidy = nSubsidyBase * COIN;
+
+    // yearly decline of production by ~20% per year, projected ~25M coins max by year 2043+.
+    for (int i = consensusParams.nSubsidyHalvingInterval; i <= nPrevHeight; i += consensusParams.nSubsidyHalvingInterval) {
+        nSubsidy -= nSubsidy/5;
     }
 
-    // proof of work
-    CAmount nSubsidyBase;
-    if (nPrevHeight < 100) nSubsidyBase = 35500000;
-    else                   nSubsidyBase = 23000;
+    // this is only active on devnets
+    if (nPrevHeight < consensusParams.nHighSubsidyBlocks) {
+        nSubsidy *= consensusParams.nHighSubsidyFactor;
+    }
 
-    double dSubsidyMultiplier = GetSubsidyMultiplier(nPrevHeight, consensusParams.nSubsidyHalvingInterval);
-    CAmount nSubsidy = nSubsidyBase * COIN * dSubsidyMultiplier;
-    CAmount nSuperblockPart = (nPrevHeight > consensusParams.nBudgetPaymentsStartBlock) ? nSubsidy / 5 : 0;
+    // Hard fork to reduce the block reward by 10 extra percent (allowing budget/superblocks)
+    CAmount nSuperblockPart = (nPrevHeight > consensusParams.nBudgetPaymentsStartBlock) ? nSubsidy/10 : 0;
+
     return fSuperblockPartOnly ? nSuperblockPart : nSubsidy - nSuperblockPart;
 }
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
-    // proof of stake
-    if (nHeight > Params().GetConsensus().nLastPoWBlock ||
-        Params().NetworkIDString() == CBaseChainParams::TESTNET)
-    {
-        if (nHeight < 1471681)      return 8280 * COIN;
-        else if (nHeight < 3994561) return 10350 * COIN;
-        else if (nHeight < 4204801) return 7762 * COIN;
-        else if (nHeight < 4414051) return 6210 * COIN;
-        else if (nHeight < 4835521) return 4140 * COIN;
-        else                        return 2070 * COIN;
-    }
-
-    // proof of work
-    CAmount ret = blockValue / 5; // start at 20%
-    int nMNPIBlock  = Params().GetConsensus().nMasternodePaymentsIncreaseBlock;
-    int nMNPIPeriod = Params().GetConsensus().nMasternodePaymentsIncreasePeriod;
-    if (nHeight > nMNPIBlock)                     ret += blockValue / 20; // 158000 - 25.0% - 2014-10-24
-    if (nHeight > nMNPIBlock + (nMNPIPeriod * 1)) ret += blockValue / 20; // 175280 - 30.0% - 2014-11-25
-    if (nHeight > nMNPIBlock + (nMNPIPeriod * 2)) ret += blockValue / 20; // 192560 - 35.0% - 2014-12-26
-    if (nHeight > nMNPIBlock + (nMNPIPeriod * 3)) ret += blockValue / 40; // 209840 - 37.5% - 2015-01-26
-    if (nHeight > nMNPIBlock + (nMNPIPeriod * 4)) ret += blockValue / 40; // 227120 - 40.0% - 2015-02-27
-    if (nHeight > nMNPIBlock + (nMNPIPeriod * 5)) ret += blockValue / 40; // 244400 - 42.5% - 2015-03-30
-    if (nHeight > nMNPIBlock + (nMNPIPeriod * 6)) ret += blockValue / 40; // 261680 - 45.0% - 2015-05-01
-    if (nHeight > nMNPIBlock + (nMNPIPeriod * 7)) ret += blockValue / 40; // 278960 - 47.5% - 2015-06-01
-    if (nHeight > nMNPIBlock + (nMNPIPeriod * 9)) ret += blockValue / 40; // 313520 - 50.0% - 2015-08-03
-    return ret;
+    return blockValue * 0.8 ;
 }
 
 CAmount GetBlockSubsidy(int nPrevHeight, const Consensus::Params& consensusParams, bool fSuperblockPartOnly) {
