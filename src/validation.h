@@ -605,6 +605,10 @@ bool IgnoreSigopsLimits(int nHeight);
 //! Returns true if we have entered PoS consensus state
 bool IsPoS();
 
+//! Return the minimum staking age appropriate to where we are in the chain
+int CurrentMinStakeAge(int nTimePeriod);
+
+
 //! Returns whether full DIP3 enforcement is active
 bool FullDIP0003Mode();
 
