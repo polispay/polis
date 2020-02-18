@@ -119,7 +119,7 @@ static void CheckBlockIndex(const Consensus::Params& consensusParams);
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const std::string strMessageMagic = "DarkCoin Signed Message:\n";
+const std::string strMessageMagic = "Polis Signed Message:\n";
 
 // Internal stuff
 namespace {
@@ -1930,6 +1930,55 @@ static int64_t nTimeIndex = 0;
 static int64_t nTimeCallbacks = 0;
 static int64_t nTimeTotal = 0;
 
+static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
+{
+    if(!pindexNew)
+        return;
+
+    if (block.IsProofOfStake()) {
+        pindexNew->SetProofOfStake();
+        pindexNew->prevoutStake = block.vtx[1]->vin[0].prevout;
+        pindexNew->nStakeTime = block.nTime;
+    } else {
+        pindexNew->prevoutStake.SetNull();
+        pindexNew->nStakeTime = 0;
+    }
+
+    //update previous block pointer
+    //        pindexNew->pprev->pnext = pindexNew;
+
+    // ppcoin: compute chain trust score
+    pindexNew->nChainTrust = (pindexNew->pprev ? pindexNew->pprev->nChainTrust : pindexNew->GetBlockTrust());
+
+    // ppcoin: compute stake entropy bit for stake modifier
+    if (!pindexNew->SetStakeEntropyBit(pindexNew->GetStakeEntropyBit()))
+        LogPrintf("AcceptProofOfStakeBlock() : SetStakeEntropyBit() failed \n");
+
+    uint256 hash = block.GetHash();
+
+
+    // ppcoin: record proof-of-stake hash value
+    if (pindexNew->IsProofOfStake()) {
+        if (!mapProofOfStake.count(hash))
+            LogPrintf("AcceptProofOfStakeBlock() : hashProofOfStake not found in map \n");
+        pindexNew->hashProofOfStake = mapProofOfStake[hash];
+    }
+
+    // ppcoin: compute stake modifier
+    uint64_t nStakeModifier = 0;
+    bool fGeneratedStakeModifier = false;
+    if (!ComputeNextStakeModifier(pindexNew, nStakeModifier, fGeneratedStakeModifier))
+        LogPrintf("AcceptProofOfStakeBlock() : ComputeNextStakeModifier() failed \n");
+    pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
+    pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
+    if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
+        LogPrintf("AcceptProofOfStakeBlock() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, std::to_string(nStakeModifier));
+
+
+    setDirtyBlockIndex.insert(pindexNew);
+
+}
+
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins.
  *  Validity checks that depend on the UTXO set are also done; ConnectBlock()
  *  can fail if those validity checks fail (among other reasons). */
@@ -1942,17 +1991,6 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     assert((pindex->phashBlock == NULL) ||
            (*pindex->phashBlock == block.GetHash()));
     int64_t nTimeStart = GetTimeMicros();
-
-    // Damage control
-    if (sporkManager.IsSporkActive(SPORK_7_CHOKE_CONTROL)) {
-        // during choke, mark any new blocks as invalid
-        uint256 invalidHash = block.GetHash();
-        CBlockIndex* pblockindex = mapBlockIndex[invalidHash];
-        InvalidateBlock(state, chainparams, pblockindex);
-        // .. and as you were
-        ActivateBestChain(state, chainparams);
-        return false;
-    }
 
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, chainparams.GetConsensus(), !fJustCheck, !fJustCheck))
@@ -3724,6 +3762,8 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
         return error("%s: %s", __func__, FormatStateMessage(state));
     }
 
+    AcceptProofOfStakeBlock(block, pindex);
+
     // Header is valid/has work, merkle tree is good...RELAY NOW
     // (but if it does not build on our best tip, let the SendMessages loop relay it)
     if (!IsInitialBlockDownload() && chainActive.Tip() == pindex->pprev)
@@ -4322,6 +4362,7 @@ static bool AddGenesisBlock(const CChainParams& chainparams, const CBlock& block
     if (!WriteBlockToDisk(block, blockPos, chainparams.MessageStart()))
         return error("%s: writing genesis block to disk failed", __func__);
     CBlockIndex *pindex = AddToBlockIndex(block);
+    AcceptProofOfStakeBlock(block, pindex);
     if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
         return error("%s: genesis block not accepted", __func__);
     return true;

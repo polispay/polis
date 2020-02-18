@@ -234,11 +234,10 @@ public:
         consensus.nPosTargetSpacing = 2 * 60;
         consensus.nPosTargetTimespan = 60 * 40;
         consensus.nMinimumStakeValue = 100 * COIN;
-
         consensus.nStakeMinAge = 10 * 60;
         consensus.nStakeMaxAge = 60 * 60 * 24 * 30;
         consensus.nStakeMinAgeSwitchTime = -1;
-        consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
+        consensus.nMaxBlockSpacingFixDeploymentHeight = 381587;
         consensus.nStakeMinAgeSwitchTime = 1561734000;
         consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
         consensus.nPoSDiffAdjustRange = 5;

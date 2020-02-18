@@ -25,7 +25,6 @@
 #include <vector>
 
 #include "prevector.h"
-#include "span.h"
 
 static const unsigned int MAX_SIZE = 0x02000000;
 
@@ -62,12 +61,6 @@ inline T* NCONST_PTR(const T* val)
 {
     return const_cast<T*>(val);
 }
-
-//! Safely convert odd char pointer types to standard ones.
-inline char* CharCast(char* c) { return c; }
-inline char* CharCast(unsigned char* c) { return (char*)c; }
-inline const char* CharCast(const char* c) { return c; }
-inline const char* CharCast(const unsigned char* c) { return (const char*)c; }
 
 /*
  * Lowest-level serialization and conversion.
@@ -164,24 +157,19 @@ class CSizeComputer;
 enum
 {
     // primary actions
-    SER_NETWORK         = (1 << 0),
+            SER_NETWORK         = (1 << 0),
     SER_DISK            = (1 << 1),
     SER_GETHASH         = (1 << 2),
 };
 
-//! Convert the reference base type to X, without changing constness or reference type.
-template<typename X> X& ReadWriteAsHelper(X& x) { return x; }
-template<typename X> const X& ReadWriteAsHelper(const X& x) { return x; }
-
 #define READWRITE(obj)      (::SerReadWrite(s, (obj), ser_action))
-#define READWRITEAS(type, obj) (::SerReadWriteMany(s, ser_action, ReadWriteAsHelper<type>(obj)))
 #define READWRITEMANY(...)      (::SerReadWriteMany(s, ser_action, __VA_ARGS__))
 
-/** 
+/**
  * Implement three methods for serializable objects. These are actually wrappers over
  * "SerializationOp" template, which implements the body of each class' serialization
  * code. Adding "ADD_SERIALIZE_METHODS" in the body of the class causes these wrappers to be
- * added as members. 
+ * added as members.
  */
 #define ADD_SERIALIZE_METHODS                                         \
     template<typename Stream>                                         \
@@ -204,10 +192,6 @@ template<typename Stream> inline void Serialize(Stream& s, int64_t a ) { ser_wri
 template<typename Stream> inline void Serialize(Stream& s, uint64_t a) { ser_writedata64(s, a); }
 template<typename Stream> inline void Serialize(Stream& s, float a   ) { ser_writedata32(s, ser_float_to_uint32(a)); }
 template<typename Stream> inline void Serialize(Stream& s, double a  ) { ser_writedata64(s, ser_double_to_uint64(a)); }
-template<typename Stream, int N> inline void Serialize(Stream& s, const char (&a)[N]) { s.write(a, N); }
-template<typename Stream, int N> inline void Serialize(Stream& s, const unsigned char (&a)[N]) { s.write(CharCast(a), N); }
-template<typename Stream> inline void Serialize(Stream& s, const Span<const unsigned char>& span) { s.write(CharCast(span.data()), span.size()); }
-template<typename Stream> inline void Serialize(Stream& s, const Span<unsigned char>& span) { s.write(CharCast(span.data()), span.size()); }
 
 template<typename Stream> inline void Unserialize(Stream& s, char& a    ) { a = ser_readdata8(s); } // TODO Get rid of bare char
 template<typename Stream> inline void Unserialize(Stream& s, int8_t& a  ) { a = ser_readdata8(s); }
@@ -220,9 +204,6 @@ template<typename Stream> inline void Unserialize(Stream& s, int64_t& a ) { a = 
 template<typename Stream> inline void Unserialize(Stream& s, uint64_t& a) { a = ser_readdata64(s); }
 template<typename Stream> inline void Unserialize(Stream& s, float& a   ) { a = ser_uint32_to_float(ser_readdata32(s)); }
 template<typename Stream> inline void Unserialize(Stream& s, double& a  ) { a = ser_uint64_to_double(ser_readdata64(s)); }
-template<typename Stream, int N> inline void Unserialize(Stream& s, char (&a)[N]) { s.read(a, N); }
-template<typename Stream, int N> inline void Unserialize(Stream& s, unsigned char (&a)[N]) { s.read(CharCast(a), N); }
-template<typename Stream> inline void Unserialize(Stream& s, Span<unsigned char>& span) { s.read(CharCast(span.data()), span.size()); }
 
 template<typename Stream> inline void Serialize(Stream& s, bool a)    { char f=a; ser_writedata8(s, f); }
 template<typename Stream> inline void Unserialize(Stream& s, bool& a) { char f=ser_readdata8(s); a=f; }
@@ -314,16 +295,16 @@ uint64_t ReadCompactSize(Stream& is)
  * sure the encoding is one-to-one, one is subtracted from all but the last digit.
  * Thus, the byte sequence a[] with length len, where all but the last byte
  * has bit 128 set, encodes the number:
- * 
+ *
  *  (a[len-1] & 0x7F) + sum(i=1..len-1, 128^i*((a[len-i-1] & 0x7F)+1))
- * 
+ *
  * Properties:
  * * Very small (0-127: 1 byte, 128-16511: 2 bytes, 16512-2113663: 3 bytes)
  * * Every integer has exactly one encoding
  * * Encoding does not depend on size of original integer type
  * * No redundancy: every (infinite) byte sequence corresponds to a list
  *   of encoded integers.
- * 
+ *
  * 0:         [0x00]  256:        [0x81 0x00]
  * 1:         [0x01]  16383:      [0xFE 0x7F]
  * 127:       [0x7F]  16384:      [0xFF 0x00]
@@ -388,7 +369,7 @@ I ReadVarInt(Stream& is)
 #define COMPACTSIZE(obj) REF(CCompactSize(REF(obj)))
 #define LIMITED_STRING(obj,n) REF(LimitedString< n >(REF(obj)))
 
-/** 
+/**
  * Wrapper for serializing arrays and POD.
  */
 class CFlatData
@@ -734,18 +715,50 @@ template<typename Stream, typename T> void Unserialize(Stream& os, std::unique_p
 /**
  * If none of the specialized versions above matched, default to calling member function.
  */
-template<typename Stream, typename T>
+template<typename Stream, typename T, typename std::enable_if<std::is_class<T>::value>::type* = nullptr>
 inline void Serialize(Stream& os, const T& a)
 {
     a.Serialize(os);
 }
 
-template<typename Stream, typename T>
-inline void Unserialize(Stream& is, T&& a)
+template<typename Stream, typename T, typename std::enable_if<std::is_class<T>::value>::type* = nullptr>
+inline void Unserialize(Stream& is, T& a)
 {
     a.Unserialize(is);
 }
 
+/**
+ * If none of the specialized versions above matched and T is an enum, default to calling
+ * Serialize/Unserialze with the underlying type. This is only allowed when a specialized struct of is_serializable_enum<Enum>
+ * is found which derives from std::true_type. This is to ensure that enums are not serialized with the wrong type by
+ * accident.
+ */
+
+template<typename T> struct is_serializable_enum;
+template<typename T> struct is_serializable_enum : std::false_type {};
+
+template<typename Stream, typename T, typename std::enable_if<std::is_enum<T>::value>::type* = nullptr>
+inline void Serialize(Stream& s, T a )
+{
+    // If you ever get into this situation, it usaully means you forgot to declare is_serializable_enum for the desired enum type
+    static_assert(is_serializable_enum<T>::value, "Missing declararion of is_serializable_enum");
+
+    typedef typename std::underlying_type<T>::type T2;
+    T2 b = (T2)a;
+    Serialize(s, b);
+}
+
+template<typename Stream, typename T, typename std::enable_if<std::is_enum<T>::value>::type* = nullptr>
+inline void Unserialize(Stream& s, T& a )
+{
+    // If you ever get into this situation, it usaully means you forgot to declare is_serializable_enum for the desired enum type
+    static_assert(is_serializable_enum<T>::value, "Missing declararion of is_serializable_enum");
+
+    typedef typename std::underlying_type<T>::type T2;
+    T2 b;
+    Unserialize(s, b);
+    a = (T)b;
+}
 
 
 

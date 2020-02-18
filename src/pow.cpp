@@ -211,10 +211,11 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     if (pindexLast->nHeight >= params.nLastPoWBlock) {
         if (pindexLast->nHeight  <= (params.nLastPoWBlock + params.nPoSDiffAdjustRange)) {
             return PoW2PoSRequired(pindexLast, params);
-        } else if (pindexLast->nHeight == 277718)
+        } else if (pindexLast->nHeight == 277718) {
             return PoW2PoSRequired(pindexLast, params);
-
-        return PoSWorkRequired(pindexLast, params);
+        } else {
+            return PoSWorkRequired(pindexLast, params);
+        }
     } else if (pindexLast->nHeight + 1 >= params.nPowDGWHeight) {
         return DarkGravityWave(pindexLast, params);
     }

@@ -6,7 +6,6 @@
 #ifndef BITCOIN_COINS_H
 #define BITCOIN_COINS_H
 
-#include "primitives/transaction.h"
 #include "compressor.h"
 #include "core_memusage.h"
 #include "hash.h"
@@ -16,7 +15,6 @@
 
 #include <assert.h>
 #include <stdint.h>
-#include <bitset>
 #include <unordered_map>
 
 /**
@@ -34,25 +32,25 @@ public:
 
     //! whether containing transaction was a coinbase
     unsigned int fCoinBase : 1;
-    //! whether containing transaction was a coinstake
     unsigned int fCoinStake : 1;
 
+
     //! at which height this containing transaction was included in the active block chain
-    uint32_t nHeight : 30;
+    uint32_t nHeight : 31;
 
     //! construct a Coin from a CTxOut and height/coinbase information.
     Coin(CTxOut&& outIn, int nHeightIn, bool fCoinBaseIn, bool fCoinStakeIn) :
-        out(std::move(outIn)),
-        fCoinBase(fCoinBaseIn),
-        fCoinStake(fCoinStakeIn),
-        nHeight(nHeightIn)
+            out(std::move(outIn)),
+            fCoinBase(fCoinBaseIn),
+            fCoinStake(fCoinStakeIn),
+            nHeight(nHeightIn)
     { }
 
     Coin(const CTxOut& outIn, int nHeightIn, bool fCoinBaseIn, bool fCoinStakeIn) :
-        out(outIn),
-        fCoinBase(fCoinBaseIn),
-        fCoinStake(fCoinStakeIn),
-        nHeight(nHeightIn)
+            out(outIn),
+            fCoinBase(fCoinBaseIn),
+            fCoinStake(fCoinStakeIn),
+            nHeight(nHeightIn)
     { }
 
     void Clear() {
@@ -76,10 +74,8 @@ public:
     template<typename Stream>
     void Serialize(Stream &s) const {
         assert(!IsSpent());
-        std::bitset<32> code(nHeight);
-        code[30] = fCoinStake;
-        code[31] = fCoinBase;
-        ::Serialize(s, VARINT(code.to_ulong()));
+        uint32_t code = nHeight * 2 + fCoinBase;
+        ::Serialize(s, VARINT(code));
         ::Serialize(s, CTxOutCompressor(REF(out)));
     }
 
@@ -87,13 +83,9 @@ public:
     void Unserialize(Stream &s) {
         uint32_t code = 0;
         ::Unserialize(s, VARINT(code));
-        std::bitset<32> bitset(code);
-        fCoinBase = bitset[31];
-        fCoinStake = bitset[30];
-        bitset.reset(30);
-        bitset.reset(31);
-        nHeight = bitset.to_ulong();
-        ::Unserialize(s, CTxOutCompressor(out));
+        nHeight = code >> 1;
+        fCoinBase = code & 1;
+        ::Unserialize(s, REF(CTxOutCompressor(out)));
     }
 
     bool IsSpent() const {
@@ -154,6 +146,7 @@ public:
 
     virtual bool GetKey(COutPoint &key) const = 0;
     virtual bool GetValue(Coin &coin) const = 0;
+    /* Don't care about GetKeySize here */
     virtual unsigned int GetValueSize() const = 0;
 
     virtual bool Valid() const = 0;
@@ -181,12 +174,6 @@ public:
     //! Retrieve the block hash whose state this CCoinsView currently represents
     virtual uint256 GetBestBlock() const;
 
-    //! Retrieve the range of blocks that may have been only partially written.
-    //! If the database is in a consistent state, the result is the empty vector.
-    //! Otherwise, a two-element vector is returned consisting of the new and
-    //! the old block hash, in that order.
-    virtual std::vector<uint256> GetHeadBlocks() const;
-
     //! Do a bulk modification (multiple Coin changes + BestBlock change).
     //! The passed mapCoins can be modified.
     virtual bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock);
@@ -213,7 +200,6 @@ public:
     bool GetCoin(const COutPoint &outpoint, Coin &coin) const override;
     bool HaveCoin(const COutPoint &outpoint) const override;
     uint256 GetBestBlock() const override;
-    std::vector<uint256> GetHeadBlocks() const override;
     void SetBackend(CCoinsView &viewIn);
     bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock) override;
     CCoinsViewCursor *Cursor() const override;
@@ -227,7 +213,7 @@ class CCoinsViewCache : public CCoinsViewBacked
 protected:
     /**
      * Make mutable so that we can "fill the cache" even from Get-methods
-     * declared as "const".  
+     * declared as "const".
      */
     mutable uint256 hashBlock;
     mutable CCoinsMap cacheCoins;
@@ -237,11 +223,6 @@ protected:
 
 public:
     CCoinsViewCache(CCoinsView *baseIn);
-
-    /**
-     * By deleting the copy constructor, we prevent accidentally using it when one intends to create a cache on top of a base cache.
-     */
-    CCoinsViewCache(const CCoinsViewCache &) = delete;
 
     // Standard CCoinsView methods
     bool GetCoin(const COutPoint &outpoint, Coin &coin) const override;
@@ -304,7 +285,7 @@ public:
     //! Calculate the size of the cache (in bytes)
     size_t DynamicMemoryUsage() const;
 
-    /** 
+    /**
      * Amount of polis coming in to a transaction
      * Note that lightweight clients may not know anything besides the hash of previous transactions,
      * so may not be able to calculate this.
@@ -319,15 +300,18 @@ public:
 
 private:
     CCoinsMap::iterator FetchCoin(const COutPoint &outpoint) const;
+
+    /**
+     * By making the copy constructor private, we prevent accidentally using it when one intends to create a cache on top of a base cache.
+     */
+    CCoinsViewCache(const CCoinsViewCache &);
 };
 
 //! Utility function to add all of a transaction's outputs to a cache.
-// When check is false, this assumes that overwrites are only possible for coinbase transactions.
-// When check is true, the underlying view may be queried to determine whether an addition is
-// an overwrite.
+// It assumes that overwrites are only possible for coinbase transactions,
 // TODO: pass in a boolean to limit these possible overwrites to known
 // (pre-BIP34) cases.
-void AddCoins(CCoinsViewCache& cache, const CTransaction& tx, int nHeight, bool check = false);
+void AddCoins(CCoinsViewCache& cache, const CTransaction& tx, int nHeight);
 
 //! Utility function to find any unspent output with a given txid.
 // This function can be quite expensive because in the event of a transaction

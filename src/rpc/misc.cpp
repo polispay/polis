@@ -248,16 +248,14 @@ UniValue spork(const JSONRPCRequest& request)
         std:: string strCommand = request.params[0].get_str();
         if (strCommand == "show") {
             UniValue ret(UniValue::VOBJ);
-            for(int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++){
-                if(sporkManager.GetSporkNameByID(nSporkID) != "Unknown")
-                    ret.push_back(Pair(sporkManager.GetSporkNameByID(nSporkID), sporkManager.GetSporkValue(nSporkID)));
+            for (const auto& sporkDef : sporkDefs) {
+                ret.push_back(Pair(sporkDef.name, sporkManager.GetSporkValue(sporkDef.sporkId)));
             }
             return ret;
         } else if(strCommand == "active"){
             UniValue ret(UniValue::VOBJ);
-            for(int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++){
-                if(sporkManager.GetSporkNameByID(nSporkID) != "Unknown")
-                    ret.push_back(Pair(sporkManager.GetSporkNameByID(nSporkID), sporkManager.IsSporkActive(nSporkID)));
+            for (const auto& sporkDef : sporkDefs) {
+                ret.push_back(Pair(sporkDef.name, sporkManager.IsSporkActive(sporkDef.sporkId)));
             }
             return ret;
         }
@@ -286,8 +284,8 @@ UniValue spork(const JSONRPCRequest& request)
             + HelpExampleRpc("spork", "\"show\""));
     } else {
         // advanced mode, update spork values
-        int nSporkID = sporkManager.GetSporkIDByName(request.params[0].get_str());
-        if(nSporkID == -1)
+        SporkId nSporkID = sporkManager.GetSporkIDByName(request.params[0].get_str());
+        if(nSporkID == SPORK_INVALID)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid spork name");
 
         if (!g_connman)
@@ -296,9 +294,8 @@ UniValue spork(const JSONRPCRequest& request)
         // SPORK VALUE
         int64_t nValue = request.params[1].get_int64();
 
-        //broadcast new spork
+        // broadcast new spork
         if(sporkManager.UpdateSpork(nSporkID, nValue, *g_connman)){
-            sporkManager.ExecuteSpork(nSporkID, nValue);
             return "success";
         } else {
             throw std::runtime_error(
