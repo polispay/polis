@@ -17,7 +17,6 @@
 #include <QMenu>
 #include <QPoint>
 #include <QPushButton>
-#include <QToolButton>
 #include <QSystemTrayIcon>
 
 #ifdef Q_OS_MAC
@@ -89,9 +88,9 @@ private:
     WalletFrame *walletFrame;
 
     UnitDisplayStatusBarControl *unitDisplayControl;
-    QLabel* labelStakingIcon = nullptr;
     QLabel *labelWalletEncryptionIcon;
     QLabel *labelWalletHDStatusIcon;
+    QLabel *labelStakingIcon;
     QLabel *labelConnectionsIcon;
     QLabel *labelBlocksIcon;
     QLabel *progressBarLabel;
@@ -140,12 +139,6 @@ private:
     HelpMessageDialog *helpMessageDialog;
     ModalOverlay *modalOverlay;
 
-    QFrame *headerFrame;
-    QPushButton *btnImg;
-    QToolButton *btnRefresh;
-    QToolButton *btnCopyNews;
-    QLabel *messageLabel;
-
 #ifdef Q_OS_MAC
     CAppNapInhibitor* m_app_nap_inhibitor = nullptr;
 #endif
@@ -180,15 +173,15 @@ private:
 
     void updateHeadersSyncProgressLabel();
 
-Q_SIGNALS:
-    /** Signal raised when a URI was entered or dragged to the GUI */
-    void receivedURI(const QString &uri);
+    Q_SIGNALS:
+            /** Signal raised when a URI was entered or dragged to the GUI */
+            void receivedURI(const QString &uri);
     /** Restart handling */
     void requestedRestart(QStringList args);
 
 public Q_SLOTS:
-    /** Set number of connections shown in the UI */
-    void setNumConnections(int count);
+            /** Set number of connections shown in the UI */
+            void setNumConnections(int count);
     /** Set network state shown in the UI */
     void setNetworkActive(bool networkActive);
     /** Get restart command-line parameters and request restart */
@@ -208,17 +201,12 @@ public Q_SLOTS:
     void message(const QString &title, const QString &message, unsigned int style, bool *ret = NULL);
 
 #ifdef ENABLE_WALLET
-
-    /** Set the UI status indicators based on the currently selected wallet.
-    */
-    void setStakingStatus();
-
-private:
     /** Set the hd-enabled status as shown in the UI.
      @param[in] status            current hd enabled status
      @see WalletModel::EncryptionStatus
      */
     void setHDStatus(int hdEnabled);
+    void setStakingStatus();
 
     /** Set the encryption status as shown in the UI.
        @param[in] status            current encryption status
@@ -234,13 +222,13 @@ private:
 
 private Q_SLOTS:
 #ifdef ENABLE_WALLET
-    /** Switch to overview (home) page */
-    void gotoOverviewPage();
+            /** Switch to overview (home) page */
+            void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
     /** Switch to masternode page */
     void gotoMasternodePage();
-    /** Switch to governance page */
+    /** Switch to masternode page */
     void gotoGovernancePage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
@@ -293,7 +281,7 @@ private Q_SLOTS:
 
     /** Show progress dialog e.g. for verifychain */
     void showProgress(const QString &title, int nProgress);
-    
+
     /** When hideTrayIcon setting is changed in OptionsModel hide or show the icon accordingly. */
     void setTrayIconVisible(bool);
 
@@ -326,8 +314,8 @@ private:
     void createContextMenu();
 
 private Q_SLOTS:
-    /** When Display Units are changed on OptionsModel it will refresh the display text of the control on the status bar */
-    void updateDisplayUnit(int newUnits);
+            /** When Display Units are changed on OptionsModel it will refresh the display text of the control on the status bar */
+            void updateDisplayUnit(int newUnits);
     /** Tells underlying optionsModel to update its current display unit. */
     void onMenuSelection(QAction* action);
 };

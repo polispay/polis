@@ -1,5 +1,5 @@
 WalletFrame {
-    border-image: url(':/images/drkblue_walletFrame_bg') 0 0 0 0 stretch stretch;
+    border-image: url(':/images/walletFrame_bg') 0 0 0 0 stretch stretch;
     border-top:0px solid #000;
     margin:0;
     padding-top:20px;
@@ -153,7 +153,7 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-    border-image: url(':/images/drkblue_downArrow') 0 0 0 0 stretch stretch;
+    border-image: url(':/images/downArrow') 0 0 0 0 stretch stretch;
 }
 
 QComboBox QListView {
@@ -208,7 +208,7 @@ QAbstractSpinBox::up-button {
 }
 
 QAbstractSpinBox::up-arrow {
-    image:url(':/images/drkblue_upArrow_small');
+    image:url(':/images/upArrow_small');
 }
 
 QAbstractSpinBox::down-button {
@@ -226,7 +226,7 @@ QAbstractSpinBox::down-button {
 }
 
 QAbstractSpinBox::down-arrow {
-    image:url(':/images/drkblue_downArrow_small');
+    image:url(':/images/downArrow_small');
 }
 
 QCheckBox {
@@ -386,19 +386,19 @@ QScrollBar:up-arrow, QScrollBar:down-arrow, QScrollBar:left-arrow, QScrollBar:ri
 }
 
 QScrollBar:up-arrow {
-    background-image: url(':/images/drkblue_upArrow_small');
+    background-image: url(':/images/upArrow_small');
 }
 
 QScrollBar:down-arrow {
-    background-image: url(':/images/drkblue_downArrow_small');
+    background-image: url(':/images/downArrow_small');
 }
 
 QScrollBar:left-arrow {
-    background-image: url(':/images/drkblue_leftArrow_small');
+    background-image: url(':/images/leftArrow_small');
 }
 
 QScrollBar:right-arrow {
-    background-image: url(':/images/drkblue_rightArrow_small');
+    background-image: url(':/images/rightArrow_small');
 }
 
 
@@ -490,7 +490,7 @@ QDialog#SignVerifyMessageDialog QPlainTextEdit { /* Message Signing Text */
 }
 
 QDialog#SignVerifyMessageDialog QPushButton#pasteButton_SM { /* Paste Button */
-    /* qproperty-icon: url(":/icons/drkblue_editpaste"); */
+    /* qproperty-icon: url(":/icons/editpaste"); */
     background-color:transparent;
     padding-left:15px;
 }
@@ -500,7 +500,7 @@ QDialog#SignVerifyMessageDialog QLineEdit:!focus { /* Font Hack */
 }
 
 QDialog#SignVerifyMessageDialog QPushButton#copySignatureButton_SM { /* Copy Button */
-    /* qproperty-icon: url(":/icons/drkblue_editcopy"); */
+    /* qproperty-icon: url(":/icons/editcopy"); */
     background-color:transparent;
     padding-left:10px;
     padding-right:10px;
@@ -1012,7 +1012,7 @@ QWidget#bgWidget .QPushButton#warningIcon {
 }
 
 QWidget#contentWidget { /* The actual content with the text/buttons/etc... */
-    border-image: url(':/images/drkblue_walletFrame_bg') 0 0 0 0 stretch stretch;
+    border-image: url(':/images/walletFrame_bg') 0 0 0 0 stretch stretch;
     border-top:0px solid #000;
     margin:0;
     padding-top:20px;
@@ -1236,7 +1236,7 @@ QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::item:checked { /* C
 }
 
 QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::branch:selected { /* Coin Control Branch Icon */
-    background-image: url(':/images/drkblue_qtreeview_selected');
+    background-image: url(':/images/qtreeview_selected');
     background-repeat:no-repeat;
     background-position:center;
     background-color:#f7f7f7;
@@ -1244,7 +1244,7 @@ QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::branch:selected { /
 }
 
 QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::branch:checked { /* Coin Control Branch Icon */
-    background-image: url(':/images/drkblue_qtreeview_selected');
+    background-image: url(':/images/qtreeview_selected');
     background-repeat:no-repeat;
     background-position:center;
     background-color:#f7f7f7;

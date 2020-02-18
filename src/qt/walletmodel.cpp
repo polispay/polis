@@ -47,6 +47,8 @@ WalletModel::WalletModel(const PlatformStyle *platformStyle, CWallet *_wallet, O
     cachedWatchOnlyBalance(0),
     cachedWatchUnconfBalance(0),
     cachedWatchImmatureBalance(0),
+    cachedStakeBalance(0),
+    cachedStakeInputs(0),
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0),
     cachedNumISLocks(0),
@@ -103,6 +105,15 @@ CAmount WalletModel::getUnconfirmedBalance() const
 CAmount WalletModel::getImmatureBalance() const
 {
     return wallet->GetImmatureBalance();
+}
+CAmount WalletModel::getStakeBalance() const
+{
+    return wallet->GetStake();
+}
+int WalletModel::getStakeInputs()  const {
+
+    return wallet->GetStakeInputs();
+
 }
 
 bool WalletModel::haveWatchOnly() const
@@ -165,6 +176,8 @@ void WalletModel::checkBalanceChanged()
     CAmount newUnconfirmedBalance = getUnconfirmedBalance();
     CAmount newImmatureBalance = getImmatureBalance();
     CAmount newAnonymizedBalance = getAnonymizedBalance();
+    CAmount newStakeBalance = getStakeBalance();
+    int newStakeInputs = getStakeInputs();
     CAmount newWatchOnlyBalance = 0;
     CAmount newWatchUnconfBalance = 0;
     CAmount newWatchImmatureBalance = 0;
@@ -175,19 +188,21 @@ void WalletModel::checkBalanceChanged()
         newWatchImmatureBalance = getWatchImmatureBalance();
     }
 
-    if(cachedBalance != newBalance || cachedUnconfirmedBalance != newUnconfirmedBalance || cachedImmatureBalance != newImmatureBalance ||
+    if(cachedBalance != newBalance || cachedUnconfirmedBalance != newUnconfirmedBalance || cachedImmatureBalance != newImmatureBalance || cachedStakeBalance != newStakeBalance || cachedStakeInputs != newStakeInputs ||
         cachedAnonymizedBalance != newAnonymizedBalance ||
         cachedWatchOnlyBalance != newWatchOnlyBalance || cachedWatchUnconfBalance != newWatchUnconfBalance || cachedWatchImmatureBalance != newWatchImmatureBalance)
     {
         cachedBalance = newBalance;
         cachedUnconfirmedBalance = newUnconfirmedBalance;
         cachedImmatureBalance = newImmatureBalance;
+        cachedStakeBalance = newStakeBalance;
+        cachedStakeInputs = newStakeInputs;
         cachedAnonymizedBalance = newAnonymizedBalance;
         cachedWatchOnlyBalance = newWatchOnlyBalance;
         cachedWatchUnconfBalance = newWatchUnconfBalance;
         cachedWatchImmatureBalance = newWatchImmatureBalance;
         Q_EMIT balanceChanged(newBalance, newUnconfirmedBalance, newImmatureBalance, newAnonymizedBalance,
-                            newWatchOnlyBalance, newWatchUnconfBalance, newWatchImmatureBalance);
+                              newWatchOnlyBalance, newWatchUnconfBalance, newWatchImmatureBalance, newStakeBalance, newStakeInputs);
     }
 }
 

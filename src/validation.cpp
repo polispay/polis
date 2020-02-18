@@ -4925,7 +4925,7 @@ int CurrentMinStakeAge(int nTimePeriod)
 //! Returns confirmations required to spend coinbase
 int ConfirmationsPerNetwork() {
     return (Params().NetworkIDString() ==
-            CBaseChainParams::TESTNET ? 20 : 100);
+            CBaseChainParams::TESTNET ? 5 : 10);
 }
 
 //! Returns whether full DIP3 enforcement is active

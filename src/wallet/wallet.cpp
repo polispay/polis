@@ -2309,6 +2309,33 @@ CAmount CWallet::GetBalance() const
     return nTotal;
 }
 
+
+// ppcoin: total coins staked (non-spendable until maturity)
+CAmount CWallet::GetStake() const
+{
+
+    CAmount nTotal = 0;
+    {
+        LOCK2(cs_main, cs_wallet);
+        for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
+        {
+            const CWalletTx* pcoin = &(*it).second;
+            auto nStakeMinAge = CurrentMinStakeAge(pcoin->GetTxTime());
+            if (pcoin->IsTrusted() && GetTime() - pcoin->GetTxTime() > nStakeMinAge && pcoin->GetBlocksToMaturity() < (pcoin->tx->IsCoinStake() ? ConfirmationsPerNetwork() : 10))
+                nTotal += pcoin->GetAvailableCredit();
+        }
+    }
+
+    return nTotal;
+}
+
+int CWallet::GetStakeInputs() const
+{
+    static StakeCoinsSet setStakeCoins;
+    int StakeInputs = (int) setStakeCoins.size();
+    return StakeInputs;
+}
+
 CAmount CWallet::GetAnonymizableBalance(bool fSkipDenominated, bool fSkipUnconfirmed) const
 {
     if(fLiteMode) return 0;

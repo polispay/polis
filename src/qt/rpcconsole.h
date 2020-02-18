@@ -65,7 +65,7 @@ protected:
     void keyPressEvent(QKeyEvent *);
 
 private Q_SLOTS:
-    void on_lineEdit_returnPressed();
+            void on_lineEdit_returnPressed();
     void on_tabWidget_currentChanged(int index);
     /** open the debug.log from the current datadir */
     void on_openDebugLogfileButton_clicked();
@@ -86,11 +86,11 @@ private Q_SLOTS:
     void clearSelectedNode();
 
 public Q_SLOTS:
-    void clear(bool clearHistory = true);
+            void clear(bool clearHistory = true);
     void fontBigger();
     void fontSmaller();
     void setFontSize(int newSize);
-    
+
     /** Wallet repair options */
     void walletSalvage();
     void walletRescan();
@@ -98,7 +98,7 @@ public Q_SLOTS:
     void walletZaptxes2();
     void walletUpgrade();
     void walletReindex();
-    
+
     /** Append the message to the message widget */
     void message(int category, const QString &message, bool html = false);
     /** Set number of connections shown in the UI */
@@ -132,9 +132,9 @@ public Q_SLOTS:
     /** set which tab has the focus (is visible) */
     void setTabFocus(enum TabTypes tabType);
 
-Q_SIGNALS:
-    // For RPC command executor
-    void stopExecutor();
+    Q_SIGNALS:
+            // For RPC command executor
+            void stopExecutor();
     void cmdRequest(const QString &command);
     /** Get restart command-line parameters and handle restart */
     void handleRestart(QStringList args);

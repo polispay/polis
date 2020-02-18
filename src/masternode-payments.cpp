@@ -46,12 +46,8 @@ bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount blockRewar
 
     strErrorRet = "";
 
-    LogPrintf("        - blockValue %lld <= blockReward %lld\n", blockValue, blockReward);
-
     CAmount nSuperblockMaxValue = blockReward + CSuperblock::GetPaymentsLimit(nBlockHeight);
     bool isSuperblockMaxValueMet = (blockValue <= nSuperblockMaxValue);
-
-    LogPrintf("        - blockValue %lld <= nSuperblockMaxValue %lld\n", blockValue, nSuperblockMaxValue);
 
     bool isGenerationHeight = (nBlockHeight == Params().GetConsensus().nGenerationHeight || nBlockHeight == Params().GetConsensus().nGenerationHeight2);
     if (isGenerationHeight)
