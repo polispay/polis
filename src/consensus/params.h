@@ -191,6 +191,7 @@ struct Params {
     int nPoSDiffAdjustRange;
     int nMaxBlockSpacingFixDeploymentHeight;
     int nStakeMinAgeSwitchTime;
+    int nPoSUpdgradeHFHeight;
     int nPosMitigationSwitchTime;
     int nMinStakeHistory;
     int MinStakeHistory() const { return nMinStakeHistory; }

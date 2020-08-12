@@ -248,6 +248,9 @@ public:
 
             consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
             consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
+
+            // New POS Kernel
+            consensus.nPoSUpdgradeHFHeight = 665979; // 19 August 2020
     
             consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
             consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008

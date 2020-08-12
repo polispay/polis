@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
+`// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2014-2017 The Polis Core developers
 // Distributed under the MIT software license, see the accompanying
@@ -211,10 +211,10 @@ CAmount GetStakeReward(CAmount blockReward, unsigned int percentage)
 {
     return (blockReward / 100) * percentage;
 }
-bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
-                                    unsigned int nBits, const CBlock &blockFrom,
-                                    unsigned int nTxPrevOffset, const CTransactionRef &txPrev,
-                                    const COutPoint &prevout, unsigned int &nTimeTx, bool fPrintProofOfStake) const
+bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript, CBlockIndex *pindex,
+                                    unsigned int nBits, const CBlock &blockFrom, const CTransactionRef &txPrev,
+                                    const COutPoint &prevout, unsigned int &nTimeTx,
+                                    const TPoSContract &contract, bool fGenerateSegwit, bool fPrintProofOfStake) const
 {
     unsigned int nTryTime = 0;
     uint256 hashProofOfStake;
@@ -223,10 +223,15 @@ bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeS
 
     if (blockFrom.GetBlockTime() + nStakeMinAge + nHashDrift > nTimeTx) // Min age requirement
         return false;
+        
+    bool isProofOfStakeV3 = Params().GetConsensus().nPoSUpdgradeHFHeight < pindex->nHeight;
+
+    auto blockFromHash = blockFrom.GetHash();
+    auto blockFromTime = blockFrom.GetBlockTime();    
     for(unsigned int i = 0; i < nHashDrift; ++i)
     {
         nTryTime = nTimeTx + nHashDrift - i;
-        bool fValid = CheckStakeKernelHash(nBits, blockFrom, nTxPrevOffset, txPrev, prevout, nTryTime, hashProofOfStake);
+        bool fValid = CheckStakeKernelHash(pindex, nBits, blockFromHash, blockFromTime, txPrev, prevout, nTryTime, hashProofOfStake, isProofOfStakeV3, fPrintProofOfStake)
         if (fDebug)
             LogPrintf("%04x %s\n", i, hashProofOfStake.ToString().c_str());
         if (fValid) {
@@ -4028,9 +4033,10 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
         //iterates each utxo inside of CheckStakeKernelHash()
         CScript kernelScript;
         auto stakeScript = pcoin.first->tx->vout[pcoin.second].scriptPubKey;
-        fKernelFound = CreateCoinStakeKernel(kernelScript, stakeScript, nBits,
-                                             block, sizeof(CBlock), pcoin.first->tx,
-                                             prevoutStake, nTxNewTime, false);
+        fKernelFound = CreateCoinStakeKernel(kernelScript, stakeScript,
+                                             chainActive.Tip(),  nBits,
+                                             block, pcoin.first->tx,
+                                             prevoutStake, nTxNewTime, tposContract, fGenerateSegwit, false);
         if(fKernelFound)
         {
             FillCoinStakePayments(txNew, kernelScript, prevoutStake, blockReward);

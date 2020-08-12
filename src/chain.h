@@ -215,9 +215,11 @@ public:
         BLOCK_PROOF_OF_STAKE = (1 << 0), // is proof-of-stake block
         BLOCK_STAKE_ENTROPY = (1 << 1),  // entropy bit for stake modifier
         BLOCK_STAKE_MODIFIER = (1 << 2), // regenerated stake modifier
+        BLOCK_PROOF_OF_STAKE_V3 = (1 << 3),
     };
     // proof-of-stake specific fields
     arith_uint256 GetBlockTrust() const;
+    uint256 hashStakeModifierV3;         // hash modifier for PoS v3.
     uint64_t nStakeModifier;             // hash modifier for proof-of-stake
     unsigned int nStakeModifierChecksum; // checksum of index; in-memeory only
     COutPoint prevoutStake;
@@ -246,9 +248,11 @@ public:
         pskip = NULL;
         nHeight = 0;
         nFile = 0;
+        hashStakeModifierV3.SetNull();
         nDataPos = 0;
         nUndoPos = 0;
         nChainWork = arith_uint256();
+    
         nTx = 0;
         nChainTx = 0;
         nStatus = 0;
@@ -295,7 +299,7 @@ public:
         hashProofOfStake = uint256();
 
         if (block.IsProofOfStake()) {
-            SetProofOfStake();
+            SetProofOfStake(false);
             prevoutStake = block.vtx[1]->vin[0].prevout;
             nStakeTime = block.nTime;
         } else {
@@ -370,13 +374,20 @@ public:
     {
         return !(nFlags & BLOCK_PROOF_OF_STAKE);
     }
-    bool IsProofOfStake() const
+    bool IsProofOfStake(bool isProofOfStakeV3) const
     {
+        if(isProofOfStakeV3) {
+            return (nFlags & BLOCK_PROOF_OF_STAKE_V3);
+        }
         return (nFlags & BLOCK_PROOF_OF_STAKE);
     }
-    void SetProofOfStake()
+    void SetProofOfStake(bool isProofOfStakeV3)
     {
         nFlags |= BLOCK_PROOF_OF_STAKE;
+        if(isProofOfStakeV3)
+        {
+            nFlags |= BLOCK_PROOF_OF_STAKE_V3;
+        }
     }
     unsigned int GetStakeEntropyBit() const;
     bool SetStakeEntropyBit(unsigned int nEntropyBit)
@@ -474,10 +485,13 @@ public:
         READWRITE(nMoneySupply);
         READWRITE(nFlags);
         READWRITE(nStakeModifier);
-        if (IsProofOfStake()) {
+        if (IsProofOfStake(false)) {
             READWRITE(prevoutStake);
             READWRITE(nStakeTime);
             READWRITE(hashProofOfStake);
+            if(IsProofOfStake(true)) {
+                READWRITE(hashStakeModifierV3);
+            }
         } else {
             const_cast<CDiskBlockIndex*>(this)->prevoutStake.SetNull();
             const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
