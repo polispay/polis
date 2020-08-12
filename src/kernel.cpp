@@ -346,15 +346,14 @@ bool CheckStakeKernelHash(const CBlockIndex* pindexPrev, unsigned int nBits, uin
                           const CTransactionRef& txPrev, const COutPoint& prevout, unsigned int nTimeTx,
                           uint256& hashProofOfStake, bool fPoSV3, bool fPrintProofOfStake)
 {
-    const CBlockIndex* pindexPrev = chainActive.Tip()->pprev;
-
-    auto txPrevTime = blockFrom.GetBlockTime();
+    auto nTxPrevOffset = 336;
+    auto txPrevTime = blockFromTime;
     if (nTimeTx < txPrevTime)  // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
 
     auto nStakeMinAge = CurrentMinStakeAge(nTimeTx);
     auto nStakeMaxAge = Params().GetConsensus().nStakeMaxAge;
-    unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
+    unsigned int nTimeBlockFrom = blockFromTime;
     if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
         return error("CheckStakeKernelHash() : min age violation");
 
@@ -373,8 +372,8 @@ bool CheckStakeKernelHash(const CBlockIndex* pindexPrev, unsigned int nBits, uin
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
 
-    if (blockFrom.nTime > Params().GetConsensus().nPosMitigationSwitchTime && (nValueIn < nMinimumStakeValue))
-        return error("%s - stakeinput value less than minimum required (%llu < %llu), blockhash %s\n", __func__, nValueIn, nMinimumStakeValue, blockFrom.ToString().c_str());
+    if (blockFromTime > Params().GetConsensus().nPosMitigationSwitchTime && (nValueIn < nMinimumStakeValue))
+        return error("%s - stakeinput value less than minimum required (%llu < %llu), blockhash %s\n", __func__, nValueIn, nMinimumStakeValue, hashBlockFrom.ToString());
 
     // Enforce minimum stake depth
     const int nPreviousBlockHeight = pindexPrev->nHeight;
@@ -397,7 +396,7 @@ bool CheckStakeKernelHash(const CBlockIndex* pindexPrev, unsigned int nBits, uin
 
         } else {
 
-            if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
+            if (!GetKernelStakeModifier(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
                 return false;
 
             ss << nStakeModifier;

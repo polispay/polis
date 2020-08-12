@@ -45,8 +45,8 @@ static bool IsValidNewAlgoHardForkBlock(const CTransaction &transaction, int nBl
                                 nBlockHeight, actualReward, maxExpectedAmount);
         return false;
     }
-
-    auto scriptPubKey = GetScriptForDestination(DecodeDestination(hfPayment.second));
+    CBitcoinAddress addr(hfPayment.second);
+    auto scriptPubKey = GetScriptForDestination(addr.Get());
     auto it = std::find_if(std::begin(vout), std::end(vout), [scriptPubKey, amount](const CTxOut &txOut) {
         return txOut.scriptPubKey == scriptPubKey &&
                 txOut.nValue == amount;
@@ -126,12 +126,10 @@ bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount expectedRe
     {
         if(IsValidNewAlgoHardForkBlock(*coinbaseTransaction, nBlockHeight, expectedReward, actualReward, strErrorRet))
         {
-            LogPrint("IsBlockValueValid -- Valid hardfork payment at height %d: %s \n", nBlockHeight, coinbaseTransaction->ToString());
             return true;
         }
         else
         {
-            LogPrint("IsBlockValueValid -- Invalid hardfork payment at height %d: %s, err: %s \n", nBlockHeight, coinbaseTransaction->ToString(), strErrorRet);
             return false;
         }
     }
@@ -238,13 +236,12 @@ bool IsBlockPayeeValid(const CTransaction& txNew, int nBlockHeight, CAmount expe
     if(consensusParams.nPoSUpdgradeHFHeight == nBlockHeight)
     {
         std::string strError;
-        if(IsValidNewAlgoHardForkBlock(*txNew, nBlockHeight, expectedReward, actualReward, strError))
+        if(IsValidNewAlgoHardForkBlock(txNew, nBlockHeight, expectedReward, actualReward, strError))
         {
             return true;
         }
         else
         {
-            LogPrint("IsBlockPayeeValid -- Invalid hardfork payment at height %d: %s, err: %s \n", nBlockHeight, txNew->ToString(), strError);
             return false;
         }
     }
@@ -293,7 +290,8 @@ void FillBlockPayments(CMutableTransaction& txNew, int nBlockHeight, CAmount blo
     const Consensus::Params& consensusParams = Params().GetConsensus();
     if(nBlockHeight == consensusParams.nPoSUpdgradeHFHeight) {
         auto payment = HardForkPayment();
-        txNew.vout.emplace_back(payment.first, GetScriptForDestination(DecodeDestination(payment.second)));
+        CBitcoinAddress addr(payment.second);
+        txNew.vout.emplace_back(payment.first, GetScriptForDestination(addr.Get()));
         return;
     }
     // only create superblocks if spork is enabled AND if superblock is actually triggered

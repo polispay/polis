@@ -1,4 +1,4 @@
-`// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2014-2017 The Polis Core developers
 // Distributed under the MIT software license, see the accompanying
@@ -213,8 +213,7 @@ CAmount GetStakeReward(CAmount blockReward, unsigned int percentage)
 }
 bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript, CBlockIndex *pindex,
                                     unsigned int nBits, const CBlock &blockFrom, const CTransactionRef &txPrev,
-                                    const COutPoint &prevout, unsigned int &nTimeTx,
-                                    const TPoSContract &contract, bool fGenerateSegwit, bool fPrintProofOfStake) const
+                                    const COutPoint &prevout, unsigned int &nTimeTx, bool fPrintProofOfStake) const
 {
     unsigned int nTryTime = 0;
     uint256 hashProofOfStake;
@@ -231,7 +230,7 @@ bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeS
     for(unsigned int i = 0; i < nHashDrift; ++i)
     {
         nTryTime = nTimeTx + nHashDrift - i;
-        bool fValid = CheckStakeKernelHash(pindex, nBits, blockFromHash, blockFromTime, txPrev, prevout, nTryTime, hashProofOfStake, isProofOfStakeV3, fPrintProofOfStake)
+        bool fValid = CheckStakeKernelHash(pindex, nBits, blockFromHash, blockFromTime, txPrev, prevout, nTryTime, hashProofOfStake, isProofOfStakeV3, fPrintProofOfStake);
         if (fDebug)
             LogPrintf("%04x %s\n", i, hashProofOfStake.ToString().c_str());
         if (fValid) {
@@ -4036,7 +4035,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
         fKernelFound = CreateCoinStakeKernel(kernelScript, stakeScript,
                                              chainActive.Tip(),  nBits,
                                              block, pcoin.first->tx,
-                                             prevoutStake, nTxNewTime, tposContract, fGenerateSegwit, false);
+                                             prevoutStake, nTxNewTime, false);
         if(fKernelFound)
         {
             FillCoinStakePayments(txNew, kernelScript, prevoutStake, blockReward);
