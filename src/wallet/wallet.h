@@ -732,7 +732,7 @@ private:
     bool CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
                                CBlockIndex *pindex,
                                unsigned int nBits, const CBlock& blockFrom, const CTransactionRef &txPrev,
-                               const COutPoint& prevout, unsigned int &nTimeTx, bool fPrintProofOfStake) const;
+                               unsigned int nTxPrevOffset, const COutPoint& prevout, unsigned int &nTimeTx, bool fPrintProofOfStake) const;
     void FillCoinStakePayments(CMutableTransaction &transaction,
                                const CScript &kernelScript,
                                const COutPoint &stakePrevout, CAmount blockReward) const;

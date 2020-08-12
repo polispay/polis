@@ -31,7 +31,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
 
 // Check whether stake kernel meets hash target
 // Sets hashProofOfStake on success return
-bool CheckStakeKernelHash(const CBlockIndex *pindexPrev, unsigned int nBits, uint256 hashBlockFrom, int64_t blockFromTime, const CTransactionRef& txPrev,
+bool CheckStakeKernelHash(const CBlockIndex *pindexPrev, unsigned int nBits, unsigned int nTxPrevOffset, uint256 hashBlockFrom, int64_t blockFromTime, const CTransactionRef& txPrev,
                           const COutPoint& prevout, unsigned int nTimeTx,
                           uint256& hashProofOfStake, bool fPoSV3, bool fPrintProofOfStake);
 // Check kernel hash target and coinstake signature
