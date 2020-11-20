@@ -578,7 +578,7 @@ void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
     GetMainSignals().ScriptForMining(coinbaseScript);
     while (true) {
         try {
-            MilliSleep(1000);
+            MilliSleep(10);
             // Throw an error if no script was provided.  This can happen
             // due to some internal error but also if the keypool is empty.
             // In the latter case, already the pointer is NULL.
@@ -591,7 +591,7 @@ void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
                     bool fvNodesEmpty = connman.GetNodeCount(CConnman::CONNECTIONS_ALL) == 0;
                     if (!fvNodesEmpty && !IsInitialBlockDownload() && masternodeSync.IsSynced())
                         break;
-                    MilliSleep(1000);
+                    MilliSleep(10);
                 } while (true);
             }
             if(fProofOfStake)
@@ -600,7 +600,7 @@ void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
                 {
                     LogPrintf("Not capable staking \n");
                     nLastCoinStakeSearchInterval = 0;
-                    MilliSleep(5000);
+                    MilliSleep(1000);
                     continue;
                 }
             }
