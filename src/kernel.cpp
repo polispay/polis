@@ -340,6 +340,10 @@ bool CheckStakeKernelHash(const CBlockIndex* pindexPrev, unsigned int nBits, uns
                           const CTransactionRef& txPrev, const COutPoint& prevout, unsigned int nTimeTx,
                           uint256& hashProofOfStake, bool fPoSV3){
 
+    if (!fPoSV3) {
+       return true;
+    } 
+
     auto txPrevTime = blockFromTime;
     unsigned int nTimeBlockFrom = blockFromTime;
 
@@ -376,10 +380,6 @@ bool CheckStakeKernelHash(const CBlockIndex* pindexPrev, unsigned int nBits, uns
     // returning zero from GetLastHeight() indicates error
     if (nBlockFromHeight == 0)
         return false;
-
-    if (!fPoSV3) {
-       return true;
-    } 
     
     ss << pindexPrev->hashStakeModifierV3;
     ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
@@ -444,6 +444,7 @@ bool CheckProofOfStake(const CBlockIndex *pindexPrev, const CBlock &block, uint2
    
     bool isProofOfStakeV3 = params.nPoSUpdgradeHFHeight < pindexPrev->nHeight;
     unsigned int nTime = block.nTime;
+
     if (!CheckStakeKernelHash(pindexPrev, block.nBits, sizeof(CBlock), blockprev.GetHash(), blockprev.GetBlockTime(), txPrev, txin.prevout, nTime, hashProofOfStake, isProofOfStakeV3))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx->GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 

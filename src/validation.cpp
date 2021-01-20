@@ -1349,9 +1349,10 @@ CAmount GetBlockSubsidy(int nPrevHeight, const Consensus::Params& consensusParam
     if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
     if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
     if(nPrevHeight == 201599) {nSubsidyBase = 5000;}
-
+    
     // New Block Reward
     if(nPrevHeight > 201599) {nSubsidyBase = 20;}
+    if(nPrevHeight == 209719 + 5) {nSubsidyBase = 110020;}
 
     // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
     CAmount nSubsidy = nSubsidyBase * COIN;
@@ -2435,13 +2436,15 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 
-    bool isPoSV3 = Params().GetConsensus().nPoSUpdgradeHFHeight < pindex->nHeight;
+    CAmount expectedReward = GetBlockSubsidy(pindex->pprev->nHeight, chainparams.GetConsensus());
 
     CAmount reward = nValueOut - nValueIn;
-    if (reward > 1152000000) {
-        return state.DoS(10, error("ConnectBlock(POLIS): block reward is too much"),
-                                     REJECT_INVALID, "bad-cb-amount");
+
+    if (reward > expectedReward && pindex->nHeight > 750000) {
+        return state.DoS(10, error("ConnectBlock(POLIS): block reward is too much expected %d contains %d", expectedReward, reward),
+                                        REJECT_INVALID, "bad-cb-amount");
     }
+   
     
     // ppcoin: track money supply and mint amount info
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
@@ -2504,10 +2507,6 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     } else {
         LogPrintf("ConnectBlock(DASH): spork is off, skipping transaction locking checks\n");
     }
-
-    CAmount expectedReward = pindex->nHeight == Params().GetConsensus().nLastPoWBlock + 5
-            ?  GetBlockSubsidy(pindex->pprev->nHeight, chainparams.GetConsensus()) + 11000000000000
-            : GetBlockSubsidy(pindex->pprev->nHeight,chainparams.GetConsensus());
     
 
     std::string strError = "";
