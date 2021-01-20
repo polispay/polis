@@ -2510,9 +2510,12 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
 
     std::string strError = "";
     if (chainActive.Height() > fFullComplianceHeight) {
-    if (!IsBlockValueValid(block, pindex->nHeight, expectedReward, pindex->nMint, strError)) {
-        return state.DoS(0, error("ConnectBlock(POLIS): %s", strError), REJECT_INVALID, "bad-cb-amount");
-    }}
+    if (pindex->nHeight != 763245 && pindex->nHeight != 766164) {
+        if (!IsBlockValueValid(block, pindex->nHeight, expectedReward, pindex->nMint, strError)) {
+            return state.DoS(0, error("ConnectBlock(POLIS): %s", strError), REJECT_INVALID, "bad-cb-amount");
+        }}
+    }
+ 
 
     const auto& coinbaseTransaction = (pindex->nHeight >= Params().GetConsensus().nLastPoWBlock ? block.vtx[1] : block.vtx[0]);
 
