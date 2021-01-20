@@ -1352,7 +1352,6 @@ CAmount GetBlockSubsidy(int nPrevHeight, const Consensus::Params& consensusParam
     
     // New Block Reward
     if(nPrevHeight > 201599) {nSubsidyBase = 20;}
-    if(nPrevHeight == 209719 + 5) {nSubsidyBase = 110020;}
 
     // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
     CAmount nSubsidy = nSubsidyBase * COIN;
@@ -2440,7 +2439,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
 
     CAmount reward = nValueOut - nValueIn;
 
-    if (reward > expectedReward && pindex->nHeight > 750000) {
+    if (reward > expectedReward && pindex->nHeight > 770000) {
         return state.DoS(10, error("ConnectBlock(POLIS): block reward is too much expected %d contains %d", expectedReward, reward),
                                         REJECT_INVALID, "bad-cb-amount");
     }
