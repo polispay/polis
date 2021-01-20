@@ -377,21 +377,13 @@ bool CheckStakeKernelHash(const CBlockIndex* pindexPrev, unsigned int nBits, uns
     if (nBlockFromHeight == 0)
         return false;
 
-    if (fPoSV3) {
-        ss << pindexPrev->hashStakeModifierV3;
-    } else {
-        if (IsProtocolV03(nTimeTx)) {
-             if (!GetKernelStakeModifier(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
-                    return false;
-                ss << nStakeModifier;
-        }
-    }
- 
-
+    if (!fPoSV3) {
+       return true;
+    } 
+    
+    ss << pindexPrev->hashStakeModifierV3;
     ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
     hashProofOfStake = Hash(ss.begin(), ss.end());
-    if (nTimeTx < 1549143000)
-        return true;
 
     // Now check if proof-of-stake hash meets target protocol
     if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay)
