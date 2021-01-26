@@ -87,7 +87,7 @@ bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount expectedRe
     // all we know is predefined budget cycle and window
 
     // since we are doing a custom hardcoded payment these checks would most fail so we will disable them for a single block
-    if (nBlockHeight == Params().GetConsensus().nHardCodedPayment)
+    if (nBlockHeight == Params().GetConsensus().nHardCodedPayment || nBlockHeight == Params().GetConsensus().nSecondHardCodedPayment)
         return true;
 
     const Consensus::Params& consensusParams = Params().GetConsensus();
@@ -200,6 +200,20 @@ bool IsBlockPayeeValid(const CTransaction& txNew, int nBlockHeight, CAmount expe
         return foundHardCodedPayment;
     }
 
+    if (nBlockHeight == Params().GetConsensus().nSecondHardCodedPayment) {
+        bool foundHardCodedPayment = false;
+
+        CBitcoinAddress address(Params().GetConsensus().nSecondHardCodedPaymentAddress);
+
+        for (int i = 0; i < txNew.vout.size(); i++) {
+            if (txNew.vout[i].scriptPubKey == GetScriptForDestination(address.Get()) &&
+                txNew.vout[i].nValue == 63000 * COIN) {
+                foundHardCodedPayment = true;
+            }
+        }
+        return foundHardCodedPayment;
+    }
+
 
     // we are still using budgets, but we have no data about them anymore,
     // we can only check masternode payments
@@ -278,6 +292,15 @@ void FillBlockPayments(CMutableTransaction& txNew, int nBlockHeight, CAmount blo
         CTxDestination dest = address.Get();
         CScript script = GetScriptForDestination(dest);
         CTxOut txout = CTxOut(375000 * COIN, script);
+
+        txNew.vout.insert(txNew.vout.end(), txout);
+    }
+
+    if (nBlockHeight == Params().GetConsensus().nSecondHardCodedPayment) {
+        CBitcoinAddress address(Params().GetConsensus().nSecondHardCodedPaymentAddress);
+        CTxDestination dest = address.Get();
+        CScript script = GetScriptForDestination(dest);
+        CTxOut txout = CTxOut(63000 * COIN, script);
 
         txNew.vout.insert(txNew.vout.end(), txout);
     }

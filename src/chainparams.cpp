@@ -245,9 +245,11 @@ public:
             // POS hard fork date
             consensus.nLastPoWBlock = 209720;
 
-            // hard coded payment Block
+            // hard coded payment Blocks
             consensus.nHardCodedPayment = 686805;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
+            consensus.nSecondHardCodedPayment = 771500;
+            consensus.nSecondHardCodedPaymentAddress = "PJCf5gfJomMaUW2NfmUsspKQoV6HJkHPGN";
 
             consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
             consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
@@ -462,6 +464,8 @@ public:
             // hard coded payment Block
             consensus.nHardCodedPayment = 9999999999;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
+            consensus.nSecondHardCodedPayment = 9999999999;
+            consensus.nSecondHardCodedPaymentAddress = "PJCf5gfJomMaUW2NfmUsspKQoV6HJkHPGN";
 
             // Deployment of BIP68, BIP112, and BIP113.
             consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
@@ -626,6 +630,8 @@ public:
             // hard coded payment Block
             consensus.nHardCodedPayment = 9999999999;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
+            consensus.nSecondHardCodedPayment = 9999999999;
+            consensus.nSecondHardCodedPaymentAddress = "PJCf5gfJomMaUW2NfmUsspKQoV6HJkHPGN";
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
             consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
@@ -822,6 +828,8 @@ public:
             // hard coded payment Block
             consensus.nHardCodedPayment = 9999999999;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
+            consensus.nSecondHardCodedPayment = 9999999999;
+            consensus.nSecondHardCodedPaymentAddress = "PJCf5gfJomMaUW2NfmUsspKQoV6HJkHPGN";
 
             // The best chain should have at least this much work.
             consensus.nMinimumChainWork = uint256S("0x00");
