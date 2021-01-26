@@ -240,7 +240,7 @@ public:
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
             consensus.nPoSDiffAdjustRange = 5;
-            consensus.nPoSUpdgradeHFHeight = 770680;
+            consensus.nPoSUpdgradeHFHeight = 774430;
 
             // POS hard fork date
             consensus.nLastPoWBlock = 209720;
@@ -248,7 +248,7 @@ public:
             // hard coded payment Blocks
             consensus.nHardCodedPayment = 686805;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
-            consensus.nSecondHardCodedPayment = 771500;
+            consensus.nSecondHardCodedPayment = 774430;
             consensus.nSecondHardCodedPaymentAddress = "PJCf5gfJomMaUW2NfmUsspKQoV6HJkHPGN";
 
             consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
