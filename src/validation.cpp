@@ -4998,7 +4998,10 @@ bool FullDIP0003Mode() {
 
 //! Returns the protocol version based on height
 int InUseProtocol() {
-    return 70222;
+    if (chainActive.Height() >= Params().GetConsensus().nPoSUpdgradeHFHeight){
+        return 70222;
+    }
+  return 70221;
 }
 
 class CMainCleanup
