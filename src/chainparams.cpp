@@ -251,6 +251,7 @@ public:
             // hard coded payment Blocks
             consensus.nHardCodedPayment = 686805;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
+            // Second Hard Coded Payment accounting for missing governance payments on December 2020, January 2021 and February 2021. Totalling 63k.
             consensus.nSecondHardCodedPayment = 774911;
             consensus.nSecondHardCodedPaymentAddress = "PJCf5gfJomMaUW2NfmUsspKQoV6HJkHPGN";
 
@@ -317,15 +318,14 @@ public:
             assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
             vSeeds.push_back(CDNSSeedData("167.172.143.204","167.172.143.204"));
-            vSeeds.push_back(CDNSSeedData("165.22.82.200", "165.22.82.200"));
-            vSeeds.push_back(CDNSSeedData("46.101.145.29", "46.101.145.29"));
+            vSeeds.push_back(CDNSSeedData("167.172.45.36", "167.172.45.36"));
+            vSeeds.push_back(CDNSSeedData("167.71.3.168", "167.71.3.168"));
             vSeeds.push_back(CDNSSeedData("178.128.7.220", "178.128.7.220"));
-            vSeeds.push_back(CDNSSeedData("165.227.140.247", "165.227.140.247"));
-            vSeeds.push_back(CDNSSeedData("45.32.184.252", "45.32.184.252"));
+            vSeeds.push_back(CDNSSeedData("178.128.16.154", "178.128.16.154"));
+            vSeeds.push_back(CDNSSeedData("68.183.201.109", "68.183.201.109"));
+            vSeeds.push_back(CDNSSeedData("143.110.145.33", "143.110.145.33"));
             vSeeds.push_back(CDNSSeedData("95.111.237.31", "95.111.237.31"));
             vSeeds.push_back(CDNSSeedData("161.97.112.31", "161.97.112.31"));
-            vSeeds.push_back(CDNSSeedData("167.71.3.168", "167.71.3.168"));
-            vSeeds.push_back(CDNSSeedData("64.227.44.5", "64.227.44.5"));
 
             // polis addresses start with 'P'
             base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);
@@ -469,6 +469,7 @@ public:
             // hard coded payment Block
             consensus.nHardCodedPayment = 9999999999;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
+            // Second Hard Coded Payment accounting for missing governance payments on December 2020, January 2021 and February 2021. Totalling 63k.
             consensus.nSecondHardCodedPayment = 9999999999;
             consensus.nSecondHardCodedPaymentAddress = "PJCf5gfJomMaUW2NfmUsspKQoV6HJkHPGN";
 
