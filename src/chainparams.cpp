@@ -240,7 +240,7 @@ public:
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
             consensus.nPoSDiffAdjustRange = 5;
-            consensus.nPoSUpdgradeHFHeight = 774685;
+            consensus.nPoSUpdgradeHFHeight = 774911;
 
             // POS hard fork date
             consensus.nLastPoWBlock = 209720;
@@ -248,7 +248,7 @@ public:
             // hard coded payment Blocks
             consensus.nHardCodedPayment = 686805;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
-            consensus.nSecondHardCodedPayment = 774685;
+            consensus.nSecondHardCodedPayment = 774911;
             consensus.nSecondHardCodedPaymentAddress = "PJCf5gfJomMaUW2NfmUsspKQoV6HJkHPGN";
 
             consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
@@ -395,10 +395,11 @@ public:
                         ( 379624, uint256S("0x58b38dde8562a110d53bae6cc5326678615a9f461095bcc189b6de6d0f7e65cc"))
                         ( 453700, uint256S("0xaebf0dde0fde68ffba89b515f3e7d8f64e15ccf309f8fe60302e4df482c34555"))
                         ( 750669, uint256S("0x8db94d662b88ef32cab70c2b2e117c885defbd30da68fcde5fa64f6aaa89c292"))
+                        ( 775079, uint256S("0x52c0f4ca7a6ec49f90ca1ddb8bffe6b64456e803068f7aab4ba3233ae881853e"))
             };
         chainTxData = ChainTxData{
-                1608655984, // * UNIX timestamp of last checkpoint block
-                2388905,    // * total number of transactions between genesis and last checkpoint
+                1611709708, // * UNIX timestamp of last checkpoint block
+                2456131,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
                 0.1        // * estimated number of transactions per day after checkpoint
 
