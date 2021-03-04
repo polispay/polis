@@ -245,6 +245,10 @@ public:
             // POS hard fork date
             consensus.nLastPoWBlock = 209720;
 
+            // Last Block
+            // consensus.nLastBlock = 812000;
+            consensus.nLastBlock = 800340;
+
             // hard coded payment Blocks
             consensus.nHardCodedPayment = 686805;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
@@ -461,7 +465,8 @@ public:
             consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
             consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
             consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
-
+        
+            consensus.nLastBlock = 800000;
             // hard coded payment Block
             consensus.nHardCodedPayment = 9999999999;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";
@@ -627,6 +632,8 @@ public:
             consensus.nPosTargetTimespan = 60 * 40;
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 180675;
+            // Last Block
+            consensus.nLastBlock = 812000;
 
             // hard coded payment Block
             consensus.nHardCodedPayment = 9999999999;
@@ -825,7 +832,8 @@ public:
             // smallest difficulty | 0x008000
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
             consensus.nStakeMinAgeSwitchTime = 1561734000;
-
+            // Last Block
+            consensus.nLastBlock = 812000;
             // hard coded payment Block
             consensus.nHardCodedPayment = 9999999999;
             consensus.nHardCodedPaymentAddress = "PGxr2egr3K7YUVpeR33d5EDG1Qi1LGiJx2";

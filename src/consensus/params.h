@@ -187,6 +187,7 @@ struct Params {
     int64_t nPosTargetSpacing;
     int64_t nPosTargetTimespan;
     int nLastPoWBlock;
+    int nLastBlock;
     int nHardCodedPayment;
     std::string nHardCodedPaymentAddress;
     int nSecondHardCodedPayment;

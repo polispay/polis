@@ -112,6 +112,11 @@ unsigned int static PoW2PoSRequired(const CBlockIndex* pindexLast, const Consens
     return Params().GetConsensus().nWSTargetDiff; // Gets hardcoded diff for last PoW block.
 }
 
+unsigned int static StopChainRequired(const CBlockIndex* pindexLast, const Consensus::Params& params) {
+    return UintToArith256(params.powLimit).GetCompact();
+}
+
+
 unsigned int static DarkGravityWave(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params) {
     /* current difficulty formula, polis - DarkGravity v3, written by Evan Duffield - evan@polispay.org */
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
@@ -241,6 +246,9 @@ unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockH
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
     // Most recent algo first
+    if (pindexLast->nHeight == params.nLastBlock) {
+        return StopChainRequired(pindexLast, params);
+    }
     if (pindexLast->nHeight == params.nPoSUpdgradeHFHeight - 1) {
         return PoW2PoSRequired(pindexLast, params);
     }
