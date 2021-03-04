@@ -246,7 +246,7 @@ unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockH
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
     // Most recent algo first
-    if (pindexLast->nHeight == params.nLastBlock) {
+    if (pindexLast->nHeight >= params.nLastBlock) {
         return StopChainRequired(pindexLast, params);
     }
     if (pindexLast->nHeight == params.nPoSUpdgradeHFHeight - 1) {
