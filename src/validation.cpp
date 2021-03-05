@@ -3807,12 +3807,8 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
 
     CBlockIndex *pindexDummy = NULL;
     CBlockIndex *&pindex = ppindex ? *ppindex : pindexDummy;
+    
 
-
-    // Stopping the chain at block 812,00 (March 20th, 2021) to migrate into BSC.
-    if (pindex->nHeight >= chainparams.GetConsensus().nLastBlock) {
-        return error("AcceptBlock(): Chain is stopped, please migrate your coins into BSC");
-    }
     // if blocks timestamp is greater than timestamp which is set in this spork stop the chain
     // We have the IsSporkActive function here as the default spork value is from the year 2099 so we need to check if the spork is active first
     if (sporkManager.IsSporkActive(SPORK_32_STOP_BLOCKCHAIN_TIMESTAMP))
@@ -3821,6 +3817,11 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
         
     if (!AcceptBlockHeader(block, state, chainparams, &pindex))
         return false;
+
+    // Stopping the chain at block 812,00 (March 20th, 2021) to migrate into BSC.
+    if (pindex->nHeight >= chainparams.GetConsensus().nLastBlock) {
+        return error("AcceptBlock(): Chain is stopped, please migrate your coins into BSC");
+    }
 
     // Try to process all requested blocks that we don't have, but only
     // process an unrequested block if it's new and has enough work to

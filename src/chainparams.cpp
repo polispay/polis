@@ -246,7 +246,6 @@ public:
             consensus.nLastPoWBlock = 209720;
 
             // Last Block
-            // consensus.nLastBlock = 812000;
             consensus.nLastBlock = 812000;
 
             // hard coded payment Blocks
